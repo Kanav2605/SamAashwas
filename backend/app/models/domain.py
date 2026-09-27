@@ -21,7 +21,13 @@ class ComplaintRecord:
         master_ticket_id: Optional[str] = None,
         is_duplicate: bool = False,
         complaint_id: Optional[str] = None,
-        created_at: Optional[str] = None
+        created_at: Optional[str] = None,
+        national_mission: Optional[str] = None,
+        citizen_charter_sla_hours: Optional[int] = None,
+        jan_sunwai_eligible: bool = False,
+        corporator_name: Optional[str] = None,
+        mla_name: Optional[str] = None,
+        audio_transcript: Optional[str] = None
     ):
         self.complaint_id = complaint_id or f"CMP-{uuid.uuid4().hex[:8].upper()}"
         self.raw_text = raw_text
@@ -40,6 +46,12 @@ class ComplaintRecord:
         self.master_ticket_id = master_ticket_id or ""
         self.is_duplicate = is_duplicate
         self.created_at = created_at or datetime.now(timezone.utc).isoformat()
+        self.national_mission = national_mission or "Swachh Bharat / AMRUT Urban Mission"
+        self.citizen_charter_sla_hours = citizen_charter_sla_hours or (24 if urgency in ["High", "Critical"] else 48)
+        self.jan_sunwai_eligible = jan_sunwai_eligible or (urgency in ["High", "Critical"])
+        self.corporator_name = corporator_name or "Ward Councillor"
+        self.mla_name = mla_name or "Constituency MLA"
+        self.audio_transcript = audio_transcript
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -59,7 +71,13 @@ class ComplaintRecord:
             "image_verification": self.image_verification,
             "master_ticket_id": self.master_ticket_id,
             "is_duplicate": self.is_duplicate,
-            "created_at": self.created_at
+            "created_at": self.created_at,
+            "national_mission": self.national_mission,
+            "citizen_charter_sla_hours": self.citizen_charter_sla_hours,
+            "jan_sunwai_eligible": self.jan_sunwai_eligible,
+            "corporator_name": self.corporator_name,
+            "mla_name": self.mla_name,
+            "audio_transcript": self.audio_transcript
         }
 
 
@@ -77,7 +95,14 @@ class MasterTicketRecord:
         status: str = "OPEN",
         assigned_engineer: str = "Ward Junior Engineer (AE-01)",
         master_ticket_id: Optional[str] = None,
-        first_reported_at: Optional[str] = None
+        first_reported_at: Optional[str] = None,
+        national_mission: Optional[str] = None,
+        citizen_charter_sla_hours: Optional[int] = None,
+        jan_sunwai_status: str = "NONE",
+        corporator: Optional[Dict[str, str]] = None,
+        mla: Optional[Dict[str, str]] = None,
+        ward_sabha_schedule: Optional[str] = None,
+        desilting_readiness_pct: Optional[int] = None
     ):
         self.master_ticket_id = master_ticket_id or f"MST-{uuid.uuid4().hex[:8].upper()}"
         self.department = department
@@ -93,7 +118,16 @@ class MasterTicketRecord:
         self.first_reported_at = first_reported_at or datetime.now(timezone.utc).isoformat()
         self.last_reported_at = self.first_reported_at
         self.citizen_reports: List[Dict[str, Any]] = []
-        self.sla_hours_remaining = 24 if urgency in ["High", "Critical"] else 48
+        self.national_mission = national_mission or "Swachh Bharat / AMRUT Urban Mission"
+        self.citizen_charter_sla_hours = citizen_charter_sla_hours or (24 if urgency in ["High", "Critical"] else 48)
+        self.sla_hours_remaining = self.citizen_charter_sla_hours
+        self.jan_sunwai_status = jan_sunwai_status
+        if self.urgency in ["High", "Critical"] and self.jan_sunwai_status == "NONE":
+            self.jan_sunwai_status = "ESCALATED"
+        self.corporator = corporator or {"name": "Ward Councillor", "designation": "Parshad", "phone": "N/A"}
+        self.mla = mla or {"name": "Constituency MLA", "constituency": "Constituency"}
+        self.ward_sabha_schedule = ward_sabha_schedule or "1st Saturday of Month, 10:30 AM"
+        self.desilting_readiness_pct = desilting_readiness_pct or 75
 
     @property
     def report_count(self) -> int:
@@ -114,10 +148,14 @@ class MasterTicketRecord:
         # Dynamic urgency escalation on high volume of reports
         if len(self.citizen_reports) >= 5 and self.urgency not in ["High", "Critical"]:
             self.urgency = "High"
-            self.sla_hours_remaining = 12
+            self.sla_hours_remaining = min(self.sla_hours_remaining, 12)
         elif len(self.citizen_reports) >= 15:
             self.urgency = "Critical"
-            self.sla_hours_remaining = 6
+            self.sla_hours_remaining = min(self.sla_hours_remaining, 6)
+
+        # Automatic Jan Sunwai / Samadhan Diwas escalation for high-traction civic issues
+        if len(self.citizen_reports) >= 3 or self.urgency in ["High", "Critical"]:
+            self.jan_sunwai_status = "ESCALATED"
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -136,5 +174,12 @@ class MasterTicketRecord:
             "first_reported_at": self.first_reported_at,
             "last_reported_at": self.last_reported_at,
             "sla_hours_remaining": self.sla_hours_remaining,
-            "assigned_engineer": self.assigned_engineer
+            "assigned_engineer": self.assigned_engineer,
+            "national_mission": self.national_mission,
+            "citizen_charter_sla_hours": self.citizen_charter_sla_hours,
+            "jan_sunwai_status": self.jan_sunwai_status,
+            "corporator": self.corporator,
+            "mla": self.mla,
+            "ward_sabha_schedule": self.ward_sabha_schedule,
+            "desilting_readiness_pct": self.desilting_readiness_pct
         }

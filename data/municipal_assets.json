@@ -9,7 +9,20 @@
       "population": 65000,
       "elevation_m": 905,
       "low_lying_zone": false,
-      "drainage_coverage_pct": 82
+      "drainage_coverage_pct": 82,
+      "corporator": {
+        "name": "Smt. Lakshmi Devi",
+        "designation": "Elected Ward Councillor (Parshad)",
+        "phone": "+91-98450-11221"
+      },
+      "mla": {
+        "name": "Shri N.A. Haris",
+        "constituency": "Shantinagar Assembly"
+      },
+      "ward_sabha_schedule": "Every 1st Saturday, 10:30 AM @ Ward Community Hall",
+      "pre_monsoon_desilting_pct": 86,
+      "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
+      "primary_mission": "Smart Cities & Urban Drainage"
     },
     {
       "ward_id": "WARD-02",
@@ -20,7 +33,20 @@
       "population": 82000,
       "elevation_m": 880,
       "low_lying_zone": true,
-      "drainage_coverage_pct": 68
+      "drainage_coverage_pct": 68,
+      "corporator": {
+        "name": "Shri M. Chandrappa",
+        "designation": "Elected Ward Councillor (Parshad)",
+        "phone": "+91-98450-22334"
+      },
+      "mla": {
+        "name": "Shri Ramalinga Reddy",
+        "constituency": "BTM Layout Assembly"
+      },
+      "ward_sabha_schedule": "Every 2nd Saturday, 11:00 AM @ Koramangala Club Hall",
+      "pre_monsoon_desilting_pct": 62,
+      "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
+      "primary_mission": "AMRUT 2.0 & Jal Jeevan Mission"
     },
     {
       "ward_id": "WARD-03",
@@ -31,7 +57,20 @@
       "population": 71000,
       "elevation_m": 885,
       "low_lying_zone": true,
-      "drainage_coverage_pct": 74
+      "drainage_coverage_pct": 74,
+      "corporator": {
+        "name": "Smt. Kavitha Jain",
+        "designation": "Elected Ward Councillor (Parshad)",
+        "phone": "+91-98450-33445"
+      },
+      "mla": {
+        "name": "Shri Satish Reddy",
+        "constituency": "Bommanahalli Assembly"
+      },
+      "ward_sabha_schedule": "Every 1st Sunday, 10:00 AM @ BDA Complex Sector 7",
+      "pre_monsoon_desilting_pct": 71,
+      "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
+      "primary_mission": "State PWD & Municipal Road Safety Program"
     },
     {
       "ward_id": "WARD-04",
@@ -42,7 +81,20 @@
       "population": 59000,
       "elevation_m": 935,
       "low_lying_zone": false,
-      "drainage_coverage_pct": 91
+      "drainage_coverage_pct": 91,
+      "corporator": {
+        "name": "Shri R. Anantha Kumar",
+        "designation": "Elected Ward Councillor (Parshad)",
+        "phone": "+91-98450-44556"
+      },
+      "mla": {
+        "name": "Dr. C.N. Ashwath Narayan",
+        "constituency": "Malleshwaram Assembly"
+      },
+      "ward_sabha_schedule": "Every 3rd Saturday, 10:00 AM @ Seva Sadan Hall",
+      "pre_monsoon_desilting_pct": 92,
+      "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
+      "primary_mission": "Swachh Bharat Mission (SBM-Urban 2.0)"
     },
     {
       "ward_id": "WARD-05",
@@ -53,7 +105,20 @@
       "population": 94000,
       "elevation_m": 872,
       "low_lying_zone": true,
-      "drainage_coverage_pct": 52
+      "drainage_coverage_pct": 52,
+      "corporator": {
+        "name": "Shri Venkatesh Gowda",
+        "designation": "Elected Ward Councillor (Parshad)",
+        "phone": "+91-98450-55667"
+      },
+      "mla": {
+        "name": "Shri Arvind Limbavali",
+        "constituency": "Mahadevapura Assembly"
+      },
+      "ward_sabha_schedule": "Every 2nd Sunday, 11:00 AM @ Bellandur Panchayat Bhavan",
+      "pre_monsoon_desilting_pct": 49,
+      "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
+      "primary_mission": "AMRUT 2.0 Lake Rejuvenation & Stormwater Drain"
     }
   ],
   "assets": [

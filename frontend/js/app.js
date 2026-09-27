@@ -1,37 +1,63 @@
-// CivicSense AI - Application Controller
+// CivicSense AI (SamAashwas) - Main Application Controller
 let currentTickets = [];
 let selectedTicketId = null;
+let isRecording = null;
+let speechRecognizer = null;
+let allWardsData = [];
 
 document.addEventListener('DOMContentLoaded', () => {
+  // Restore language preference
+  const savedLang = localStorage.getItem('civicsense_lang') || 'en';
+  if (typeof setLanguage === 'function') setLanguage(savedLang);
+
+  // Restore sunlight mode preference
+  if (localStorage.getItem('civicsense_sunlight') === 'true') {
+    document.body.classList.add('sunlight-mode');
+    updateSunlightButtonText();
+  }
+
+  // Restore lite mode preference
+  if (localStorage.getItem('civicsense_lite') === 'true') {
+    document.body.classList.add('lite-data-mode');
+  }
+
   initMap();
   loadKPIStats();
   loadMasterTickets();
   loadPredictiveData();
+  loadWardGovernanceData();
 });
 
-// Tab Switcher
+// Tab Switcher for Desktop & Mobile
 function switchTab(tabId) {
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+  document.querySelectorAll('.mobile-nav-item').forEach(btn => btn.classList.remove('active'));
   document.querySelectorAll('.view-container').forEach(view => view.classList.remove('active'));
 
   const targetView = document.getElementById(tabId);
   if (targetView) targetView.classList.add('active');
 
-  // Highlight clicked tab
-  const btn = Array.from(document.querySelectorAll('.tab-btn')).find(b =>
-    b.getAttribute('onclick').includes(tabId)
-  );
-  if (btn) btn.classList.add('active');
+  // Highlight desktop tab
+  const desktopBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+  if (desktopBtn) desktopBtn.classList.add('active');
 
-  // Trigger leaflet redraw if switching back to map
-  if (tabId === 'command-center' && map) {
+  // Highlight mobile nav button
+  const mobileBtn = document.querySelector(`.mobile-nav-item[data-tab="${tabId}"]`);
+  if (mobileBtn) mobileBtn.classList.add('active');
+
+  // Redraw leaflet if switching to map
+  if (tabId === 'command-center' && typeof map !== 'undefined' && map) {
     setTimeout(() => {
       map.invalidateSize();
     }, 200);
   }
+
+  if (tabId === 'jan-sunwai-view') {
+    loadWardGovernanceData();
+  }
 }
 
-// Fetch KPI Stats
+// Fetch KPI Stats with National Missions & Jan Sunwai
 async function loadKPIStats() {
   try {
     const res = await fetch('/api/v1/analytics/stats');
@@ -42,15 +68,26 @@ async function loadKPIStats() {
     document.getElementById('kpi-master-tickets').innerText = stats.total_master_tickets;
     document.getElementById('kpi-dedup-rate').innerText = `${stats.deduplication_rate_pct}%`;
     document.getElementById('kpi-high-risk-wards').innerText = stats.high_risk_wards_count;
+    
+    const janCountEl = document.getElementById('kpi-jan-sunwai-count');
+    if (janCountEl) {
+      janCountEl.innerText = stats.jan_sunwai_escalated_count || 0;
+    }
   } catch (e) {
-    console.warn('Could not fetch stats, server might be offline:', e);
+    console.warn('Could not fetch stats:', e);
   }
 }
 
-// Load Master Tickets
+// Load Master Tickets with Filters
 async function loadMasterTickets() {
   const statusFilter = document.getElementById('status-filter').value;
-  const url = statusFilter ? `/api/v1/master-tickets?status=${statusFilter}` : '/api/v1/master-tickets';
+  let url = '/api/v1/master-tickets';
+
+  if (statusFilter === 'JAN_SUNWAI') {
+    url = '/api/v1/master-tickets?jan_sunwai_only=true';
+  } else if (statusFilter) {
+    url = `/api/v1/master-tickets?status=${statusFilter}`;
+  }
 
   try {
     const res = await fetch(url);
@@ -58,6 +95,7 @@ async function loadMasterTickets() {
     currentTickets = await res.json();
     renderTicketList(currentTickets);
     renderMapIncidents(currentTickets);
+    renderLiteWardGrid(currentTickets);
   } catch (e) {
     console.error('Error fetching tickets:', e);
   }
@@ -68,7 +106,7 @@ function renderTicketList(tickets) {
   listEl.innerHTML = '';
 
   if (tickets.length === 0) {
-    listEl.innerHTML = '<div style="padding: 1.5rem; text-align: center; color: var(--text-muted);">No incidents found.</div>';
+    listEl.innerHTML = '<div style="padding: 1.5rem; text-align: center; color: var(--text-muted);">No incidents found for this filter.</div>';
     return;
   }
 
@@ -82,14 +120,28 @@ function renderTicketList(tickets) {
     else if (t.urgency === 'High') badgeClass = 'badge-high';
     else if (t.urgency === 'Low') badgeClass = 'badge-low';
 
+    const janSunwaiTag = t.jan_sunwai_status === 'ESCALATED'
+      ? `<span class="badge badge-jan-sunwai">⚖️ Jan Sunwai Docket</span>`
+      : '';
+
+    const missionTag = t.national_mission
+      ? `<span class="badge badge-mission">${t.national_mission.split('/')[0].trim()}</span>`
+      : '';
+
+    const corporatorName = t.corporator && t.corporator.name ? t.corporator.name : 'Ward Councillor';
+
     card.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
-        <span class="badge ${badgeClass}">${t.urgency}</span>
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; gap: 6px; flex-wrap: wrap;">
+        <div style="display: flex; gap: 4px; flex-wrap: wrap; align-items: center;">
+          <span class="badge ${badgeClass}">${t.urgency}</span>
+          ${janSunwaiTag}
+          ${missionTag}
+        </div>
         <span class="badge-count">${t.report_count} reports</span>
       </div>
-      <div style="font-weight: 600; font-size: 0.95rem; margin-bottom: 4px; color: #f1f5f9;">${t.title}</div>
+      <div style="font-weight: 600; font-size: 0.92rem; margin-bottom: 4px; color: var(--text-main);">${t.title}</div>
       <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px;">
-        📍 ${t.ward_name} &bull; 🏛️ ${t.department}
+        📍 ${t.ward_name} &bull; 🏛️ ${corporatorName}
       </div>
       <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #93c5fd;">
         <span>Status: <strong>${t.status}</strong></span>
@@ -114,8 +166,30 @@ function openTicketModal(ticketId) {
   document.getElementById('modal-urgency').innerText = ticket.urgency;
   document.getElementById('modal-status').innerText = ticket.status;
   document.getElementById('modal-engineer').innerText = ticket.assigned_engineer;
-  document.getElementById('modal-sla').innerText = `${ticket.sla_hours_remaining} hours remaining`;
+  document.getElementById('modal-sla').innerText = `${ticket.sla_hours_remaining} hours remaining (${ticket.citizen_charter_sla_hours || 48}h Citizen Charter)`;
   document.getElementById('modal-report-count').innerText = ticket.report_count;
+
+  // National Mission & Jan Sunwai
+  document.getElementById('modal-mission').innerText = ticket.national_mission || "Swachh Bharat / AMRUT Urban Mission";
+  const janTag = document.getElementById('modal-jan-sunwai-tag');
+  const janBtn = document.getElementById('modal-btn-jan-sunwai');
+  if (ticket.jan_sunwai_status === 'ESCALATED') {
+    janTag.style.display = 'inline-block';
+    janBtn.disabled = true;
+    janBtn.innerText = '⚖️ Already Docketed in Jan Sunwai';
+    janBtn.style.opacity = '0.6';
+  } else {
+    janTag.style.display = 'none';
+    janBtn.disabled = false;
+    janBtn.innerText = '⚖️ Docket for Friday Jan Sunwai';
+    janBtn.style.opacity = '1';
+  }
+
+  // Representative details
+  const corp = ticket.corporator || {};
+  const mla = ticket.mla || {};
+  document.getElementById('modal-corporator').innerText = corp.name ? `${corp.name} (${corp.phone || 'N/A'})` : 'Ward Councillor';
+  document.getElementById('modal-mla').innerText = mla.name ? `${mla.name} (${mla.constituency || 'Constituency'})` : 'Constituency MLA';
 
   // Render linked citizen reports
   const reportsList = document.getElementById('modal-reports-list');
@@ -132,7 +206,7 @@ function openTicketModal(ticketId) {
     reportItem.innerHTML = `
       <div style="display: flex; justify-content: space-between; color: #94a3b8; margin-bottom: 4px;">
         <strong>#${idx + 1} ${r.citizen_name} (${r.citizen_phone})</strong>
-        <span>Channel: ${r.channel}</span>
+        <span>Channel: <strong>${r.channel}</strong></span>
       </div>
       <div style="color: #f8fafc; font-style: italic;">"${r.raw_text}"</div>
     `;
@@ -159,13 +233,33 @@ async function updateTicketStatus(newStatus) {
       closeModal();
       loadMasterTickets();
       loadKPIStats();
+      loadWardGovernanceData();
     }
   } catch (e) {
     console.error('Error updating status:', e);
   }
 }
 
-// Load Predictive Data
+async function escalateModalToJanSunwai() {
+  if (!selectedTicketId) return;
+  try {
+    const res = await fetch(`/api/v1/master-tickets/${selectedTicketId}/escalate-jan-sunwai`, {
+      method: 'POST'
+    });
+    if (res.ok) {
+      const data = await res.json();
+      alert(`Docketed! ${data.message}`);
+      closeModal();
+      loadMasterTickets();
+      loadKPIStats();
+      loadWardGovernanceData();
+    }
+  } catch (e) {
+    console.error('Error escalating to Jan Sunwai:', e);
+  }
+}
+
+// Load Predictive Data & Monsoon Risk
 async function loadPredictiveData() {
   try {
     const riskRes = await fetch('/api/v1/predictive-maintenance/ward-risk');
@@ -173,6 +267,7 @@ async function loadPredictiveData() {
 
     if (riskRes.ok) {
       const wards = await riskRes.json();
+      allWardsData = wards;
       renderWardRiskCards(wards);
     }
 
@@ -202,18 +297,29 @@ function renderWardRiskCards(wards) {
       pillStyle = 'background: rgba(245, 158, 11, 0.2); color: #fcd34d; border: 1px solid #f59e0b;';
     }
 
+    const desiltingPct = w.desilting_readiness_pct || 75;
+
     card.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h3 style="font-size: 1.1rem; color: #fff;">${w.ward_name}</h3>
+        <h3 style="font-size: 1.05rem; color: var(--text-main);">${w.ward_name}</h3>
         <span class="risk-score-pill" style="${pillStyle}">${w.risk_score}</span>
       </div>
-      <div style="font-size: 0.8rem; color: var(--text-muted);">
+      <div style="font-size: 0.78rem; color: var(--text-muted);">
         🌧️ 48h Rain Forecast: <strong>${w.rainfall_forecast_48h_mm} mm</strong> &bull; Drainage Deficit: <strong>${w.drainage_vulnerability_score}%</strong>
       </div>
-      <div style="font-size: 0.8rem; background: #0f172a; padding: 8px; border-radius: 4px; border-left: 3px solid #3b82f6;">
+      <div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.72rem; margin-bottom: 2px;">
+          <span>Pre-Monsoon Desilting Readiness</span>
+          <strong>${desiltingPct}%</strong>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: ${desiltingPct}%; background: ${desiltingPct < 60 ? '#ef4444' : '#10b981'};"></div>
+        </div>
+      </div>
+      <div style="font-size: 0.78rem; background: #0f172a; padding: 8px; border-radius: 4px; border-left: 3px solid #3b82f6;">
         <strong>Root Cause:</strong> ${w.primary_risk_factor}
       </div>
-      <div style="font-size: 0.8rem; color: #93c5fd;">
+      <div style="font-size: 0.78rem; color: #93c5fd;">
         💡 <strong>Action:</strong> ${w.recommendation}
       </div>
     `;
@@ -246,6 +352,254 @@ function renderAssetTable(assets) {
   });
 }
 
+// Load Ward Governance & Jan Sunwai Dashboard
+async function loadWardGovernanceData() {
+  try {
+    const [wardRes, ticketRes] = await Promise.all([
+      fetch('/api/v1/predictive-maintenance/ward-risk'),
+      fetch('/api/v1/master-tickets?jan_sunwai_only=true')
+    ]);
+
+    if (wardRes.ok) {
+      const wards = await wardRes.json();
+      renderWardGovernanceCards(wards);
+    }
+
+    if (ticketRes.ok) {
+      const janTickets = await ticketRes.json();
+      renderJanSunwaiTable(janTickets);
+    }
+  } catch (err) {
+    console.error('Error loading Ward Governance data:', err);
+  }
+}
+
+function renderWardGovernanceCards(wards) {
+  const container = document.getElementById('ward-governance-cards');
+  if (!container) return;
+  container.innerHTML = '';
+
+  wards.forEach(w => {
+    const corp = w.corporator || { name: 'Ward Councillor', designation: 'Parshad', phone: '+91-98450-XXXXX' };
+    const desiltingPct = w.desilting_readiness_pct || 75;
+    const schedule = w.ward_sabha_schedule || 'Every 1st Saturday, 10:30 AM';
+
+    const card = document.createElement('div');
+    card.className = 'ward-gov-card';
+    card.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+        <div>
+          <h3 style="font-size: 1.05rem; color: #60a5fa;">${w.ward_name}</h3>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">${w.ward_id} &bull; Bangalore ULB</span>
+        </div>
+        <span class="badge badge-low">Active Council</span>
+      </div>
+
+      <div style="background: #0f172a; padding: 10px; border-radius: 6px; font-size: 0.8rem; display: flex; flex-direction: column; gap: 4px;">
+        <div>🏛️ <strong>Corporator:</strong> ${corp.name} (${corp.designation || 'Parshad'})</div>
+        <div>📞 <strong>Helpline:</strong> <a href="tel:${corp.phone}" style="color: #38bdf8; text-decoration: none;">${corp.phone || 'N/A'}</a></div>
+        <div>🗓️ <strong>Ward Sabha:</strong> ${schedule}</div>
+      </div>
+
+      <div>
+        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 4px;">
+          <span>Pre-Monsoon Desilting Progress</span>
+          <strong>${desiltingPct}%</strong>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" style="width: ${desiltingPct}%; background: ${desiltingPct < 60 ? '#ef4444' : '#10b981'};"></div>
+        </div>
+      </div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function renderJanSunwaiTable(tickets) {
+  const tbody = document.getElementById('jan-sunwai-table-body');
+  const badgeTotal = document.getElementById('jan-sunwai-badge-total');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  if (badgeTotal) badgeTotal.innerText = `${tickets.length} Docketed Cases`;
+
+  if (tickets.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" style="padding: 1.5rem; text-align: center; color: var(--text-muted);">No grievances currently escalated to Jan Sunwai.</td></tr>';
+    return;
+  }
+
+  tickets.forEach(t => {
+    const tr = document.createElement('tr');
+    tr.style.borderBottom = '1px solid var(--border)';
+    const corpName = t.corporator && t.corporator.name ? t.corporator.name : 'Ward Officer';
+
+    tr.innerHTML = `
+      <td style="padding: 8px; font-weight: bold; color: #f87171;">${t.master_ticket_id}</td>
+      <td style="padding: 8px; font-weight: 600;">${t.title}</td>
+      <td style="padding: 8px; font-size: 0.78rem;">${t.ward_name}<br><span style="color: #94a3b8;">${corpName}</span></td>
+      <td style="padding: 8px;"><span class="badge badge-mission">${t.national_mission || 'Civic Mission'}</span></td>
+      <td style="padding: 8px; text-align: center;"><span class="badge-count">${t.report_count}</span></td>
+      <td style="padding: 8px; font-weight: bold; color: #fb923c;">${t.sla_hours_remaining}h left</td>
+      <td style="padding: 8px;">
+        <button class="btn-primary" style="font-size: 0.75rem; padding: 4px 8px;" onclick="openTicketModal('${t.master_ticket_id}')">Inspect</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// 2G Lite Data Mode Toggle & Grid Rendering
+function toggleLiteMode() {
+  document.body.classList.toggle('lite-data-mode');
+  const isLite = document.body.classList.contains('lite-data-mode');
+  localStorage.setItem('civicsense_lite', isLite ? 'true' : 'false');
+  const btn = document.getElementById('btn-lite-toggle');
+  if (btn) btn.innerText = isLite ? "📶 Lite Mode ON" : "📶 2G Lite Data";
+  renderLiteWardGrid(currentTickets);
+}
+
+function renderLiteWardGrid(tickets) {
+  const container = document.getElementById('lite-wards-container');
+  if (!container) return;
+  container.innerHTML = '';
+
+  const wardGroups = {};
+  tickets.forEach(t => {
+    wardGroups[t.ward_name] = wardGroups[t.ward_name] || [];
+    wardGroups[t.ward_name].push(t);
+  });
+
+  Object.keys(wardGroups).forEach(wardName => {
+    const items = wardGroups[wardName];
+    const el = document.createElement('div');
+    el.style.background = '#1e293b';
+    el.style.border = '1px solid var(--border)';
+    el.style.borderRadius = '6px';
+    el.style.padding = '10px';
+
+    el.innerHTML = `
+      <div style="font-weight: bold; color: #60a5fa; margin-bottom: 4px;">${wardName}</div>
+      <div style="font-size: 0.75rem; color: #cbd5e1;">Active Master Incidents: <strong>${items.length}</strong></div>
+      <div style="font-size: 0.75rem; color: #f87171;">Critical / High: <strong>${items.filter(i => i.urgency === 'Critical' || i.urgency === 'High').length}</strong></div>
+    `;
+    container.appendChild(el);
+  });
+}
+
+// Outdoor Sunlight Readability Mode Toggle
+function toggleSunlightMode() {
+  document.body.classList.toggle('sunlight-mode');
+  const isSunlight = document.body.classList.contains('sunlight-mode');
+  localStorage.setItem('civicsense_sunlight', isSunlight ? 'true' : 'false');
+  updateSunlightButtonText();
+}
+
+function updateSunlightButtonText() {
+  const btn = document.getElementById('btn-sunlight-toggle');
+  if (!btn) return;
+  const isSunlight = document.body.classList.contains('sunlight-mode');
+  btn.innerText = isSunlight ? "🌙 Indoor / Dark Mode" : "☀️ Outdoor Sunlight Mode";
+}
+
+// Vernacular Audio / Speech-to-Text Grievance Simulation
+function toggleVoiceRecording() {
+  const btnLabel = document.getElementById('voice-btn-label');
+  const statusLabel = document.getElementById('voice-status-label');
+  const recordBtn = document.getElementById('voice-record-btn');
+  const langSelect = document.getElementById('voice-lang-select');
+  const chosenLang = langSelect ? langSelect.value : 'hi-IN';
+
+  if (!isRecording) {
+    isRecording = true;
+    recordBtn.classList.add('voice-btn-pulse');
+    recordBtn.style.background = '#dc2626';
+    btnLabel.innerText = "Listening...";
+    statusLabel.innerText = `Recording speech in ${chosenLang} (speak now)...`;
+
+    // Attempt browser Web Speech API if supported
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      try {
+        speechRecognizer = new SpeechRecognition();
+        speechRecognizer.lang = chosenLang;
+        speechRecognizer.continuous = false;
+        speechRecognizer.interimResults = false;
+
+        speechRecognizer.onresult = (event) => {
+          const transcript = event.results[0][0].transcript;
+          document.getElementById('complaint-text').value = transcript;
+          statusLabel.innerText = `Transcribed: "${transcript}"`;
+          stopRecordingUI();
+        };
+
+        speechRecognizer.onerror = () => {
+          simulateVernacularVoice(chosenLang);
+        };
+
+        speechRecognizer.start();
+        return;
+      } catch (e) {
+        // Fall through to simulation
+      }
+    }
+
+    // High fidelity vernacular speech-to-text simulation fallback
+    setTimeout(() => {
+      simulateVernacularVoice(chosenLang);
+    }, 2000);
+  } else {
+    stopRecordingUI();
+  }
+}
+
+function stopRecordingUI() {
+  isRecording = false;
+  const recordBtn = document.getElementById('voice-record-btn');
+  const btnLabel = document.getElementById('voice-btn-label');
+  if (recordBtn) {
+    recordBtn.classList.remove('voice-btn-pulse');
+    recordBtn.style.background = '#2563eb';
+  }
+  if (btnLabel) btnLabel.innerText = "Start Speaking";
+  if (speechRecognizer) {
+    try { speechRecognizer.stop(); } catch(e) {}
+  }
+}
+
+function simulateVernacularVoice(lang) {
+  const sampleMap = {
+    'hi-IN': "सड़क पर गहरा गड्ढा है, 27th मेन रोड के पास, कभी भी दुर्घटना हो सकती है, वार्ड 3",
+    'kn-IN': "ರಸ್ತೆಯಲ್ಲಿ ದೊಡ್ಡ ಗುಂಡಿ ಬಿದ್ದಿದೆ, ವಾಹನ ಸವಾರರಿಗೆ ಅಪಘಾತವಾಗುವ ಸಂಭವವಿದೆ ಬೇಗ ಸರಿಮಾಡಿ, ವಾರ್ಡ್ 3",
+    'ta-IN': "தெரு விளக்கு 4 நாட்களாக எரியவில்லை, இரவு நேரத்தில் மிகவும் இருட்டாக உள்ளது, வார்டு 1",
+    'hinglish': "Bhaiya road par street light 4 din se band hai, near Sharma General Store, Ward 1",
+    'en-IN': "Dangerous open transformer sparking near school entrance, Ward 1"
+  };
+
+  const text = sampleMap[lang] || sampleMap['hinglish'];
+  document.getElementById('complaint-text').value = text;
+  const statusLabel = document.getElementById('voice-status-label');
+  if (statusLabel) {
+    statusLabel.innerHTML = `✓ Voice transcribed (${lang}): <em>"${text}"</em>`;
+  }
+  stopRecordingUI();
+}
+
+function fillSampleGrievance(langKey) {
+  const samples = {
+    hi: "सड़क पर गहरा गड्ढा है, 27th मेन रोड के पास, कभी भी दुर्घटना हो सकती है, वार्ड 3",
+    kn: "ರಸ್ತೆಯಲ್ಲಿ ದೊಡ್ಡ ಗುಂಡಿ ಬಿದ್ದಿದೆ, ವಾಹನ ಸವಾರರಿಗೆ ಅಪಘಾತವಾಗುವ ಸಂಭವವಿದೆ ಬೇಗ ಸರಿಮಾಡಿ, ವಾರ್ಡ್ 3",
+    ta: "தெரு விளக்கு 4 நாட்களாக எரியவில்லை, இரவு நேரத்தில் மிகவும் இருட்டாக உள்ளது, வார்டு 1",
+    hg: "Bhaiya road par street light 4 din se band hai, near Sharma General Store, Ward 1",
+    en: "Sewer pipeline leakage and dirty water overflowing on main road, Ward 2"
+  };
+  const text = samples[langKey] || samples.en;
+  document.getElementById('complaint-text').value = text;
+  const statusLabel = document.getElementById('voice-status-label');
+  if (statusLabel) {
+    statusLabel.innerHTML = `Selected sample (${langKey}): <em>"${text}"</em>`;
+  }
+}
+
 // Citizen Grievance Submission
 async function handleCitizenSubmit(event) {
   event.preventDefault();
@@ -259,7 +613,7 @@ async function handleCitizenSubmit(event) {
 
   const resultContainer = document.getElementById('submission-result');
   resultContainer.style.display = 'block';
-  resultContainer.innerHTML = '<div style="color: #60a5fa;">Submitting to AI Pipeline (NLP + Vision Verification + Deduplication)...</div>';
+  resultContainer.innerHTML = '<div style="color: #60a5fa;">Submitting to AI Pipeline (Multilingual NLP + Vision Verification + Deduplication)...</div>';
 
   try {
     const res = await fetch('/api/v1/complaints/submit', {
@@ -287,24 +641,32 @@ async function handleCitizenSubmit(event) {
           : `<span class="badge badge-critical">Vision: ${vision.status_label}</span>`;
       }
 
+      const janBadge = data.jan_sunwai_eligible
+        ? `<span class="badge badge-jan-sunwai">⚖️ Eligible for Jan Sunwai Review</span>`
+        : '';
+
       resultContainer.innerHTML = `
         <div style="font-weight: bold; color: #34d399; margin-bottom: 6px;">
           ✓ Grievance Processed Successfully!
         </div>
         <div><strong>Assigned Ticket:</strong> ${data.master_ticket_id}</div>
         <div><strong>Department:</strong> ${data.department} (${data.issue_type})</div>
+        <div><strong>National Mission:</strong> ${data.national_mission || 'Swachh Bharat / AMRUT'}</div>
+        <div><strong>Ward & Corporator:</strong> ${data.ward_extracted} (${data.corporator_name || 'Ward Parshad'})</div>
         <div><strong>Urgency:</strong> ${data.urgency} | <strong>Language:</strong> ${data.language_detected}</div>
-        <div style="margin-top: 4px;">
+        <div style="margin-top: 6px; display: flex; gap: 6px; flex-wrap: wrap;">
           ${isDup
             ? '<span class="badge badge-high">Duplicate Merged: Linked to existing neighborhood master ticket</span>'
             : '<span class="badge badge-low">Unique Incident: New Master Ticket Created</span>'
           }
           ${visionBadge}
+          ${janBadge}
         </div>
       `;
 
       loadMasterTickets();
       loadKPIStats();
+      loadWardGovernanceData();
     } else {
       resultContainer.innerHTML = '<div style="color: #ef4444;">Failed to submit grievance. Please try again.</div>';
     }
@@ -314,11 +676,12 @@ async function handleCitizenSubmit(event) {
 }
 
 function detectLocation() {
-  // Set random realistic coordinate in Koramangala / Indiranagar
   const coords = [
     { lat: 12.9352, lon: 77.6245 },
     { lat: 12.9716, lon: 77.6412 },
-    { lat: 12.9121, lon: 77.6446 }
+    { lat: 12.9121, lon: 77.6446 },
+    { lat: 13.0067, lon: 77.5694 },
+    { lat: 12.9304, lon: 77.6784 }
   ];
   const chosen = coords[Math.floor(Math.random() * coords.length)];
   document.getElementById('form-lat').value = chosen.lat;

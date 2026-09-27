@@ -25,6 +25,7 @@ def test_submit_and_deduplicate_complaints():
     data1 = res1.json()
     master_id = data1["master_ticket_id"]
     assert data1["department"] == "Electrical & Streetlighting"
+    assert data1["national_mission"] is not None
 
     # Submit duplicate grievance 40 meters away with code-mixed text
     payload2 = {
@@ -47,6 +48,8 @@ def test_get_master_tickets():
     tickets = res.json()
     assert isinstance(tickets, list)
     assert len(tickets) > 0
+    assert "national_mission" in tickets[0]
+    assert "corporator" in tickets[0]
 
 def test_whatsapp_webhook_flow():
     payload = {
@@ -60,6 +63,7 @@ def test_whatsapp_webhook_flow():
     data = res.json()
     assert "Namaste" in data["reply_message"]
     assert data["status"] == "PROCESSED"
+    assert data["national_mission"] is not None
 
 def test_predictive_ward_risk():
     res = client.get("/api/v1/predictive-maintenance/ward-risk")
@@ -67,3 +71,25 @@ def test_predictive_ward_risk():
     wards = res.json()
     assert len(wards) > 0
     assert "risk_score" in wards[0]
+    assert "desilting_readiness_pct" in wards[0]
+    assert "corporator" in wards[0]
+
+def test_analytics_stats_with_missions_and_jan_sunwai():
+    res = client.get("/api/v1/analytics/stats")
+    assert res.status_code == 200
+    data = res.json()
+    assert "national_mission_breakdown" in data
+    assert "jan_sunwai_escalated_count" in data
+
+def test_pwa_and_frontend_serving():
+    res_index = client.get("/")
+    assert res_index.status_code == 200
+    assert "CivicSense AI" in res_index.text
+
+    res_manifest = client.get("/manifest.json")
+    assert res_manifest.status_code == 200
+    assert "SamAashwas" in res_manifest.text
+
+    res_sw = client.get("/sw.js")
+    assert res_sw.status_code == 200
+    assert "civicsense" in res_sw.text

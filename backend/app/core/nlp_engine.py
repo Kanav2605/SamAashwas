@@ -7,14 +7,19 @@ from ..config import settings
 
 logger = logging.getLogger(__name__)
 
-# Department definitions & keywords (English + Hinglish + Hindi Romanized)
+# Department definitions & keywords (English + Hinglish + Hindi + Kannada + Tamil)
 CIVIC_TAXONOMY = {
     "Electrical & Streetlighting": {
         "keywords": [
             "street light", "streetlight", "light", "bulb", "pole", "khamba", "bijli", "transformer", 
             "wire", "sparking", "short circuit", "current", "fuse", "andhera", "dark", "no light",
             "band hai", "chalu nahi", "broken light", "streetlamp", "meter", "power cut",
-            "स्ट्रीट लाइट", "बिजली", "खंभा", "बल्ब", "तार", "करंट", "शॉर्ट सर्किट", "अंधेरा"
+            # Hindi
+            "स्ट्रीट लाइट", "बिजली", "खंभा", "बल्ब", "तार", "करंट", "शॉर्ट सर्किट", "अंधेरा", "बिजली गुल",
+            # Kannada
+            "ಬೀದಿ ದೀಪ", "ದೀಪ", "ಕಂಬ", "ವಿದ್ಯುತ್", "ಕತ್ತಲೆ", "ಬೆಳಕು", "beedi deepa", "current illa", "kambha", "kattale",
+            # Tamil
+            "தெரு விளக்கு", "மின்சாரம்", "மின் கம்பம்", "இருட்டு", "விளக்கு", "theru vilakku", "current illai", "iruttu"
         ],
         "default_issue": "Non-functional streetlight / Electrical issue"
     },
@@ -23,7 +28,12 @@ CIVIC_TAXONOMY = {
             "kachra", "garbage", "trash", "waste", "dustbin", "kuda", "kude", "safai", "sweeper", 
             "cleaning", "smell", "badbu", "dhalao", "dump", "plastic", "kachra gadi", "filth", 
             "litter", "animal dead", "debris", "malba",
-            "कचरा", "कूड़ा", "सफाई", "डस्टबिन", "बदबू", "कूड़ेदान", "कचरे", "सफाईकर्मी"
+            # Hindi
+            "कचरा", "कूड़ा", "सफाई", "डस्टबिन", "बदबू", "कूड़ेदान", "कचरे", "सफाईकर्मी", "स्वच्छ भारत",
+            # Kannada
+            "ಕಸ", "ಕಸದ ಗಾಡಿ", "ಸ್ವಚ್ಛತೆ", "ದುರ್ವಾಸನೆ", "ತಿಪ್ಪೆ", "kasa", "kachra", "swachhata",
+            # Tamil
+            "குப்பை", "துப்புரவு", "நாற்றம்", "குப்பைத்தொட்டி", "kuppai", "kuppaikoodai", "natram", "sugatharam"
         ],
         "default_issue": "Garbage dump / Uncleared solid waste"
     },
@@ -32,7 +42,12 @@ CIVIC_TAXONOMY = {
             "paani", "water", "pipeline", "pipe", "burst", "leak", "sewer", "sewage", "gutter", 
             "drain", "nali", "manhole", "overflow", "drainage", "clogged", "choked", "dirty water", 
             "ganda paani", "no water", "supply", "borewell", "motor", "water main",
-            "सीवर", "गटर", "पानी", "पाइपलाइन", "नाला", "नाली", "गंदा पानी", "मैनहोल", "जलभराव"
+            # Hindi
+            "सीवर", "गटर", "पानी", "पाइपलाइन", "नाला", "नाली", "गंदा पानी", "मैनहोल", "जलभराव", "जल जीवन",
+            # Kannada
+            "ನೀರು", "ಒಳಚರಂಡಿ", "ಚರಂಡಿ", "ಕೊಳವೆ", "ನೀರು ಸರಬರಾಜು", "neeru", "charandi", "sewerage", "kandaka",
+            # Tamil
+            "சாக்கடை நீர்", "சாக்கடை", "கழிவுநீர்", "தண்ணீர்", "குடிநீர்", "குழாய்", "குழாய் வெடிப்பு", "thanneer", "kudineer", "saakadai", "kuzhai"
         ],
         "default_issue": "Sewage overflow / Water pipeline rupture"
     },
@@ -41,7 +56,12 @@ CIVIC_TAXONOMY = {
             "pothole", "gaddha", "gaddhe", "road", "sadak", "pavement", "footpath", "tar", "divider", 
             "speed breaker", "broken road", "asphalt", "crater", "signal", "traffic light", "zebra crossing",
             "dhas gayi", "sinkhole", "road repair",
-            "सड़क", "गड्ढा", "गड्ढे", "खड्डा", "फुटपाथ", "रोड", "डिवाइडर"
+            # Hindi
+            "सड़क", "गड्ढा", "गड्ढे", "खड्डा", "फुटपाथ", "रोड", "डिवाइडर", "खराब सड़क",
+            # Kannada
+            "ರಸ್ತೆ", "ಗುಂಡಿ", "ಹಳ್ಳ", "ಡಾಂಬರು", "ರಸ್ತೆ ಗುಂಡಿ", "rasty", "gundi", "halla", "dambaru",
+            # Tamil
+            "சாலை", "குழி", "பள்ளம்", "தார் சாலை", "விபத்து", "salai", "kuzhi", "pallam"
         ],
         "default_issue": "Potholes / Broken road pavement"
     },
@@ -49,7 +69,12 @@ CIVIC_TAXONOMY = {
         "keywords": [
             "illegal", "encroachment", "thela", "hawker", "illegal construction", "footpath blocked", 
             "kabza", "illegal parking", "unauthorized", "shop extended", "dukandar",
-            "कब्जा", "अतिक्रमण", "ठेला", "अवैध निर्माण", "अवैध पार्किंग"
+            # Hindi
+            "कब्जा", "अतिक्रमण", "ठेला", "अवैध निर्माण", "अवैध पार्किंग",
+            # Kannada
+            "ಅತಿಕ್ರಮಣ", "ಫುಟ್‌ಪಾತ್", "ಕಬ್ಜ", "anikramana",
+            # Tamil
+            "ஆக்கிரமிப்பு", "நடைபாதை", "aakkiramippu", "nadaipaathai"
         ],
         "default_issue": "Unauthorized footpath encroachment"
     },
@@ -57,7 +82,12 @@ CIVIC_TAXONOMY = {
         "keywords": [
             "mosquito", "macchar", "fogging", "dengue", "malaria", "stagnant water", "waterlogging", 
             "insect", "spraying", "larvae", "fever outbreak",
-            "मच्छर", "डेंगू", "मलेरिया", "दवा का छिड़काव", "फॉगिंग", "कीटनाशक"
+            # Hindi
+            "मच्छर", "डेंगू", "मलेरिया", "दवा का छिड़काव", "फॉगिंग", "कीटनाशक",
+            # Kannada
+            "ಸೊಳ್ಳೆ", "ಡೆಂಗ್ಯೂ", "ಮಲೇರಿಯಾ", "ಔಷಧಿ ಸಿಂಪಡಣೆ", "solle", "dengue",
+            # Tamil
+            "கொசு", "டெங்கு", "மருந்து தெளிப்பு", "kosu", "marundhu thelippu"
         ],
         "default_issue": "Stagnant water mosquito breeding / Fogging required"
     }
@@ -66,28 +96,43 @@ CIVIC_TAXONOMY = {
 URGENCY_KEYWORDS = {
     UrgencyEnum.CRITICAL: [
         "accident", "sparking", "fire", "danger", "dangerous", "emergency", "current lag raha", 
-        "khatra", "open manhole", "deep crater", "pipeline burst", "flooded inside home"
+        "khatra", "open manhole", "deep crater", "pipeline burst", "flooded inside home",
+        "ಅಪಘಾತ", "ತುರ್ತು", "ವಿದ್ಯುತ್ ಆಘಾತ", "ಪ್ರಾಣಾಪಾಯ", "விபத்து", "அவசரம்", "உயிர்க்கொல்லி"
     ],
     UrgencyEnum.HIGH: [
         "urgent", "immediately", "jaldi", "severe", "overflowing badly", "4 din se", "5 din se", 
-        "week", "hafta", "choked", "bad smell", "impassable", "main road", "traffic jam"
+        "week", "hafta", "choked", "bad smell", "impassable", "main road", "traffic jam",
+        "ಬೇಗ", "ತಕ್ಷಣ", "ದುರ್ವಾಸನೆ", "உடனடியாக", "விரைவாக", "கடுமையான"
     ],
     UrgencyEnum.MEDIUM: [
-        "kal se", "yesterday", "2 din se", "repair", "band hai", "kachra", "pothole", "problem", "issue"
+        "kal se", "yesterday", "2 din se", "repair", "band hai", "kachra", "pothole", "problem", "issue",
+        "ಸಮಸ್ಯೆ", "ಸರಿಮಾಡಿ", "பிரச்சனை", "பழுது"
     ],
     UrgencyEnum.LOW: [
-        "minor", "request", "please paint", "suggestion", "dim light"
+        "minor", "request", "please paint", "suggestion", "dim light", "ಕಡಿಮೆ", "கோரிக்கை"
     ]
 }
 
 def detect_language(text: str) -> str:
     """
-    Classify whether input is English, Hindi (Devanagari), or Hinglish (Romanized Hindi-English).
+    Classify whether input is English, Hindi (Devanagari), Kannada, Tamil, or Hinglish.
     """
+    # 1. Kannada script: \u0C80 - \u0CFF
+    kannada_count = len(re.findall(r'[\u0C80-\u0CFF]', text))
+    if kannada_count > 3:
+        return "Kannada"
+
+    # 2. Tamil script: \u0B80 - \u0BFF
+    tamil_count = len(re.findall(r'[\u0B80-\u0BFF]', text))
+    if tamil_count > 3:
+        return "Tamil"
+
+    # 3. Devanagari script: \u0900 - \u097F
     devanagari_count = len(re.findall(r'[\u0900-\u097F]', text))
-    if devanagari_count > 4:
+    if devanagari_count > 3:
         return "Hindi (Devanagari)"
 
+    # 4. Hinglish detection via romanized markers
     hinglish_markers = [
         "hai", "ho", "raha", "rahi", "gaya", "mein", "pe", "par", "bhaiya", "yeh", "woh", 
         "nahi", "aayi", "aaya", "kripya", "jaldi", "bohot", "bada", "gaddha", "paani", 
@@ -101,14 +146,16 @@ def detect_language(text: str) -> str:
     return "English"
 
 HINDI_DIGITS = {'०': '0', '१': '1', '२': '2', '३': '3', '४': '4', '५': '5', '६': '6', '७': '7', '८': '8', '९': '9'}
+KANNADA_DIGITS = {'೦': '0', '೧': '1', '೨': '2', '೩': '3', '೪': '4', '೫': '5', '೬': '6', '೭': '7', '೮': '8', '೯': '9'}
+TAMIL_DIGITS = {'௦': '0', '௧': '1', '௨': '2', '௩': '3', '௪': '4', '௫': '5', '௬': '6', '௭': '7', '௮': '8', '௯': '9'}
 
 def extract_ward(text: str) -> str:
     """
-    Extract ward number or identifier from complaint text in English or Hindi.
-    E.g., 'Ward 7', 'ward no. 12', 'ward #3', 'W-04', 'वार्ड 5', 'प्रभाग १२'
+    Extract ward number or identifier from complaint text in English, Hindi, Kannada, or Tamil.
+    E.g., 'Ward 7', 'ward no. 12', 'ward #3', 'W-04', 'वार्ड 5', 'ಪ್ರಭಾಗ ೧೨', 'வார்டு 4'
     """
     ward_patterns = [
-        r'(?:ward|wrd|prabhag|वार्ड|प्रभाग)\s*(?:no\.?|number|संख्या|#)?\s*([0-9०-९]{1,3}[A-Za-z]?)',
+        r'(?:ward|wrd|prabhag|ವಾರ್ಡ್|ಪ್ರಭಾಗ|வார்டு|வட்டம்|वार्ड|प्रभाग)\s*(?:no\.?|number|संख्या|ಸಂಖ್ಯೆ|எண்|#)?\s*([0-9०-९೦-೯௦-௯]{1,3}[A-Za-z]?)',
         r'\bW-?([0-9]{1,3})\b',
         r'\bsector\s*([0-9]{1,3})\b'
     ]
@@ -118,6 +165,10 @@ def extract_ward(text: str) -> str:
             raw_val = match.group(1)
             for h, d in HINDI_DIGITS.items():
                 raw_val = raw_val.replace(h, d)
+            for k, d in KANNADA_DIGITS.items():
+                raw_val = raw_val.replace(k, d)
+            for t, d in TAMIL_DIGITS.items():
+                raw_val = raw_val.replace(t, d)
             return f"Ward {raw_val.upper()}"
     return "Unassigned Ward (Auto-Geo)"
 
@@ -134,8 +185,8 @@ def extract_landmark(text: str) -> str:
         if len(landmark) > 3:
             return landmark.title()
 
-    # 2. Hindi post-position phrases: [Landmark] ke paas / nazdeek / ke samne
-    post_pattern = r'([A-Za-z0-9\s\.\-]{3,30}?)\s+(?:ke paas|nazdeek|ke samne|ke peeche)\b'
+    # 2. Hindi/Vernacular post-position phrases: [Landmark] ke paas / nazdeek / ke samne / hattira / arugil
+    post_pattern = r'([A-Za-z0-9\s\.\-]{3,30}?)\s+(?:ke paas|nazdeek|ke samne|ke peeche|hattira|arugil)\b'
     match_post = re.search(post_pattern, text, re.IGNORECASE)
     if match_post:
         cand = match_post.group(1).strip()
@@ -144,7 +195,7 @@ def extract_landmark(text: str) -> str:
             return cand.title()
 
     # 3. Specific named intersections / roads: e.g., '27th Main', 'Gandhi Chowk'
-    named_pattern = r'\b([0-9A-Za-z\s]{2,25}?\s+(?:chowk|circle|cross|main|layout|colony|nagar|marg))\b'
+    named_pattern = r'\b([0-9A-Za-z\s]{2,25}?\s+(?:chowk|circle|cross|main|layout|colony|nagar|marg|bhavan|temple|masjid|church))\b'
     match2 = re.search(named_pattern, text, re.IGNORECASE)
     if match2:
         cand2 = match2.group(1).strip()
@@ -164,7 +215,7 @@ def extract_department_and_issue(text: str) -> Tuple[str, str, float]:
     for dept, data in CIVIC_TAXONOMY.items():
         score = 0
         for kw in data["keywords"]:
-            if kw in lower_text:
+            if kw.lower() in lower_text:
                 score += (3 if " " in kw else 1) # Higher weight for multi-word match
         scores[dept] = score
 
@@ -177,18 +228,18 @@ def extract_department_and_issue(text: str) -> Tuple[str, str, float]:
     confidence = min(0.98, 0.65 + (max_score * 0.08))
     default_issue = CIVIC_TAXONOMY[best_dept]["default_issue"]
 
-    # Finer issue extraction based on prominent keywords
-    if "pothole" in lower_text or "gaddha" in lower_text:
+    # Finer issue extraction based on prominent keywords across languages
+    if any(k in lower_text for k in ["pothole", "gaddha", "gaddhe", "ಗುಂಡಿ", "குழி", "halla", "pallam"]):
         issue_type = "Severe Potholes / Road Surface Breakdown"
-    elif "street light" in lower_text or "khamba" in lower_text or "light band" in lower_text:
+    elif any(k in lower_text for k in ["street light", "khamba", "light band", "ದೀಪ", "ಕಂಬ", "விளக்கு", "மின்கம்பம்"]):
         issue_type = "Non-functional Streetlight / Dark Spot"
-    elif "sewer" in lower_text or "gutter" in lower_text or "overflow" in lower_text:
+    elif any(k in lower_text for k in ["sewer", "gutter", "overflow", "ಗಟರ್", "ಚರಂಡಿ", "சாக்கடை"]):
         issue_type = "Sewer Line Overflow & Blockage"
-    elif "pipeline" in lower_text or "pipe" in lower_text or "paani" in lower_text:
+    elif any(k in lower_text for k in ["pipeline", "pipe", "paani", "ನೀರು", "தண்ணீர்", "குடிநீர்"]):
         issue_type = "Potable Water Pipeline Rupture / Leak"
-    elif "kachra" in lower_text or "garbage" in lower_text or "kuda" in lower_text:
+    elif any(k in lower_text for k in ["kachra", "garbage", "kuda", "ಕಸ", "குப்பை"]):
         issue_type = "Garbage Pile-up / Waste Clearance"
-    elif "thela" in lower_text or "encroachment" in lower_text or "kabza" in lower_text:
+    elif any(k in lower_text for k in ["thela", "encroachment", "kabza", "ಅತಿಕ್ರಮಣ", "ஆக்கிரமிப்பு"]):
         issue_type = "Illegal Footpath & Road Encroachment"
     else:
         issue_type = default_issue
@@ -202,14 +253,34 @@ def extract_urgency(text: str) -> UrgencyEnum:
     lower_text = text.lower()
     for level, keywords in URGENCY_KEYWORDS.items():
         for kw in keywords:
-            if kw in lower_text:
+            if kw.lower() in lower_text:
                 return level
     return UrgencyEnum.MEDIUM
+
+def get_national_mission_and_sla(department: str, urgency: UrgencyEnum) -> Tuple[str, int]:
+    """
+    Maps grievances to Flagship Indian Civic Missions and Citizen Charter SLA hours.
+    """
+    if department == "Sanitation & Solid Waste":
+        return "Swachh Bharat Mission (SBM-Urban 2.0)", 24
+    elif department == "Water Supply & Sewage":
+        sla = 12 if urgency == UrgencyEnum.CRITICAL else (24 if urgency == UrgencyEnum.HIGH else 48)
+        return "AMRUT 2.0 & Jal Jeevan Mission", sla
+    elif department == "Electrical & Streetlighting":
+        sla = 12 if urgency == UrgencyEnum.CRITICAL else 48
+        return "Smart Cities Mission / National Street Lighting Program", sla
+    elif department == "Roads & Traffic Infrastructure":
+        sla = 24 if urgency == UrgencyEnum.CRITICAL else 72
+        return "State PWD & Municipal Road Safety Program", sla
+    elif department == "Health & Vector Control":
+        return "National Vector Borne Disease Control / SBM Urban Health", 24
+    else:
+        return "Smart Cities Urban Land Modernization", 96
 
 class CivicNLPEngine:
     """
     Core NLP Engine capable of zero-shot parsing, entity extraction,
-    and Hinglish/Hindi classification for municipal grievances.
+    and Hindi / Hinglish / Kannada / Tamil / English classification for Indian municipal grievances.
     """
     def __init__(self):
         self.backend = settings.NLP_MODEL_BACKEND
@@ -220,6 +291,7 @@ class CivicNLPEngine:
         ward = extract_ward(raw_text)
         landmark = extract_landmark(raw_text)
         urgency = extract_urgency(raw_text)
+        mission, sla = get_national_mission_and_sla(dept, urgency)
 
         return ExtractedNLPData(
             department=dept,
@@ -228,7 +300,9 @@ class CivicNLPEngine:
             location_landmark=landmark,
             ward_extracted=ward,
             language_detected=lang,
-            confidence=conf
+            confidence=conf,
+            national_mission=mission,
+            citizen_charter_sla_hours=sla
         )
 
 # Global engine singleton

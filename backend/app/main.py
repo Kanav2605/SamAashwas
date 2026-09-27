@@ -56,10 +56,25 @@ async def health_check():
         "environment": settings.ENVIRONMENT
     }
 
-# Mount frontend directory for easy standalone viewing
+# Mount frontend directory for easy standalone viewing and PWA support
 frontend_dir = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(__file__))), "frontend")
 if os.path.exists(frontend_dir):
     app.mount("/static", StaticFiles(directory=frontend_dir), name="static")
+
+    css_dir = os.path.join(frontend_dir, "css")
+    js_dir = os.path.join(frontend_dir, "js")
+    if os.path.exists(css_dir):
+        app.mount("/css", StaticFiles(directory=css_dir), name="css")
+    if os.path.exists(js_dir):
+        app.mount("/js", StaticFiles(directory=js_dir), name="js")
+
+    @app.get("/manifest.json", include_in_schema=False)
+    async def serve_manifest():
+        return FileResponse(os.path.join(frontend_dir, "manifest.json"), media_type="application/manifest+json")
+
+    @app.get("/sw.js", include_in_schema=False)
+    async def serve_sw():
+        return FileResponse(os.path.join(frontend_dir, "sw.js"), media_type="application/javascript")
 
     @app.get("/", include_in_schema=False)
     async def serve_index():

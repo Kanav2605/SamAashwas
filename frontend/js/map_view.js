@@ -1,4 +1,4 @@
-// Leaflet GIS Map Visualization for CivicSense AI
+// Leaflet GIS Map Visualization for CivicSense AI (SamAashwas)
 let map;
 let markersLayer = null;
 let radiusLayer = null;
@@ -41,16 +41,12 @@ function renderMapIncidents(masterTickets) {
 
     // Color code based on urgency & report volume
     let markerColor = '#f59e0b'; // Medium
-    let radiusColor = 'rgba(245, 158, 11, 0.15)';
     if (ticket.urgency === 'Critical' || ticket.report_count >= 5) {
       markerColor = '#ef4444';
-      radiusColor = 'rgba(239, 68, 68, 0.15)';
     } else if (ticket.urgency === 'High' || ticket.report_count >= 2) {
       markerColor = '#f97316';
-      radiusColor = 'rgba(249, 115, 22, 0.15)';
     } else if (ticket.status === 'RESOLVED') {
       markerColor = '#10b981';
-      radiusColor = 'rgba(16, 185, 129, 0.15)';
     }
 
     // 1. Draw 300m Spatial Clustering Gate Perimeter
@@ -93,17 +89,26 @@ function renderMapIncidents(masterTickets) {
 
     const marker = L.marker([lat, lon], { icon: customIcon });
 
+    const janTag = ticket.jan_sunwai_status === 'ESCALATED'
+      ? '<span style="background: #dc2626; color: white; padding: 2px 5px; border-radius: 3px; font-weight: bold; font-size: 10px;">⚖️ Jan Sunwai</span>'
+      : '';
+    const missionTag = ticket.national_mission
+      ? `<div style="font-size: 11px; color: #475569; margin: 3px 0;">🇮🇳 ${ticket.national_mission.split('/')[0]}</div>`
+      : '';
+
     const popupContent = `
-      <div style="font-family: sans-serif; font-size: 12px; color: #1e293b; min-width: 200px;">
+      <div style="font-family: sans-serif; font-size: 12px; color: #1e293b; min-width: 220px;">
         <strong style="color: #1e3a8a;">${ticket.master_ticket_id}</strong><br/>
         <strong>${ticket.title}</strong><br/>
-        <div style="margin: 4px 0;">
+        ${missionTag}
+        <div style="margin: 4px 0; display: flex; gap: 4px; flex-wrap: wrap;">
           <span style="background: #e2e8f0; padding: 2px 5px; border-radius: 3px;">${ticket.ward_name}</span>
           <span style="background: ${markerColor}; color: white; padding: 2px 5px; border-radius: 3px; font-weight: bold;">${ticket.urgency}</span>
+          ${janTag}
         </div>
         <div>👥 <strong>${ticket.report_count}</strong> Citizen Endorsements</div>
         <div>⏱️ SLA: <strong>${ticket.sla_hours_remaining}h</strong> remaining</div>
-        <button onclick="openTicketModal('${ticket.master_ticket_id}')" style="margin-top: 6px; background: #2563eb; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; width: 100%;">Inspect Master Incident</button>
+        <button onclick="openTicketModal('${ticket.master_ticket_id}')" style="margin-top: 6px; background: #2563eb; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; width: 100%; font-weight: 600;">Inspect Master Incident</button>
       </div>
     `;
 

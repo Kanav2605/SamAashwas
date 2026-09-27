@@ -8,6 +8,7 @@ class ChannelEnum(str, Enum):
     WEB_PORTAL = "web_portal"
     MOBILE_APP = "mobile_app"
     HELPLINE = "helpline"
+    VOICE_NOTE = "voice_note"
 
 class TicketStatusEnum(str, Enum):
     OPEN = "OPEN"
@@ -30,7 +31,7 @@ class VisionVerificationResult(BaseModel):
     explanation: str
 
 class ComplaintCreateRequest(BaseModel):
-    raw_text: str = Field(..., description="Complaint description in Hinglish, Hindi, or English")
+    raw_text: str = Field(..., description="Complaint description in Hinglish, Hindi, Kannada, Tamil, or English")
     lat: float = Field(..., description="Latitude coordinate of grievance")
     lon: float = Field(..., description="Longitude coordinate of grievance")
     ward_hint: Optional[str] = Field(None, description="Optional user-provided ward name/id")
@@ -39,6 +40,15 @@ class ComplaintCreateRequest(BaseModel):
     channel: ChannelEnum = Field(ChannelEnum.WEB_PORTAL, description="Reporting channel")
     image_url: Optional[str] = Field(None, description="Image URL or base64 data")
     image_category_hint: Optional[str] = Field(None, description="Vision verification hint")
+    audio_transcript: Optional[str] = Field(None, description="Voice note speech-to-text transcript")
+
+class VoiceNoteComplaintRequest(BaseModel):
+    spoken_language: str = Field("hi-IN", description="Language code: hi-IN, kn-IN, ta-IN, en-IN, or hinglish")
+    audio_transcript: str = Field(..., description="Transcribed vernacular voice grievance text")
+    lat: float = Field(..., description="Latitude coordinate")
+    lon: float = Field(..., description="Longitude coordinate")
+    citizen_name: Optional[str] = Field("Citizen", description="Citizen name")
+    citizen_phone: Optional[str] = Field("9876543210", description="Citizen phone")
 
 class ExtractedNLPData(BaseModel):
     department: str
@@ -48,6 +58,8 @@ class ExtractedNLPData(BaseModel):
     ward_extracted: str
     language_detected: str
     confidence: float
+    national_mission: Optional[str] = None
+    citizen_charter_sla_hours: Optional[int] = None
 
 class ComplaintResponse(BaseModel):
     complaint_id: str
@@ -67,6 +79,12 @@ class ComplaintResponse(BaseModel):
     master_ticket_id: str
     is_duplicate: bool
     created_at: str
+    national_mission: Optional[str] = None
+    citizen_charter_sla_hours: Optional[int] = None
+    jan_sunwai_eligible: Optional[bool] = None
+    corporator_name: Optional[str] = None
+    mla_name: Optional[str] = None
+    audio_transcript: Optional[str] = None
 
 class MasterTicketResponse(BaseModel):
     master_ticket_id: str
@@ -85,12 +103,20 @@ class MasterTicketResponse(BaseModel):
     last_reported_at: str
     sla_hours_remaining: int
     assigned_engineer: str
+    national_mission: Optional[str] = None
+    citizen_charter_sla_hours: Optional[int] = None
+    jan_sunwai_status: Optional[str] = None
+    corporator: Optional[Dict[str, str]] = None
+    mla: Optional[Dict[str, str]] = None
+    ward_sabha_schedule: Optional[str] = None
+    desilting_readiness_pct: Optional[int] = None
 
 class MasterTicketUpdateRequest(BaseModel):
     status: Optional[TicketStatusEnum] = None
     urgency: Optional[UrgencyEnum] = None
     assigned_engineer: Optional[str] = None
     resolution_notes: Optional[str] = None
+    jan_sunwai_status: Optional[str] = None
 
 class WardRiskResponse(BaseModel):
     ward_id: str
@@ -105,6 +131,9 @@ class WardRiskResponse(BaseModel):
     active_complaints_count: int
     drainage_vulnerability_score: float
     recommendation: str
+    desilting_readiness_pct: Optional[int] = 75
+    corporator: Optional[Dict[str, str]] = None
+    ward_sabha_schedule: Optional[str] = None
 
 class PredictiveAssetResponse(BaseModel):
     asset_id: str
@@ -126,6 +155,9 @@ class AnalyticsStatsResponse(BaseModel):
     ward_breakdown: Dict[str, int]
     urgency_breakdown: Dict[str, int]
     high_risk_wards_count: int
+    national_mission_breakdown: Optional[Dict[str, int]] = None
+    jan_sunwai_escalated_count: Optional[int] = 0
+    language_breakdown: Optional[Dict[str, int]] = None
 
 class WhatsAppMessageRequest(BaseModel):
     From: str = Field(..., description="WhatsApp user phone number e.g. whatsapp:+919876543210")
@@ -133,9 +165,12 @@ class WhatsAppMessageRequest(BaseModel):
     Latitude: Optional[float] = Field(None, description="User shared location latitude")
     Longitude: Optional[float] = Field(None, description="User shared location longitude")
     MediaUrl: Optional[str] = Field(None, description="Uploaded photo link")
+    LanguagePref: Optional[str] = Field(None, description="Preferred language code (en, hi, kn, ta)")
 
 class WhatsAppMessageResponse(BaseModel):
     reply_message: str
     complaint_id: Optional[str] = None
     master_ticket_id: Optional[str] = None
     status: str
+    national_mission: Optional[str] = None
+    jan_sunwai_status: Optional[str] = None

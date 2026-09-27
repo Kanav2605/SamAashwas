@@ -80,7 +80,10 @@ class PredictiveMaintenanceEngine:
             rainfall_forecast_48h_mm=rainfall_48h_mm,
             active_complaints_count=active_complaint_count,
             drainage_vulnerability_score=round(drain_deficit_score, 1),
-            recommendation=recommendation
+            recommendation=recommendation,
+            desilting_readiness_pct=ward_data.get("pre_monsoon_desilting_pct", 75),
+            corporator=ward_data.get("corporator"),
+            ward_sabha_schedule=ward_data.get("ward_sabha_schedule")
         )
 
     def assess_asset_failure(self, asset: Dict[str, Any], rainfall_48h_mm: float) -> PredictiveAssetResponse:

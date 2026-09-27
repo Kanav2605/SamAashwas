@@ -1,6 +1,6 @@
 from fastapi import APIRouter, HTTPException, Query
 from typing import List, Optional, Dict, Any
-from ..models.schemas import ComplaintCreateRequest, ComplaintResponse
+from ..models.schemas import ComplaintCreateRequest, ComplaintResponse, VoiceNoteComplaintRequest, ChannelEnum
 from ..db.database import db
 
 router = APIRouter(prefix="/complaints", tags=["Citizen Complaints"])
@@ -16,6 +16,27 @@ async def submit_complaint(payload: ComplaintCreateRequest):
         return complaint.to_dict()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to process complaint: {str(e)}")
+
+@router.post("/voice-note", response_model=ComplaintResponse, summary="Submit vernacular voice grievance")
+async def submit_voice_grievance(payload: VoiceNoteComplaintRequest):
+    """
+    Ingests speech-to-text transcribed voice note in Hindi, Kannada, Tamil, Hinglish, or English.
+    Tags as ChannelEnum.VOICE_NOTE and passes through AI deduplication and routing pipeline.
+    """
+    try:
+        complaint_req = ComplaintCreateRequest(
+            raw_text=payload.audio_transcript,
+            lat=payload.lat,
+            lon=payload.lon,
+            citizen_name=payload.citizen_name or "Voice Citizen",
+            citizen_phone=payload.citizen_phone or "9876543210",
+            channel=ChannelEnum.VOICE_NOTE,
+            audio_transcript=f"[{payload.spoken_language}] {payload.audio_transcript}"
+        )
+        complaint = db.submit_complaint(complaint_req)
+        return complaint.to_dict()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to process voice grievance: {str(e)}")
 
 @router.get("", response_model=List[Dict[str, Any]], summary="List recent citizen complaints")
 async def list_complaints(limit: int = Query(50, ge=1, le=200)):
