@@ -1,0 +1,124 @@
+{
+  "wards": [
+    {
+      "ward_id": "WARD-01",
+      "ward_name": "Indiranagar Central",
+      "city": "Bengaluru",
+      "center_lat": 12.9716,
+      "center_lon": 77.6412,
+      "population": 65000,
+      "elevation_m": 905,
+      "low_lying_zone": false,
+      "drainage_coverage_pct": 82
+    },
+    {
+      "ward_id": "WARD-02",
+      "ward_name": "Koramangala 4th Block",
+      "city": "Bengaluru",
+      "center_lat": 12.9352,
+      "center_lon": 77.6245,
+      "population": 82000,
+      "elevation_m": 880,
+      "low_lying_zone": true,
+      "drainage_coverage_pct": 68
+    },
+    {
+      "ward_id": "WARD-03",
+      "ward_name": "HSR Layout Sector 7",
+      "city": "Bengaluru",
+      "center_lat": 12.9121,
+      "center_lon": 77.6446,
+      "population": 71000,
+      "elevation_m": 885,
+      "low_lying_zone": true,
+      "drainage_coverage_pct": 74
+    },
+    {
+      "ward_id": "WARD-04",
+      "ward_name": "Malleshwaram 8th Cross",
+      "city": "Bengaluru",
+      "center_lat": 13.0067,
+      "center_lon": 77.5694,
+      "population": 59000,
+      "elevation_m": 935,
+      "low_lying_zone": false,
+      "drainage_coverage_pct": 91
+    },
+    {
+      "ward_id": "WARD-05",
+      "ward_name": "Bellandur Outer Ring",
+      "city": "Bengaluru",
+      "center_lat": 12.9304,
+      "center_lon": 77.6784,
+      "population": 94000,
+      "elevation_m": 872,
+      "low_lying_zone": true,
+      "drainage_coverage_pct": 52
+    }
+  ],
+  "assets": [
+    {
+      "asset_id": "DRAIN-BLR-0101",
+      "type": "Primary Stormwater Drain (SWD)",
+      "ward_id": "WARD-02",
+      "lat": 12.9348,
+      "lon": 77.6251,
+      "installed_year": 2011,
+      "material": "Reinforced Concrete",
+      "last_desilted_date": "2023-04-10",
+      "capacity_m3_per_sec": 14.5,
+      "structural_health_score": 42,
+      "vulnerability_flag": "HIGH_SILT_ACCUMULATION"
+    },
+    {
+      "asset_id": "DRAIN-BLR-0102",
+      "type": "Secondary Feeder Drain",
+      "ward_id": "WARD-05",
+      "lat": 12.9295,
+      "lon": 77.6791,
+      "installed_year": 2016,
+      "material": "Masonry Channel",
+      "last_desilted_date": "2022-09-15",
+      "capacity_m3_per_sec": 6.2,
+      "structural_health_score": 38,
+      "vulnerability_flag": "CHOKED_WEEDS"
+    },
+    {
+      "asset_id": "XFMR-BESCOM-402",
+      "type": "Distribution Transformer 250kVA",
+      "ward_id": "WARD-01",
+      "lat": 12.9721,
+      "lon": 77.6408,
+      "installed_year": 2014,
+      "material": "Oil Immersed",
+      "last_serviced_date": "2023-11-20",
+      "capacity_kva": 250,
+      "structural_health_score": 78,
+      "vulnerability_flag": "NORMAL"
+    },
+    {
+      "asset_id": "ROAD-BBMP-772",
+      "type": "Arterial Asphalt Road",
+      "ward_id": "WARD-03",
+      "lat": 12.9118,
+      "lon": 77.6450,
+      "installed_year": 2018,
+      "material": "Bituminous Concrete",
+      "last_tarred_date": "2021-02-14",
+      "structural_health_score": 48,
+      "vulnerability_flag": "POTHOLE_PRONE"
+    },
+    {
+      "asset_id": "PUMP-BWSSB-109",
+      "type": "Sewage Lift Station Pump",
+      "ward_id": "WARD-02",
+      "lat": 12.9360,
+      "lon": 77.6238,
+      "installed_year": 2012,
+      "material": "Submersible High Discharge",
+      "last_serviced_date": "2023-01-18",
+      "structural_health_score": 51,
+      "vulnerability_flag": "PUMP_SEAL_WEAR"
+    }
+  ]
+}

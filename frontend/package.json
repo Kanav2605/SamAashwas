@@ -1,0 +1,9 @@
+{
+  "name": "civicsense-ai-ui",
+  "version": "1.0.0",
+  "description": "CivicSense AI - ULB Officer Command Center and Citizen Interface",
+  "scripts": {
+    "start": "python -m http.server 3000"
+  },
+  "dependencies": {}
+}

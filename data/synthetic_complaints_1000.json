@@ -1,0 +1,102 @@
+[
+  {
+    "id": "SYN-0001",
+    "raw_text": "Ward 2 gali mein sewer overflow ho raha hai, badbu se rehna mushkil ho gaya near Sharma General Store",
+    "lat": 12.9352,
+    "lon": 77.6245,
+    "citizen_name": "Rahul Sharma",
+    "citizen_phone": "9845012301",
+    "channel": "whatsapp",
+    "ward_hint": "Koramangala 4th Block"
+  },
+  {
+    "id": "SYN-0002",
+    "raw_text": "Bhaiya sewer ka ganda paani sadak pe beh raha hai near Sharma General Store Ward 2",
+    "lat": 12.9354,
+    "lon": 77.6247,
+    "citizen_name": "Pooja Verma",
+    "citizen_phone": "9845012302",
+    "channel": "web_portal",
+    "ward_hint": "Koramangala 4th Block"
+  },
+  {
+    "id": "SYN-0003",
+    "raw_text": "Sewer line block ho gayi hai, dirty black water overflowing on road Ward 2 opposite Sharma store",
+    "lat": 12.9351,
+    "lon": 77.6243,
+    "citizen_name": "Amit Patel",
+    "citizen_phone": "9845012303",
+    "channel": "mobile_app",
+    "ward_hint": "Koramangala 4th Block"
+  },
+  {
+    "id": "SYN-0004",
+    "raw_text": "Street light 4 din se band hai near metro pillar 108, pura andhera hai Indiranagar",
+    "lat": 12.9716,
+    "lon": 77.6412,
+    "citizen_name": "Deepa Rao",
+    "citizen_phone": "9845012304",
+    "channel": "whatsapp",
+    "ward_hint": "Indiranagar Central"
+  },
+  {
+    "id": "SYN-0005",
+    "raw_text": "Road light khamba not working since 4 days near pillar 108 Indiranagar",
+    "lat": 12.9718,
+    "lon": 77.6415,
+    "citizen_name": "Vikram Singh",
+    "citizen_phone": "9845012305",
+    "channel": "web_portal",
+    "ward_hint": "Indiranagar Central"
+  },
+  {
+    "id": "SYN-0006",
+    "raw_text": "Main road par huge pothole hai accident hone ka chance hai, 27th Main HSR",
+    "lat": 12.9121,
+    "lon": 77.6446,
+    "citizen_name": "Sneha Reddy",
+    "citizen_phone": "9845012306",
+    "channel": "whatsapp",
+    "ward_hint": "HSR Layout Sector 7"
+  },
+  {
+    "id": "SYN-0007",
+    "raw_text": "Dangerous deep pothole on 27th main HSR layout, bikes slipping daily",
+    "lat": 12.9123,
+    "lon": 77.6448,
+    "citizen_name": "Arun Kumar",
+    "citizen_phone": "9845012307",
+    "channel": "mobile_app",
+    "ward_hint": "HSR Layout Sector 7"
+  },
+  {
+    "id": "SYN-0008",
+    "raw_text": "Kachra gadi nahi aayi 3 din se, community bin overflowing with waste Bellandur",
+    "lat": 12.9304,
+    "lon": 77.6784,
+    "citizen_name": "Ananya Iyer",
+    "citizen_phone": "9845012308",
+    "channel": "web_portal",
+    "ward_hint": "Bellandur Outer Ring"
+  },
+  {
+    "id": "SYN-0009",
+    "raw_text": "Garbage dump not cleared for 3 days near Bellandur lake junction, dog menace",
+    "lat": 12.9306,
+    "lon": 77.6786,
+    "citizen_name": "Karthik Nair",
+    "citizen_phone": "9845012309",
+    "channel": "whatsapp",
+    "ward_hint": "Bellandur Outer Ring"
+  },
+  {
+    "id": "SYN-0010",
+    "raw_text": "Stagnant waterlogging after rain, mosquito breeding heavy near 8th cross park Malleshwaram",
+    "lat": 13.0067,
+    "lon": 77.5694,
+    "citizen_name": "Sunita Gupta",
+    "citizen_phone": "9845012310",
+    "channel": "whatsapp",
+    "ward_hint": "Malleshwaram 8th Cross"
+  }
+]

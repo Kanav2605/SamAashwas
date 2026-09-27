@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CivicSense AI (SamAashwas) - Municipal Grievance Intelligence & Predictive Maintenance</title>
+  
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header>
+    <div class="brand">
+      <div style="font-size: 1.8rem;">🏛️</div>
+      <div>
+        <h1>CivicSense AI</h1>
+        <div style="font-size: 0.75rem; color: #94a3b8;">SamAashwas Municipal Intelligence Platform</div>
+      </div>
+      <span>ULB Live Command Center</span>
+    </div>
+
+    <nav class="nav-tabs">
+      <button class="tab-btn active" onclick="switchTab('command-center')">Officer Command Center</button>
+      <button class="tab-btn" onclick="switchTab('predictive-view')">Predictive Risk Index</button>
+      <button class="tab-btn" onclick="switchTab('citizen-portal')">Citizen Web Portal</button>
+      <button class="tab-btn" onclick="switchTab('whatsapp-simulator')">WhatsApp Bot Demo</button>
+    </nav>
+  </header>
+
+  <main class="content">
+    <!-- Real-time KPI Stats Banner -->
+    <div class="kpi-grid">
+      <div class="kpi-card blue">
+        <div class="kpi-title">Total Citizen Reports</div>
+        <div class="kpi-value" id="kpi-total-reports">--</div>
+        <div class="kpi-sub">Across WhatsApp, App & Portal</div>
+      </div>
+      <div class="kpi-card orange">
+        <div class="kpi-title">Active Master Incidents</div>
+        <div class="kpi-value" id="kpi-master-tickets">--</div>
+        <div class="kpi-sub">Auto-routed to Ward Engineers</div>
+      </div>
+      <div class="kpi-card green">
+        <div class="kpi-title">Deduplication Rate</div>
+        <div class="kpi-value" id="kpi-dedup-rate">--%</div>
+        <div class="kpi-sub">Redundant complaints clustered</div>
+      </div>
+      <div class="kpi-card red">
+        <div class="kpi-title">High-Risk Vulnerable Wards</div>
+        <div class="kpi-value" id="kpi-high-risk-wards">--</div>
+        <div class="kpi-sub">Pre-monsoon action alerts</div>
+      </div>
+    </div>
+
+    <!-- VIEW 1: Officer Command Center & GIS Map -->
+    <div id="command-center" class="view-container active">
+      <div class="dashboard-split">
+        <!-- Master Ticket Queue -->
+        <div class="ticket-panel">
+          <div class="panel-header">
+            <div>
+              <h3 style="font-size: 1rem; font-weight: 600;">Incident Master Queue</h3>
+              <span style="font-size: 0.75rem; color: var(--text-muted);">Spatio-Temporal Aggregated Incidents</span>
+            </div>
+            <select id="status-filter" class="form-control" style="padding: 4px 8px; font-size: 0.8rem; width: auto;" onchange="loadMasterTickets()">
+              <option value="">All Statuses</option>
+              <option value="OPEN">Open</option>
+              <option value="IN_PROGRESS">In Progress</option>
+              <option value="RESOLVED">Resolved</option>
+            </select>
+          </div>
+          <div class="ticket-list" id="ticket-list">
+            <div style="padding: 1rem; text-align: center; color: var(--text-muted);">Loading incidents...</div>
+          </div>
+        </div>
+
+        <!-- Leaflet Map View -->
+        <div class="map-panel">
+          <div id="map"></div>
+          <div style="position: absolute; bottom: 12px; left: 12px; z-index: 500; background: rgba(15,23,42,0.9); padding: 8px 12px; border-radius: 6px; font-size: 0.75rem; border: 1px solid var(--border);">
+            <div style="font-weight: bold; margin-bottom: 4px;">Map Legend</div>
+            <div>🔴 Critical Urgency (5+ Citizen Reports)</div>
+            <div>🟠 High Urgency (2-4 Citizen Reports)</div>
+            <div>🟡 Moderate Urgency (1 Citizen Report)</div>
+            <div>🔵 300m Spatial Clustering Gate Perimeter</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 2: Predictive Maintenance & Monsoon Risk -->
+    <div id="predictive-view" class="view-container">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h2>Predictive Municipal Risk & Asset Vulnerability Index</h2>
+          <p style="font-size: 0.85rem; color: var(--text-muted);">
+            Proactive pre-monsoon failure likelihood based on Open-Meteo rainfall forecasts, elevation topography, and drainage health.
+          </p>
+        </div>
+        <button class="btn-primary" onclick="loadPredictiveData()">🔄 Refresh Forecast</button>
+      </div>
+
+      <div class="risk-grid" id="ward-risk-cards">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin-top: 1rem;">
+        <h3 style="margin-bottom: 1rem;">Critical Municipal Infrastructure Failure Risk</h3>
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.85rem; text-align: left;">
+          <thead>
+            <tr style="border-bottom: 1px solid var(--border); color: var(--text-muted);">
+              <th style="padding: 8px;">Asset ID</th>
+              <th style="padding: 8px;">Asset Type</th>
+              <th style="padding: 8px;">Ward</th>
+              <th style="padding: 8px;">Structural Health</th>
+              <th style="padding: 8px;">Failure Probability</th>
+              <th style="padding: 8px;">Recommended Proactive Action</th>
+            </tr>
+          </thead>
+          <tbody id="assets-table-body">
+            <!-- Rendered dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- VIEW 3: Citizen Web Portal -->
+    <div id="citizen-portal" class="view-container">
+      <div style="max-width: 640px; margin: 0 auto; width: 100%; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 2rem;">
+        <h2 style="margin-bottom: 0.5rem;">Citizen Grievance Submission</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">
+          Report municipal issues in Hinglish, Hindi, or English. Our AI automatically extracts the department, validates the photo, and links to existing neighborhood complaints.
+        </p>
+
+        <form id="citizen-form" onsubmit="handleCitizenSubmit(event)">
+          <div class="form-group">
+            <label>Describe the Grievance (Hinglish / English / Hindi)</label>
+            <textarea id="complaint-text" class="form-control" rows="3" placeholder="e.g. Bhaiya road par street light 4 din se band hai, near Sharma General Store, Ward 7" required></textarea>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label>Latitude</label>
+              <input type="number" step="0.000001" id="form-lat" class="form-control" value="12.9352" required>
+            </div>
+            <div class="form-group">
+              <label>Longitude</label>
+              <input type="number" step="0.000001" id="form-lon" class="form-control" value="77.6245" required>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 1rem;">
+            <button type="button" class="btn-primary" style="background: #334155; font-size: 0.8rem;" onclick="detectLocation()">
+              📍 Set GPS Location (Simulate Ward Pin)
+            </button>
+          </div>
+
+          <div class="form-group">
+            <label>Upload Photo (Simulated Vision Check)</label>
+            <select id="form-image-hint" class="form-control">
+              <option value="">No Image</option>
+              <option value="pothole">Photo: Pothole / Broken Road</option>
+              <option value="sewage_overflow">Photo: Sewer Overflow / Drain Block</option>
+              <option value="garbage_dump">Photo: Garbage Dump / Trash Pile</option>
+              <option value="broken_streetlight">Photo: Broken Streetlight</option>
+              <option value="unrelated_or_spam">Photo: Random Selfie / Meme (Spam Test)</option>
+            </select>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label>Your Name</label>
+              <input type="text" id="citizen-name" class="form-control" value="Aarav Sharma" required>
+            </div>
+            <div class="form-group">
+              <label>Phone Number</label>
+              <input type="text" id="citizen-phone" class="form-control" value="9845012345" required>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1rem; padding: 12px;">
+            Submit Grievance to ULB
+          </button>
+        </form>
+
+        <div id="submission-result" style="display: none; margin-top: 1.5rem; background: #0f172a; border: 1px solid var(--border); border-radius: 6px; padding: 1rem; font-size: 0.85rem;">
+          <!-- Result rendered dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- VIEW 4: WhatsApp Bot Simulator -->
+    <div id="whatsapp-simulator" class="view-container">
+      <div style="text-align: center; max-width: 600px; margin: 0 auto;">
+        <h2>WhatsApp Municipal Bot Simulator</h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Experience how Indian citizens interact via WhatsApp in code-mixed language and receive automated ticket deduplication responses.
+        </p>
+      </div>
+
+      <div class="phone-mockup-wrapper">
+        <div class="phone-mockup">
+          <div class="wa-header">
+            <div class="wa-avatar">🏛️</div>
+            <div>
+              <div style="font-size: 0.9rem; font-weight: bold;">CivicSense Municipal Bot</div>
+              <div style="font-size: 0.7rem; color: #8696a0;">Official WhatsApp Helpline</div>
+            </div>
+          </div>
+
+          <div class="wa-chat-body" id="wa-chat-body">
+            <div class="wa-msg in">
+              Namaste! 🙏 Welcome to CivicSense Municipal Grievance Helpline.
+              Aap apni samasya (Hinglish/Hindi/English) yahan type karein ya photo bhejein.
+            </div>
+          </div>
+
+          <div class="wa-input-bar">
+            <input type="text" id="wa-input" class="wa-input" placeholder="Type a message in Hinglish..." onkeydown="if(event.key === 'Enter') sendWhatsAppMessage()">
+            <button class="wa-send-btn" onclick="sendWhatsAppMessage()">➤</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Modal: Master Ticket Details -->
+  <div class="modal-overlay" id="ticket-modal" onclick="closeModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
+        <div>
+          <span id="modal-ticket-id" style="font-size: 0.8rem; color: #60a5fa; font-weight: bold;"></span>
+          <h3 id="modal-ticket-title" style="margin-top: 4px;"></h3>
+        </div>
+        <button onclick="closeModal()" style="background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;">&times;</button>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; background: #0f172a; padding: 1rem; border-radius: 6px; font-size: 0.85rem;">
+        <div><strong>Department:</strong> <span id="modal-dept"></span></div>
+        <div><strong>Ward:</strong> <span id="modal-ward"></span></div>
+        <div><strong>Urgency:</strong> <span id="modal-urgency"></span></div>
+        <div><strong>Status:</strong> <span id="modal-status"></span></div>
+        <div><strong>Assigned Officer:</strong> <span id="modal-engineer"></span></div>
+        <div><strong>SLA Remaining:</strong> <span id="modal-sla"></span></div>
+      </div>
+
+      <div style="margin-bottom: 1rem;">
+        <label style="font-size: 0.85rem; font-weight: bold; color: var(--text-muted);">Update Ticket Status:</label>
+        <div style="display: flex; gap: 8px; margin-top: 6px;">
+          <button class="btn-primary" style="background: #2563eb; font-size: 0.8rem; padding: 6px 12px;" onclick="updateTicketStatus('IN_PROGRESS')">Mark In Progress</button>
+          <button class="btn-primary" style="background: #10b981; font-size: 0.8rem; padding: 6px 12px;" onclick="updateTicketStatus('RESOLVED')">Mark Resolved</button>
+        </div>
+      </div>
+
+      <h4 style="margin-bottom: 0.5rem; font-size: 0.95rem;">Citizen Reports Linked to this Incident (<span id="modal-report-count">0</span> Endorsements)</h4>
+      <div id="modal-reports-list" style="display: flex; flex-direction: column; gap: 8px; max-height: 240px; overflow-y: auto;">
+        <!-- Filled dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/map_view.js"></script>
+  <script src="js/whatsapp_bot.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

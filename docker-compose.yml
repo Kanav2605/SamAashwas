@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  civicsense-api:
+    build: .
+    container_name: civicsense-api
+    ports:
+      - "8000:8000"
+    environment:
+      - ENVIRONMENT=production
+      - CORS_ORIGINS=*
+      - PORT=8000
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped
+
+  civicsense-frontend:
+    image: nginx:alpine
+    container_name: civicsense-ui
+    ports:
+      - "3000:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+    depends_on:
+      - civicsense-api
+    restart: unless-stopped

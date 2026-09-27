@@ -1,0 +1,37 @@
+{
+  "city": "Bengaluru",
+  "generated_at": "2026-09-27T12:00:00Z",
+  "forecast_hours_48": {
+    "total_rainfall_expected_mm": 68.4,
+    "max_intensity_mm_per_hr": 24.2,
+    "monsoon_risk_level": "RED_ALERT",
+    "wind_gust_kmh": 46.5
+  },
+  "ward_weather": {
+    "WARD-01": {
+      "rainfall_next_24h_mm": 42.0,
+      "rainfall_next_48h_mm": 65.0,
+      "soil_saturation_pct": 72
+    },
+    "WARD-02": {
+      "rainfall_next_24h_mm": 51.5,
+      "rainfall_next_48h_mm": 78.0,
+      "soil_saturation_pct": 89
+    },
+    "WARD-03": {
+      "rainfall_next_24h_mm": 48.0,
+      "rainfall_next_48h_mm": 71.0,
+      "soil_saturation_pct": 84
+    },
+    "WARD-04": {
+      "rainfall_next_24h_mm": 35.0,
+      "rainfall_next_48h_mm": 52.0,
+      "soil_saturation_pct": 60
+    },
+    "WARD-05": {
+      "rainfall_next_24h_mm": 58.0,
+      "rainfall_next_48h_mm": 86.0,
+      "soil_saturation_pct": 94
+    }
+  }
+}
