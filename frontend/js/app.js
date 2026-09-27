@@ -145,7 +145,10 @@ function renderTicketList(tickets) {
       </div>
       <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #93c5fd;">
         <span>Status: <strong>${t.status}</strong></span>
-        <span>⏱️ SLA: <strong>${t.sla_hours_remaining}h</strong></span>
+        ${t.is_sla_breached || t.sla_hours_remaining <= 0
+          ? `<span style="color: #ef4444; font-weight: bold;">⚠️ SLA: Overdue (${t.sla_hours_remaining}h)</span>`
+          : `<span>⏱️ SLA: <strong>${t.sla_hours_remaining}h</strong></span>`
+        }
       </div>
     `;
 
@@ -166,7 +169,9 @@ function openTicketModal(ticketId) {
   document.getElementById('modal-urgency').innerText = ticket.urgency;
   document.getElementById('modal-status').innerText = ticket.status;
   document.getElementById('modal-engineer').innerText = ticket.assigned_engineer;
-  document.getElementById('modal-sla').innerText = `${ticket.sla_hours_remaining} hours remaining (${ticket.citizen_charter_sla_hours || 48}h Citizen Charter)`;
+  document.getElementById('modal-sla').innerText = ticket.is_sla_breached
+    ? `⚠️ Overdue / Breached! (${ticket.sla_hours_remaining}h remaining of ${ticket.citizen_charter_sla_hours || 48}h Citizen Charter)`
+    : `${ticket.sla_hours_remaining} hours remaining (${ticket.citizen_charter_sla_hours || 48}h Citizen Charter)`;
   document.getElementById('modal-report-count').innerText = ticket.report_count;
 
   // National Mission & Jan Sunwai
@@ -566,7 +571,12 @@ function stopRecordingUI() {
   }
 }
 
+let lastInputSource = 'text';
+let lastSpokenLanguage = 'hi-IN';
+
 function simulateVernacularVoice(lang) {
+  lastInputSource = 'voice';
+  lastSpokenLanguage = lang;
   const sampleMap = {
     'hi-IN': "सड़क पर गहरा गड्ढा है, 27th मेन रोड के पास, कभी भी दुर्घटना हो सकती है, वार्ड 3",
     'kn-IN': "ರಸ್ತೆಯಲ್ಲಿ ದೊಡ್ಡ ಗುಂಡಿ ಬಿದ್ದಿದೆ, ವಾಹನ ಸವಾರರಿಗೆ ಅಪಘಾತವಾಗುವ ಸಂಭವವಿದೆ ಬೇಗ ಸರಿಮಾಡಿ, ವಾರ್ಡ್ 3",
@@ -585,6 +595,8 @@ function simulateVernacularVoice(lang) {
 }
 
 function fillSampleGrievance(langKey) {
+  lastInputSource = 'voice';
+  lastSpokenLanguage = langKey === 'hi' ? 'hi-IN' : (langKey === 'kn' ? 'kn-IN' : (langKey === 'ta' ? 'ta-IN' : (langKey === 'hg' ? 'hinglish' : 'en-IN')));
   const samples = {
     hi: "सड़क पर गहरा गड्ढा है, 27th मेन रोड के पास, कभी भी दुर्घटना हो सकती है, वार्ड 3",
     kn: "ರಸ್ತೆಯಲ್ಲಿ ದೊಡ್ಡ ಗುಂಡಿ ಬಿದ್ದಿದೆ, ವಾಹನ ಸವಾರರಿಗೆ ಅಪಘಾತವಾಗುವ ಸಂಭವವಿದೆ ಬೇಗ ಸರಿಮಾಡಿ, ವಾರ್ಡ್ 3",
@@ -616,17 +628,32 @@ async function handleCitizenSubmit(event) {
   resultContainer.innerHTML = '<div style="color: #60a5fa;">Submitting to AI Pipeline (Multilingual NLP + Vision Verification + Deduplication)...</div>';
 
   try {
-    const res = await fetch('/api/v1/complaints/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        raw_text: text,
+    let endpoint = '/api/v1/complaints/submit';
+    let reqBody = {
+      raw_text: text,
+      lat: lat,
+      lon: lon,
+      citizen_name: citizenName,
+      citizen_phone: citizenPhone,
+      image_category_hint: imageHint || null
+    };
+
+    if (lastInputSource === 'voice' && !imageHint) {
+      endpoint = '/api/v1/complaints/voice-note';
+      reqBody = {
+        spoken_language: lastSpokenLanguage || 'hi-IN',
+        audio_transcript: text,
         lat: lat,
         lon: lon,
         citizen_name: citizenName,
-        citizen_phone: citizenPhone,
-        image_category_hint: imageHint || null
-      })
+        citizen_phone: citizenPhone
+      };
+    }
+
+    const res = await fetch(endpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(reqBody)
     });
 
     if (res.ok) {

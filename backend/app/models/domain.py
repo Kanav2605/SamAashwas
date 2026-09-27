@@ -133,6 +133,31 @@ class MasterTicketRecord:
     def report_count(self) -> int:
         return len(self.citizen_reports)
 
+    @property
+    def current_sla_hours_remaining(self) -> int:
+        if self.status == "RESOLVED":
+            return 0
+        try:
+            created_dt = datetime.fromisoformat(self.first_reported_at.replace("Z", "+00:00"))
+            now_dt = datetime.now(timezone.utc)
+            elapsed_hours = (now_dt - created_dt).total_seconds() / 3600.0
+            remaining = int(round(self.sla_hours_remaining - elapsed_hours))
+            return max(0, remaining)
+        except Exception:
+            return max(0, self.sla_hours_remaining)
+
+    @property
+    def is_sla_breached(self) -> bool:
+        if self.status == "RESOLVED":
+            return False
+        try:
+            created_dt = datetime.fromisoformat(self.first_reported_at.replace("Z", "+00:00"))
+            now_dt = datetime.now(timezone.utc)
+            elapsed_hours = (now_dt - created_dt).total_seconds() / 3600.0
+            return elapsed_hours > self.citizen_charter_sla_hours
+        except Exception:
+            return False
+
     def add_report(self, complaint: ComplaintRecord):
         self.citizen_reports.append({
             "complaint_id": complaint.complaint_id,
@@ -145,8 +170,22 @@ class MasterTicketRecord:
             "lon": complaint.lon
         })
         self.last_reported_at = complaint.created_at
+
+        # Check if the incoming complaint has higher urgency than the master ticket
+        urgency_ranks = {"Low": 1, "Medium": 2, "High": 3, "Critical": 4}
+        complaint_urgency = complaint.urgency
+        current_rank = urgency_ranks.get(self.urgency, 2)
+        new_rank = urgency_ranks.get(complaint_urgency, 2)
+        
+        if new_rank > current_rank:
+            self.urgency = complaint_urgency
+            if complaint_urgency == "Critical":
+                self.sla_hours_remaining = min(self.sla_hours_remaining, 12)
+            elif complaint_urgency == "High":
+                self.sla_hours_remaining = min(self.sla_hours_remaining, 24)
+
         # Dynamic urgency escalation on high volume of reports
-        if len(self.citizen_reports) >= 5 and self.urgency not in ["High", "Critical"]:
+        if len(self.citizen_reports) >= 5 and urgency_ranks.get(self.urgency, 2) < 3:
             self.urgency = "High"
             self.sla_hours_remaining = min(self.sla_hours_remaining, 12)
         elif len(self.citizen_reports) >= 15:
@@ -154,10 +193,15 @@ class MasterTicketRecord:
             self.sla_hours_remaining = min(self.sla_hours_remaining, 6)
 
         # Automatic Jan Sunwai / Samadhan Diwas escalation for high-traction civic issues
+        # or when any complaint/hazard is High or Critical
         if len(self.citizen_reports) >= 3 or self.urgency in ["High", "Critical"]:
             self.jan_sunwai_status = "ESCALATED"
 
     def to_dict(self) -> Dict[str, Any]:
+        # Statutory Jan Sunwai escalation if Citizen Charter SLA is breached
+        if self.is_sla_breached and self.jan_sunwai_status == "NONE":
+            self.jan_sunwai_status = "ESCALATED"
+
         return {
             "master_ticket_id": self.master_ticket_id,
             "department": self.department,
@@ -173,7 +217,8 @@ class MasterTicketRecord:
             "citizen_reports": self.citizen_reports,
             "first_reported_at": self.first_reported_at,
             "last_reported_at": self.last_reported_at,
-            "sla_hours_remaining": self.sla_hours_remaining,
+            "sla_hours_remaining": self.current_sla_hours_remaining,
+            "is_sla_breached": self.is_sla_breached,
             "assigned_engineer": self.assigned_engineer,
             "national_mission": self.national_mission,
             "citizen_charter_sla_hours": self.citizen_charter_sla_hours,

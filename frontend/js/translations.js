@@ -444,6 +444,21 @@ function setLanguage(lang) {
     }
   });
 
+  // Synchronize voice recorder language dropdown
+  const voiceSelect = document.getElementById('voice-lang-select');
+  if (voiceSelect) {
+    const langVoiceMap = {
+      hi: 'hi-IN',
+      kn: 'kn-IN',
+      ta: 'ta-IN',
+      hg: 'hinglish',
+      en: 'en-IN'
+    };
+    if (langVoiceMap[lang]) {
+      voiceSelect.value = langVoiceMap[lang];
+    }
+  }
+
   // Update dynamic elements
   updateDynamicTexts();
 }

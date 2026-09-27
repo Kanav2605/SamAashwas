@@ -102,6 +102,7 @@ class MasterTicketResponse(BaseModel):
     first_reported_at: str
     last_reported_at: str
     sla_hours_remaining: int
+    is_sla_breached: Optional[bool] = False
     assigned_engineer: str
     national_mission: Optional[str] = None
     citizen_charter_sla_hours: Optional[int] = None

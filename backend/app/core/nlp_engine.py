@@ -116,30 +116,35 @@ URGENCY_KEYWORDS = {
 def detect_language(text: str) -> str:
     """
     Classify whether input is English, Hindi (Devanagari), Kannada, Tamil, or Hinglish.
+    Accurately supports short Indic phrases (>= 1 character in script) and dominant script selection.
     """
-    # 1. Kannada script: \u0C80 - \u0CFF
     kannada_count = len(re.findall(r'[\u0C80-\u0CFF]', text))
-    if kannada_count > 3:
+    tamil_count = len(re.findall(r'[\u0B80-\u0BFF]', text))
+    devanagari_count = len(re.findall(r'[\u0900-\u097F]', text))
+
+    if kannada_count > 0 and kannada_count >= tamil_count and kannada_count >= devanagari_count:
         return "Kannada"
 
-    # 2. Tamil script: \u0B80 - \u0BFF
-    tamil_count = len(re.findall(r'[\u0B80-\u0BFF]', text))
-    if tamil_count > 3:
+    if tamil_count > 0 and tamil_count > kannada_count and tamil_count >= devanagari_count:
         return "Tamil"
 
-    # 3. Devanagari script: \u0900 - \u097F
-    devanagari_count = len(re.findall(r'[\u0900-\u097F]', text))
-    if devanagari_count > 3:
+    if devanagari_count > 0 and devanagari_count > kannada_count and devanagari_count > tamil_count:
         return "Hindi (Devanagari)"
 
-    # 4. Hinglish detection via romanized markers
+    # Hinglish and Romanized Indic detection via markers
     hinglish_markers = [
         "hai", "ho", "raha", "rahi", "gaya", "mein", "pe", "par", "bhaiya", "yeh", "woh", 
         "nahi", "aayi", "aaya", "kripya", "jaldi", "bohot", "bada", "gaddha", "paani", 
-        "sadak", "kachra", "kuda", "safai", "wali", "wala", "chalu", "band"
+        "sadak", "kachra", "kuda", "safai", "wali", "wala", "chalu", "band", "khamba",
+        "bijli", "dost", "samasya", "thik", "karo", "khatra", "gande", "sharma"
+    ]
+    indic_roman_markers = [
+        "beedi", "deepa", "kambha", "kattale", "kasa", "thumbide", "neeru", "charandi",
+        "rasty", "gundi", "halla", "biddide", "theru", "vilakku", "iruttu", "kuppai",
+        "thanneer", "saakadai", "kuzhi", "pallam", "salai"
     ]
     words = [w.lower() for w in re.findall(r'\b[a-zA-Z]+\b', text)]
-    match_count = sum(1 for w in words if w in hinglish_markers)
+    match_count = sum(1 for w in words if w in hinglish_markers or w in indic_roman_markers)
 
     if match_count >= 1:
         return "Hinglish"
@@ -152,12 +157,12 @@ TAMIL_DIGITS = {'௦': '0', '௧': '1', '௨': '2', '௩': '3', '௪': '4', '௫
 def extract_ward(text: str) -> str:
     """
     Extract ward number or identifier from complaint text in English, Hindi, Kannada, or Tamil.
-    E.g., 'Ward 7', 'ward no. 12', 'ward #3', 'W-04', 'वार्ड 5', 'ಪ್ರಭಾಗ ೧೨', 'வார்டு 4'
+    E.g., 'Ward 7', 'Ward-7', 'Ward - 12', 'ward no. 12', 'w/no 5', 'ward #3', 'W-04', 'वार्ड 5', 'ಪ್ರಭಾಗ ೧೨', 'வார்டு 4'
     """
     ward_patterns = [
-        r'(?:ward|wrd|prabhag|ವಾರ್ಡ್|ಪ್ರಭಾಗ|வார்டு|வட்டம்|वार्ड|प्रभाग)\s*(?:no\.?|number|संख्या|ಸಂಖ್ಯೆ|எண்|#)?\s*([0-9०-९೦-೯௦-௯]{1,3}[A-Za-z]?)',
-        r'\bW-?([0-9]{1,3})\b',
-        r'\bsector\s*([0-9]{1,3})\b'
+        r'(?:ward|wrd|w/no\.?|prabhag|ವಾರ್ಡ್|ಪ್ರಭಾಗ|வார்டு|வட்டம்|वार्ड|प्रभाग)\s*[-:#/]?\s*(?:no\.?|number|संख्या|ಸಂಖ್ಯೆ|எண்|#)?\s*[-:#/]?\s*([0-9०-९೦-೯௦-௯]{1,3}[A-Za-z]?)',
+        r'\bW\s*[-:#/]?\s*([0-9०-९೦-೯௦-௯]{1,3}[A-Za-z]?)\b',
+        r'\bsector\s*[-:#/]?\s*([0-9०-९೦-೯௦-௯]{1,3}[A-Za-z]?)\b'
     ]
     for pattern in ward_patterns:
         match = re.search(pattern, text, re.IGNORECASE)

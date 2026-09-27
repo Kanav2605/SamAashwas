@@ -71,13 +71,16 @@ function sendQuickWhatsApp(msg) {
 }
 
 function sendWhatsAppVoice() {
-  const voiceSamples = [
-    "🎙️ Voice Note (0:12): 'Bhaiya road par street light 4 din se band hai Indiranagar Ward 1'",
-    "🎙️ Voice Note (0:15): 'ಸದರ್ ರಸ್ತೆಯಲ್ಲಿ ದೊಡ್ಡ ಗುಂಡಿ ಬಿದ್ದಿದೆ ಬೇಗ ಸರಿಮಾಡಿ ವಾರ್ಡ್ 3'",
-    "🎙️ Voice Note (0:10): 'தெரு விளக்கு எரியவில்லை, இருட்டாக உள்ளது வார்டு 1'",
-    "🎙️ Voice Note (0:18): 'Ward 2 gali mein sewer overflow ho raha hai badbu aa rahi hai'"
-  ];
-  const sample = voiceSamples[Math.floor(Math.random() * voiceSamples.length)];
+  const activeLang = typeof currentLang !== 'undefined' ? currentLang : 'hg';
+  const voiceSamplesByLang = {
+    hi: "🎙️ Voice Note (0:12): 'सड़क पर गहरा गड्ढा है 27th मेन रोड के पास, कभी भी दुर्घटना हो सकती है, वार्ड 3'",
+    kn: "🎙️ Voice Note (0:15): 'ರಸ್ತೆಯಲ್ಲಿ ದೊಡ್ಡ ಗುಂಡಿ ಬಿದ್ದಿದೆ ವಾಹನ ಸವಾರರಿಗೆ ಅಪಘಾತವಾಗುವ ಸಂಭವವಿದೆ ಬೇಗ ಸರಿಮಾಡಿ, ವಾರ್ಡ್ 3'",
+    ta: "🎙️ Voice Note (0:10): 'தெரு விளக்கு 4 நாட்களாக எரியவில்லை, இரவு நேரத்தில் மிகவும் இருட்டாக உள்ளது, வார்டு 1'",
+    hg: "🎙️ Voice Note (0:12): 'Bhaiya road par street light 4 din se band hai Indiranagar Ward 1'",
+    en: "🎙️ Voice Note (0:14): 'Dangerous open transformer wire sparking near school entrance, Ward 1'"
+  };
+
+  const sample = voiceSamplesByLang[activeLang] || voiceSamplesByLang['hg'];
   
   const chatBody = document.getElementById('wa-chat-body');
   const userMsgEl = document.createElement('div');
@@ -91,7 +94,9 @@ function sendWhatsAppVoice() {
 
   // Clean raw transcript for AI
   const cleanText = sample.replace(/🎙️ Voice Note \([0-9:]+\): '/, '').replace(/'$/, '');
-  
+
+  const langPref = activeLang === 'hi' ? 'Hindi (Devanagari)' : (activeLang === 'kn' ? 'Kannada' : (activeLang === 'ta' ? 'Tamil' : null));
+
   // Send cleaned speech-to-text to webhook
   setTimeout(() => {
     // Typing indicator
@@ -108,7 +113,8 @@ function sendWhatsAppVoice() {
         From: 'whatsapp:+919876543210',
         Body: cleanText,
         Latitude: 12.9352,
-        Longitude: 77.6245
+        Longitude: 77.6245,
+        LanguagePref: langPref
       })
     }).then(res => res.json()).then(data => {
       if (chatBody.contains(typingEl)) chatBody.removeChild(typingEl);
@@ -119,6 +125,7 @@ function sendWhatsAppVoice() {
       chatBody.scrollTop = chatBody.scrollHeight;
       if (typeof loadMasterTickets === 'function') loadMasterTickets();
       if (typeof loadKPIStats === 'function') loadKPIStats();
+      if (typeof loadWardGovernanceData === 'function') loadWardGovernanceData();
     }).catch(() => {
       if (chatBody.contains(typingEl)) chatBody.removeChild(typingEl);
     });

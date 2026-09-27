@@ -56,7 +56,8 @@ async def handle_whatsapp_webhook(payload: WhatsAppMessageRequest):
                 f"⚡ ತುರ್ತುಸ್ಥಿತಿ: {complaint.urgency}\n"
                 f"⏱️ ಸಿಟಿಜನ್ ಚಾರ್ಟರ್ SLA: {complaint.citizen_charter_sla_hours} ಗಂಟೆಗಳು\n"
                 f"ರಾಷ್ಟ್ರೀಯ ಯೋಜನೆ: {complaint.national_mission}\n"
-                f"ಜನಸ್ಪಂದನ / ಜನ ಸುನ್ವಾಯಿ ಸ್ಥಿತಿ: {jan_status}\n"
+                f"🏛️ ಕಾರ್ಪೊರೇಟರ್: {complaint.corporator_name} | ಶಾಸಕರು: {complaint.mla_name}\n"
+                f"📋 ಜನಸ್ಪಂದನ / ಜನ ಸುನ್ವಾಯಿ ಸ್ಥಿತಿ: {jan_status}\n"
                 f"ವಾರ್ಡ್ ಇಂಜಿನಿಯರ್‌ಗೆ ಸ್ವಯಂಚಾಲಿತವಾಗಿ ನಿಯೋಜಿಸಲಾಗಿದೆ."
             )
     elif lang == "Tamil":
@@ -66,8 +67,8 @@ async def handle_whatsapp_webhook(payload: WhatsAppMessageRequest):
                 f"உங்கள் புகார் ({complaint.department}) பெறப்பட்டது.\n"
                 f"📌 அறிவிப்பு: உங்கள் வார்டில் ஏற்கனவே உள்ள மாஸ்டர் டிக்கெட் #{complaint.master_ticket_id} "
                 f"உடன் உங்கள் புகார் (+1) இணைக்கப்பட்டுள்ளது.\n"
-                f"திட்டம்: {complaint.national_mission}\n"
-                f"கவுன்சிலர்: {complaint.corporator_name}\n"
+                f"🇮🇳 திட்டம்: {complaint.national_mission}\n"
+                f"🏛️ கவுன்சிலர்: {complaint.corporator_name}\n"
                 f"நிலை: பரிசீலனையில் உள்ளது 🚀"
             )
         else:
@@ -75,11 +76,13 @@ async def handle_whatsapp_webhook(payload: WhatsAppMessageRequest):
                 f"வணக்கம்! 🙏\n"
                 f"உங்கள் புகார் வெற்றிகரமாக பதிவு செய்யப்பட்டது.\n"
                 f"🎫 புகார் எண்: {complaint.complaint_id}\n"
-                f"🏛️ துறை: {complaint.department}\n"
+                f"🏛️ துறை: {complaint.department} ({complaint.issue_type})\n"
                 f"📍 இடம்: {complaint.location_landmark} ({complaint.ward_extracted})\n"
                 f"⚡ அவசரம்: {complaint.urgency}\n"
                 f"⏱️ குடிமக்கள் சாசனம் SLA: {complaint.citizen_charter_sla_hours} மணி நேரம்\n"
-                f"தேசிய திட்டம்: {complaint.national_mission}\n"
+                f"🇮🇳 தேசிய திட்டம்: {complaint.national_mission}\n"
+                f"🏛️ கவுன்சிலர்: {complaint.corporator_name} | சட்டமன்ற உறுப்பினர்: {complaint.mla_name}\n"
+                f"📋 மக்கள் குறைதீர்ப்பு நிலை: {jan_status}\n"
                 f"வார்டு பொறியாளருக்கு உடனடியாக ஒதுக்கப்பட்டுள்ளது."
             )
     elif lang == "Hindi (Devanagari)":
