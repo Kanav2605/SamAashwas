@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Project Synopsis - SamAashwas</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 20mm 20mm 20mm 20mm;
+      @bottom-right {
+        content: counter(page);
+      }
+    }
+    body {
+      font-family: "Times New Roman", Times, serif;
+      font-size: 12pt;
+      line-height: 1.5;
+      color: #111;
+      margin: 0;
+      padding: 0;
+    }
+    .header-box {
+      text-align: center;
+      border-bottom: 2px solid #991b1b;
+      padding-bottom: 12px;
+      margin-bottom: 20px;
+    }
+    .univ-name {
+      font-size: 17pt;
+      font-weight: bold;
+      color: #991b1b;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    .dept-name {
+      font-size: 13pt;
+      font-weight: bold;
+      color: #333;
+      margin-top: 4px;
+    }
+    .doc-type {
+      font-size: 15pt;
+      font-weight: bold;
+      margin-top: 8px;
+      text-decoration: underline;
+    }
+    .course-title {
+      font-size: 11pt;
+      font-style: italic;
+      color: #555;
+      margin-top: 2px;
+    }
+    .project-title-banner {
+      background-color: #f8fafc;
+      border: 1.5px solid #cbd5e1;
+      border-left: 6px solid #1e40af;
+      padding: 10px 14px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+    .project-title-banner h2 {
+      margin: 0;
+      font-size: 14pt;
+      color: #1e3a8a;
+    }
+    .meta-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 18px;
+    }
+    .meta-table td {
+      padding: 5px 8px;
+      vertical-align: top;
+      font-size: 11.5pt;
+    }
+    .meta-label {
+      font-weight: bold;
+      width: 25%;
+      color: #334155;
+    }
+    h3 {
+      font-size: 13pt;
+      color: #0f172a;
+      border-bottom: 1px solid #cbd5e1;
+      padding-bottom: 4px;
+      margin-top: 20px;
+      margin-bottom: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+    p {
+      margin-top: 6px;
+      margin-bottom: 8px;
+      text-align: justify;
+      text-justify: inter-word;
+    }
+    ol, ul {
+      margin-top: 6px;
+      margin-bottom: 8px;
+      padding-left: 24px;
+    }
+    li {
+      margin-bottom: 4px;
+      text-align: justify;
+    }
+    table.data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      font-size: 10.5pt;
+    }
+    table.data-table th, table.data-table td {
+      border: 1px solid #94a3b8;
+      padding: 6px 8px;
+      text-align: left;
+    }
+    table.data-table th {
+      background-color: #f1f5f9;
+      font-weight: bold;
+      color: #0f172a;
+    }
+    .page-break {
+      page-break-before: always;
+    }
+    .footer-signatures {
+      margin-top: 40px;
+      width: 100%;
+      page-break-inside: avoid;
+    }
+    .sig-col {
+      width: 50%;
+      display: inline-block;
+      vertical-align: top;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header-box">
+    <div class="univ-name">Chandigarh University</div>
+    <div class="dept-name">Department of Computer Science & Engineering</div>
+    <div class="course-title">Bachelor of Engineering (CSE) | Batch: 2024–2028 (5th Semester)</div>
+    <div class="course-title">Course: Capstone Project (24CSP-337 – Full Stack-II)</div>
+    <div class="doc-type">PROJECT SYNOPSIS</div>
+  </div>
+
+  <div class="project-title-banner">
+    <h2>SamAashwas: Municipal Grievance Intelligence & Predictive Maintenance Platform</h2>
+  </div>
+
+  <table class="meta-table">
+    <tr>
+      <td class="meta-label">Candidate 1:</td>
+      <td><strong>Kanav Kaul</strong> (UID: <strong>24BAI70060</strong>)</td>
+    </tr>
+    <tr>
+      <td class="meta-label">Candidate 2:</td>
+      <td><strong>Shivansh Paliwal</strong> (UID: <strong>24BAI70045</strong>)</td>
+    </tr>
+    <tr>
+      <td class="meta-label">GitHub Repository:</td>
+      <td><a href="https://github.com/Kanav2605/SamAashwas" style="color: #1d4ed8; text-decoration: none;">https://github.com/Kanav2605/SamAashwas</a></td>
+    </tr>
+    <tr>
+      <td class="meta-label">Academic Year:</td>
+      <td>2026–2027 (Pre-Practical IST Submission)</td>
+    </tr>
+  </table>
+
+  <h3>1. Introduction</h3>
+  <p>
+    In Indian cities, Urban Local Bodies (ULBs) and Municipal Corporations (such as BBMP Bengaluru, BMC Mumbai, and MCD Delhi) receive thousands of citizen complaints daily through municipal helplines, WhatsApp portals, and grievance portals. Timely and effective redressal of civic grievances directly determines urban living standards, public health, hygiene, and municipal infrastructure longevity.
+  </p>
+  <p>
+    <strong>SamAashwas</strong> is an AI-powered, full-stack municipal grievance intelligence and predictive maintenance platform engineered to modernize public grievance governance. Built specifically for India's linguistic, socio-cultural, and administrative realities, SamAashwas empowers citizens of all literacy levels to report civic issues effortlessly in their native languages (Hindi, Hinglish, Kannada, Tamil, English) via text or voice notes. For municipal administration, it provides automated NLP department routing, computer vision fraud detection, spatio-temporal geo-semantic deduplication, citizen charter SLA tracking with Jan Sunwai escalation, and pre-monsoon predictive infrastructure risk mapping.
+  </p>
+
+  <h3>2. Problem Statement</h3>
+  <p>Municipal grievance redressal mechanisms in Indian Urban Local Bodies currently suffer from four primary bottlenecks:</p>
+  <ol>
+    <li><strong>Linguistic Misrouting & Language Barriers:</strong> Standard portals mandate English drop-down menus. Indian citizens communicate in colloquial code-mixed dialects (<em>Hinglish</em>, <em>Kanglish</em>, <em>Tanglish</em>, or native Devanagari/Dravidian scripts, e.g., <em>"Gali mein sewer overflow ho raha hai"</em> or <em>"Street light band ide"</em>). Keyword-based bots fail to extract wards, landmarks, or assign the proper municipal engineer.</li>
+    <li><strong>Duplicate Flooding & Artificial Backlogs:</strong> When a major civic breakdown occurs (e.g., a burst water main or collapsed culvert), 50–100 neighborhood residents submit duplicate tickets. Field engineers are overwhelmed with redundant work orders, obscuring genuine unserved issues.</li>
+    <li><strong>Fraudulent, Irrelevant & Unverified Reports:</strong> Citizens frequently upload memes, selfies, screenshots, or unrelated images to gain attention, wasting valuable municipal auditing bandwidth.</li>
+    <li><strong>Reactive Firefighting vs. Proactive Maintenance:</strong> Municipal engineers act only after catastrophic failures occur (e.g., severe urban waterlogging during monsoons) rather than proactively servicing vulnerable drainage basins and electrical transformers ahead of heavy rainfall.</li>
+  </ol>
+
+  <h3>3. Objectives</h3>
+  <ul>
+    <li><strong>Develop a Vernacular-First Citizen Interface:</strong> Enable multimodal grievance filing (text, audio/voice notes, photos, GPS) across Indian languages (Hindi, Kannada, Tamil, Hinglish, English) with speech-to-text recognition and WhatsApp-like conversational bots.</li>
+    <li><strong>Build an Automated Code-Mixed NLP Pipeline:</strong> Accurately classify municipal departments (Sanitation, Water/Sewage, Roads, Streetlighting, Public Health, Encroachment), extract spatial landmarks, and parse municipal ward notations.</li>
+    <li><strong>Implement Geo-Semantic Incident Deduplication:</strong> Cluster overlapping complaints within a 300-meter geographic gate and semantic text similarity into unified <strong>Master Incidents</strong>, dynamically aggregating citizen votes and elevating urgency.</li>
+    <li><strong>Integrate Visual Complaint Verification:</strong> Leverage computer vision to cross-verify uploaded images against complaint categories (potholes, garbage dumps, waterlogging, sewage overflow, broken poles) while filtering out spam and selfies.</li>
+    <li><strong>Establish Democratic Accountability & SLA Tracking:</strong> Enforce Citizen Charter SLA countdowns, map local Ward Corporators and MLAs to tickets, and automate escalation to <strong>Jan Sunwai (Public Grievance Day)</strong> upon SLA breaches.</li>
+    <li><strong>Formulate Predictive Municipal Maintenance Models:</strong> Ingest historical complaint density, asset age, and live 48-hour rainfall forecasts to generate Ward Vulnerability Indices (0–100) and automated pre-emptive action orders for field squads.</li>
+  </ul>
+
+  <div class="page-break"></div>
+
+  <h3>4. Proposed Solution</h3>
+  <p>
+    SamAashwas proposes a cohesive, two-tier architecture tailored for Indian municipal governance:
+  </p>
+  <ul>
+    <li><strong>Citizen Experience Tier (Mobile-First & Low-Bandwidth Resilient):</strong>
+      A lightweight Progressive Web App (PWA) and WhatsApp Bot interface equipped with an <strong>Outdoor Sunlight Readability Mode</strong> for field officers, offline-resilient service workers, and voice note transcription. Citizens can speak or type in their local language, pin their geolocation, and attach photos.
+    </li>
+    <li><strong>Intelligent Municipal Command Center & Engine Tier:</strong>
+      A FastAPI-powered backend integrating:
+      <ul>
+        <li><strong>Multilingual NLP Engine:</strong> Tokenizes and extracts entities (Ward, Landmark, Urgency) across Indic Unicode blocks and phonetic transliterations.</li>
+        <li><strong>Visual Verifier:</strong> Validates civic image contents with confidence scoring.</li>
+        <li><strong>Spatio-Temporal Deduplicator:</strong> Employs Haversine geographic radius filters combined with Jaccard and containment semantic vector algorithms.</li>
+        <li><strong>Predictive Risk Engine:</strong> Computes ward vulnerability scores from open meteorological forecasts and infrastructure age logs.</li>
+        <li><strong>Live Incident Map:</strong> An interactive Leaflet GIS dashboard color-coded by hazard severity with SLA breach monitors and Jan Sunwai escalation alerts.</li>
+      </ul>
+    </li>
+  </ul>
+
+  <h3>5. Modules / Key Features</h3>
+  <ol>
+    <li><strong>Citizen Portal & Vernacular Voice Submission Module:</strong>
+      Instant UI language switching (English, हिन्दी, ಕನ್ನಡ, தமிழ்); Speech-to-text voice note grievance capture; Interactive WhatsApp chatbot simulator with instant formatted receipt cards.
+    </li>
+    <li><strong>Code-Mixed Civic NLP & Routing Module:</strong>
+      Automated intent routing across 6 municipal departments; Named Entity Recognition (NER) for ward notations (<code>Ward-7</code>, <code>W-12</code>, Indic numerals <code>०-९</code>) and landmarks (<code>near Sharma Store</code>, <code>opp Metro Pillar</code>).
+    </li>
+    <li><strong>Computer Vision Complaint Verifier & Anti-Spam Module:</strong>
+      Multi-class civic image classifier (potholes, garbage dumps, waterlogging, sewage overflow, broken streetlights, fallen trees); Image-to-text correlation check with confidence scoring and spam/selfie rejection.
+    </li>
+    <li><strong>Spatio-Temporal Deduplication & Master Ticket Aggregator:</strong>
+      300-meter spatial bounding gate; Hybrid semantic similarity clustering linking duplicate complaints to a single Master Ticket; Dynamic urgency escalation: Automatically escalates master tickets to <em>Critical</em> when hazardous conditions or multiple endorsements are detected.
+    </li>
+    <li><strong>Democratic Representation & Jan Sunwai Escalation Module:</strong>
+      Automated mapping of Ward Corporators (पार्षद / ಕಾರ್ಪೊರೇಟರ್ / கவுன்சிலர்) and MLAs with contact details; Statutory Citizen Charter SLA countdown with <code>⚠️ SLA: Overdue</code> flags; Direct escalation pipeline to <strong>Jan Sunwai (Public Grievance Day)</strong> for municipal commissioner review.
+    </li>
+    <li><strong>Predictive Maintenance & Geospatial Command Center Module:</strong>
+      Real-time Leaflet GIS ward map with clustered incident markers; 48-Hour Open-Meteo rainfall forecast integration; Ward Vulnerability Index (0–100) triggering automated pre-monsoon desilting squads and mobile dewatering pump deployments; National Mission Tagging (Swachh Bharat 2.0, AMRUT 2.0, Jal Jeevan Mission, Smart Cities SLNP).
+    </li>
+  </ol>
+
+  <h3>6. Technology Stack</h3>
+  <table class="data-table">
+    <thead>
+      <tr>
+        <th style="width: 25%;">Layer / Component</th>
+        <th style="width: 30%;">Technology Selected</th>
+        <th>Rationale & Purpose</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Frontend Framework</strong></td>
+        <td>Vanilla ES6+ JavaScript, HTML5, CSS3, Tailwind Classes</td>
+        <td>Ultra-lightweight, zero bundle overhead, rapid loading on low-end 2G/3G mobile devices in India.</td>
+      </tr>
+      <tr>
+        <td><strong>Mapping & GIS</strong></td>
+        <td>Leaflet.js, OpenStreetMap Tiles</td>
+        <td>Open-source, lightweight GIS map rendering with custom ward-level marker clustering.</td>
+      </tr>
+      <tr>
+        <td><strong>Web Accessibility</strong></td>
+        <td>Progressive Web App (PWA), Service Worker, Web Speech API</td>
+        <td>Offline caching, home-screen installability, and vernacular voice note speech recognition.</td>
+      </tr>
+      <tr>
+        <td><strong>Backend API</strong></td>
+        <td>Python 3.11, FastAPI, Uvicorn</td>
+        <td>High-performance asynchronous REST API with automatic OpenAPI (Swagger) documentation.</td>
+      </tr>
+      <tr>
+        <td><strong>Validation & Schema</strong></td>
+        <td>Pydantic v2</td>
+        <td>Strict request validation, type checking, and domain modeling.</td>
+      </tr>
+      <tr>
+        <td><strong>Data Layer & GIS</strong></td>
+        <td>Spatial Stores / PostgreSQL + PostGIS Architecture</td>
+        <td>Spatial distance calculation (Haversine / <code>ST_DWithin</code>) and relational persistence.</td>
+      </tr>
+      <tr>
+        <td><strong>NLP & Deduplication</strong></td>
+        <td>Regex NER, Scikit-learn TF-IDF, Token Normalizers</td>
+        <td>Fast, low-latency parsing of code-mixed Hindi, Kannada, Tamil, and Hinglish.</td>
+      </tr>
+      <tr>
+        <td><strong>Predictive Engine</strong></td>
+        <td>Scikit-learn, Open-Meteo Weather API</td>
+        <td>Multi-factor tabular risk scoring combining weather forecasts and asset age logs.</td>
+      </tr>
+      <tr>
+        <td><strong>Testing Framework</strong></td>
+        <td>Pytest, AnyIO, HTTPX</td>
+        <td>34 automated unit and integration tests with 100% pass rate.</td>
+      </tr>
+      <tr>
+        <td><strong>Version Control</strong></td>
+        <td>Git, GitHub</td>
+        <td>Distributed version control and remote tracking on <code>origin/main</code>.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>7. Expected Outcome</h3>
+  <ul>
+    <li><strong>70%+ Reduction in Municipal Ticket Duplication:</strong> Redundant reports are consolidated into unified master tickets, saving municipal administrative overhead.</li>
+    <li><strong>100% Automated Grievance Routing:</strong> Complaints are routed instantly to the right ward engineer without human manual sorting.</li>
+    <li><strong>Enhanced Citizen Inclusivity:</strong> Marginalized and semi-literate citizens can voice grievances in their regional mother tongue.</li>
+    <li><strong>Proactive Disaster Prevention:</strong> Cities can preempt urban flooding and power outages through 48-hour pre-monsoon predictive risk alerts.</li>
+    <li><strong>Transparent Democratic Accountability:</strong> Citizens and ward officers can track SLA countdowns and see unresolved issues escalated directly to Jan Sunwai hearings.</li>
+  </ul>
+
+  <h3>8. Future Scope</h3>
+  <ol>
+    <li><strong>Live WhatsApp Business API & IVR Integration:</strong> Connect Twilio/Meta WhatsApp Cloud API webhooks and automated interactive voice response (IVR) phone lines for non-smartphone users.</li>
+    <li><strong>Deep Edge YOLOv8 & Indic-BERT Deployment:</strong> Deploy quantized Onnx/PyTorch YOLOv8 on camera edge streams and fine-tune Indic-BERT models for deeper dialectical sentiment analysis.</li>
+    <li><strong>IoT Sensor Ingestion:</strong> Integrate ultrasonic water-level sensors in municipal stormwater drains and smart electricity meter telemetry directly into the predictive maintenance engine.</li>
+    <li><strong>Blockchain-Backed Audit Trail:</strong> Immutably record contractor work order completion and citizen resolution sign-offs for transparent public auditing.</li>
+  </ol>
+
+  <h3>9. References</h3>
+  <ol>
+    <li>Ministry of Housing and Urban Affairs (MoHUA), Government of India – <em>Swachh Bharat Mission (Urban 2.0) & AMRUT Guidelines</em>, https://mohua.gov.in.</li>
+    <li>Department of Administrative Reforms & Public Grievances (DARPG) – <em>CPGRAMS Public Grievance Portal & Citizen Charter Standards</em>, https://pgportal.gov.in.</li>
+    <li>Open-Meteo Weather Forecast API Documentation – <em>High-Resolution Global Meteorological Models</em>, https://open-meteo.com/.</li>
+    <li>Reimers, N., & Gurevych, I. (2019). <em>Sentence-BERT: Sentence Embeddings using Siamese BERT-Networks</em>. Proceedings of EMNLP 2019.</li>
+    <li>Ultralytics (2023). <em>YOLOv8: Real-Time Computer Vision and Object Detection Architecture</em>. https://github.com/ultralytics/ultralytics.</li>
+    <li>FastAPI Documentation & Asynchronous Web Architecture in Python, https://fastapi.tiangolo.com/.</li>
+  </ol>
+
+  <div class="footer-signatures">
+    <table style="width: 100%; border: none;">
+      <tr>
+        <td style="width: 50%; text-align: left; padding: 20px 0;">
+          __________________________<br>
+          <strong>Signature of Candidate 1</strong><br>
+          Kanav Kaul (24BAI70060)
+        </td>
+        <td style="width: 50%; text-align: right; padding: 20px 0;">
+          __________________________<br>
+          <strong>Signature of Candidate 2</strong><br>
+          Shivansh Paliwal (24BAI70045)
+        </td>
+      </tr>
+      <tr>
+        <td colspan="2" style="text-align: center; padding-top: 30px;">
+          __________________________<br>
+          <strong>PROJECT SUPERVISOR / GUIDE</strong><br>
+          Department of Computer Science & Engineering<br>
+          Chandigarh University
+        </td>
+      </tr>
+    </table>
+  </div>
+
+</body>
+</html>
