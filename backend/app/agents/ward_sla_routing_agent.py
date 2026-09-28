@@ -33,8 +33,10 @@ class WardSlaRoutingAgent(BaseCivicAgent):
         ward_id = assigned_ward.get("ward_id", "MCD-KB-01")
         ward_name = assigned_ward.get("ward_name", "Municipal Ward")
         mcd_zone = assigned_ward.get("mcd_zone") or assigned_ward.get("zone", "Karol Bagh Zone")
+        city = assigned_ward.get("city", "Delhi")
+        corporation = assigned_ward.get("corporation", "MCD")
         corporator = assigned_ward.get("corporator", {"name": "Ward Councillor (Parshad)", "designation": "Parshad"})
-        mla = assigned_ward.get("mla", {"name": "Constituency MLA", "constituency": "Delhi Vidhan Sabha"})
+        mla = assigned_ward.get("mla", {"name": "Constituency MLA", "constituency": f"{city} Vidhan Sabha"})
         ward_sabha = assigned_ward.get("ward_sabha_schedule", "Every 1st Saturday, 10:30 AM")
 
         # Officer assignment based on department
@@ -58,7 +60,7 @@ class WardSlaRoutingAgent(BaseCivicAgent):
             sla_hours = 48
 
         thought = (
-            f"ADMINISTRATIVE ROUTING: Mapped coordinates ({lat:.4f}, {lon:.4f}) to MCD Zone '{mcd_zone}', "
+            f"ADMINISTRATIVE ROUTING: Mapped coordinates ({lat:.4f}, {lon:.4f}) to {corporation} ({city}) Zone '{mcd_zone}', "
             f"Ward '{ward_name}' ({ward_id}). Assigned field officer: '{assigned_engineer}'. "
             f"Bound democratic accountability to Parshad: {corporator.get('name', 'N/A')} and MLA: {mla.get('name', 'N/A')}. "
             f"Citizen Charter SLA locked to {sla_hours} Hours under {national_mission}."
@@ -66,6 +68,9 @@ class WardSlaRoutingAgent(BaseCivicAgent):
 
         outputs = {
             "mcd_zone": mcd_zone,
+            "zone": mcd_zone,
+            "city": city,
+            "corporation": corporation,
             "ward_id": ward_id,
             "ward_name": ward_name,
             "assigned_engineer": assigned_engineer,
@@ -77,6 +82,9 @@ class WardSlaRoutingAgent(BaseCivicAgent):
 
         context["assigned_ward"] = assigned_ward
         context["mcd_zone"] = mcd_zone
+        context["zone"] = mcd_zone
+        context["city"] = city
+        context["corporation"] = corporation
         context["ward_id"] = ward_id
         context["ward_name"] = ward_name
         context["assigned_engineer"] = assigned_engineer

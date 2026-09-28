@@ -9,13 +9,14 @@ router = APIRouter(prefix="/master-tickets", tags=["ULB Officer Master Incidents
 async def list_master_tickets(
     status: Optional[str] = Query(None, description="Filter by status (OPEN, IN_PROGRESS, RESOLVED)"),
     jan_sunwai_only: bool = Query(False, description="Filter tickets escalated to Jan Sunwai / Public Grievance Day"),
-    mission: Optional[str] = Query(None, description="Filter by National Civic Mission (Swachh Bharat, AMRUT, etc.)")
+    mission: Optional[str] = Query(None, description="Filter by National Civic Mission (Swachh Bharat, AMRUT, etc.)"),
+    city: Optional[str] = Query(None, description="Filter by Indian City / Municipal Corporation (Bengaluru, Mumbai, Delhi, etc.)")
 ):
     """
     Retrieve auto-assigned Master Incidents with aggregated citizen report counts, SLA timers,
     Corporator/MLA linkages, and Jan Sunwai escalation flags.
     """
-    return db.get_master_tickets(status=status, jan_sunwai_only=jan_sunwai_only, mission=mission)
+    return db.get_master_tickets(status=status, jan_sunwai_only=jan_sunwai_only, mission=mission, city=city)
 
 @router.get("/{ticket_id}", summary="Get master ticket details and citizen report trail")
 async def get_master_ticket(ticket_id: str):

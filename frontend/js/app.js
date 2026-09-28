@@ -1,9 +1,241 @@
-// CivicSense AI (SamAashwas) - Main Application Controller
+// SamAashwas (समाश्वास) - National Municipal Grievance Intelligence & Urban Care Platform
+// Main Application Controller powered by CivicSense AI
+
 let currentTickets = [];
 let selectedTicketId = null;
-let isRecording = null;
+let isRecording = false;
 let speechRecognizer = null;
 let allWardsData = [];
+let currentSelectedCity = 'all';
+
+// Supported Metros & Corporations Metadata
+const CITIES_DATA = {
+  all: {
+    id: "all",
+    name: "Pan-India",
+    local_name: "अखिल भारतीय नगर सेवा",
+    corporation: "PAN-INDIA",
+    corporation_full: "National Municipal Care & Citizen Redressal Platform",
+    emblem: "🏛️",
+    lat: 20.5937,
+    lon: 78.9629,
+    zoom: 5,
+    helplines: {
+      control_room: "112 / 1916",
+      water: "1916",
+      sanitation: "1913 / 1533",
+      power: "1912",
+      medical: "108"
+    },
+    advisory: "24x7 Monsoon & Disaster Control Rooms operational across BBMP Bengaluru, MCD Delhi, BMC Mumbai, PMC Pune, GCC Chennai, GHMC Hyderabad, LMC Lucknow & KMC Kolkata • Primary storm drain desilting achieved 86.4% readiness • Friday Jan Sunwai active at all Zonal Offices.",
+    pins: [
+      { name: "Bengaluru (Indiranagar)", lat: 12.9716, lon: 77.6412 },
+      { name: "Delhi (Karol Bagh)", lat: 28.6514, lon: 77.1907 },
+      { name: "Mumbai (Bandra West)", lat: 19.0596, lon: 72.8295 },
+      { name: "Pune (Shivajinagar)", lat: 18.5314, lon: 73.8446 }
+    ]
+  },
+  bengaluru: {
+    id: "bengaluru",
+    name: "Bengaluru",
+    local_name: "ಬೃಹತ್ ಬೆಂಗಳೂರು ಮಹಾನಗರ ಪಾಲಿಕೆ",
+    corporation: "BBMP",
+    corporation_full: "Bruhat Bengaluru Mahanagara Palike",
+    emblem: "🏛️",
+    lat: 12.9716,
+    lon: 77.5946,
+    zoom: 12,
+    helplines: {
+      control_room: "1533 / 080-22660000",
+      water: "1916 (BWSSB)",
+      sanitation: "1533 (SBM)",
+      power: "1912 (BESCOM)",
+      medical: "108"
+    },
+    advisory: "BBMP High Alert: Rajakaluve SWD desilting 88% completed in Koramangala & Bellandur corridors • Rapid Pothole Squads tarring Outer Ring Road • Friday Jan Sunwai 11:00 AM @ BBMP Head Office.",
+    pins: [
+      { name: "Indiranagar", lat: 12.9716, lon: 77.6412 },
+      { name: "Koramangala", lat: 12.9352, lon: 77.6245 },
+      { name: "HSR Layout", lat: 12.9121, lon: 77.6446 },
+      { name: "Malleshwaram", lat: 13.0067, lon: 77.5694 }
+    ]
+  },
+  delhi: {
+    id: "delhi",
+    name: "Delhi",
+    local_name: "दिल्ली नगर निगम",
+    corporation: "MCD",
+    corporation_full: "Municipal Corporation of Delhi",
+    emblem: "🏛️",
+    lat: 28.6139,
+    lon: 77.2090,
+    zoom: 12,
+    helplines: {
+      control_room: "155305 / 1800-11-8700",
+      water: "1916 (Delhi Jal Board)",
+      sanitation: "155305 (MCD Sanitation)",
+      power: "19123 (BSES / TPDDL)",
+      medical: "108"
+    },
+    advisory: "MCD Flood Control Alert: 24x7 Control Rooms Activated across all 12 Administrative Zones • Minto Bridge & Pul Prahladpur heavy sumps tested • Anti-Dengue door-to-door fogging active.",
+    pins: [
+      { name: "Karol Bagh", lat: 28.6514, lon: 77.1907 },
+      { name: "Rohini", lat: 28.7166, lon: 77.1189 },
+      { name: "Civil Lines", lat: 28.6814, lon: 77.2228 },
+      { name: "Chandni Chowk", lat: 28.6506, lon: 77.2303 }
+    ]
+  },
+  mumbai: {
+    id: "mumbai",
+    name: "Mumbai",
+    local_name: "बृहन्मुंबई महानगरपालिका",
+    corporation: "BMC",
+    corporation_full: "Brihanmumbai Municipal Corporation",
+    emblem: "🌊",
+    lat: 19.0760,
+    lon: 72.8777,
+    zoom: 12,
+    helplines: {
+      control_room: "1916 / 022-22694725",
+      water: "1916 (BMC Hydraulic)",
+      sanitation: "1916 (Solid Waste)",
+      power: "19122 (BEST / Adani)",
+      medical: "108"
+    },
+    advisory: "BMC High-Tide Readiness: 480 dewatering pumps positioned at Hindmata, Milan Subway & Gandhi Market • Mithi River desilting 91% complete • Ward disaster teams on standby.",
+    pins: [
+      { name: "Bandra West", lat: 19.0596, lon: 72.8295 },
+      { name: "Andheri East", lat: 19.1136, lon: 72.8697 },
+      { name: "Dadar West", lat: 19.0178, lon: 72.8478 },
+      { name: "Colaba / Fort", lat: 18.9067, lon: 72.8147 }
+    ]
+  },
+  pune: {
+    id: "pune",
+    name: "Pune",
+    local_name: "पुणे महानगरपालिका",
+    corporation: "PMC",
+    corporation_full: "Pune Municipal Corporation",
+    emblem: "🏰",
+    lat: 18.5204,
+    lon: 73.8567,
+    zoom: 12,
+    helplines: {
+      control_room: "1800-1030-222 / 020-25501000",
+      water: "020-25501100 (PMC Water)",
+      sanitation: "1800-1030-222",
+      power: "1912 (MSEDCL)",
+      medical: "108"
+    },
+    advisory: "PMC Smart Care Drive: Mutha Riverfront cleaning & nullah desilting ahead of schedule • Smart LED streetlight dark spot audit in Kothrud & Viman Nagar • Friday Jan Sunwai active.",
+    pins: [
+      { name: "Shivajinagar", lat: 18.5314, lon: 73.8446 },
+      { name: "Kothrud", lat: 18.5074, lon: 73.8077 },
+      { name: "Viman Nagar", lat: 18.5679, lon: 73.9143 },
+      { name: "Hadapsar", lat: 18.5089, lon: 73.9259 }
+    ]
+  },
+  chennai: {
+    id: "chennai",
+    name: "Chennai",
+    local_name: "பெருநகர சென்னை மாநகராட்சி",
+    corporation: "GCC",
+    corporation_full: "Greater Chennai Corporation",
+    emblem: "🌴",
+    lat: 13.0827,
+    lon: 80.2707,
+    zoom: 12,
+    helplines: {
+      control_room: "1913 / 044-25619206",
+      water: "044-45674567 (CMWSSB)",
+      sanitation: "1913 (Namma Chennai)",
+      power: "94987-94987 (TANGEDCO)",
+      medical: "108"
+    },
+    advisory: "Singara Chennai 2.0 Mission: Kosasthalaiyar & Kovalam basin storm drain works under continuous sensor telemetry • Namma Chennai Ward grievance response under 12 hours.",
+    pins: [
+      { name: "T. Nagar", lat: 13.0418, lon: 80.2341 },
+      { name: "Mylapore", lat: 13.0339, lon: 80.2676 },
+      { name: "Adyar", lat: 13.0012, lon: 80.2565 },
+      { name: "Anna Nagar", lat: 13.0850, lon: 80.2101 }
+    ]
+  },
+  hyderabad: {
+    id: "hyderabad",
+    name: "Hyderabad",
+    local_name: "గ్రేటర్ హైదరాబాద్ మున్సిపల్ కార్పొరేషన్",
+    corporation: "GHMC",
+    corporation_full: "Greater Hyderabad Municipal Corporation",
+    emblem: "🕌",
+    lat: 17.3850,
+    lon: 78.4867,
+    zoom: 12,
+    helplines: {
+      control_room: "040-21111111 / 1800-599-0099",
+      water: "155313 (HMWSSB)",
+      sanitation: "040-21111111",
+      power: "1912 (TSSPDCL)",
+      medical: "108"
+    },
+    advisory: "GHMC Monsoon Emergency Action: Strategic Nala Development Program (SNDP) phase 2 channels cleared • Rapid Action Teams deployed across Jubilee Hills & Hitec Corridor.",
+    pins: [
+      { name: "Jubilee Hills", lat: 17.4319, lon: 78.4073 },
+      { name: "Hitec City", lat: 17.4474, lon: 78.3762 },
+      { name: "Charminar", lat: 17.3616, lon: 78.4747 },
+      { name: "Secunderabad", lat: 17.4399, lon: 78.4983 }
+    ]
+  },
+  lucknow: {
+    id: "lucknow",
+    name: "Lucknow",
+    local_name: "लखनऊ नगर निगम",
+    corporation: "LMC",
+    corporation_full: "Lucknow Municipal Corporation",
+    emblem: "🛕",
+    lat: 26.8467,
+    lon: 80.9462,
+    zoom: 12,
+    helplines: {
+      control_room: "1533 / 0522-2622080",
+      water: "0522-2623040 (Jal Sansthan)",
+      sanitation: "1533 (Swachh Desk)",
+      power: "1912 (MVVNL)",
+      medical: "108"
+    },
+    advisory: "Swachh Lucknow Clean City Mission: Gomti Riverfront ecological cleanup • Door-to-door waste segregation 94% verified • Sambhav Diwas / Jan Sunwai hearings every Tuesday & Friday.",
+    pins: [
+      { name: "Hazratganj", lat: 26.8536, lon: 80.9452 },
+      { name: "Gomti Nagar", lat: 26.8568, lon: 81.0028 },
+      { name: "Alambagh", lat: 26.8184, lon: 80.9082 },
+      { name: "Chowk", lat: 26.8667, lon: 80.9083 }
+    ]
+  },
+  kolkata: {
+    id: "kolkata",
+    name: "Kolkata",
+    local_name: "কলকাতা পৌরসংস্থা",
+    corporation: "KMC",
+    corporation_full: "Kolkata Municipal Corporation",
+    emblem: "🌉",
+    lat: 22.5726,
+    lon: 88.3639,
+    zoom: 12,
+    helplines: {
+      control_room: "155359 / 033-22861000",
+      water: "033-22861212",
+      sanitation: "155359",
+      power: "1912 (CESC)",
+      medical: "108"
+    },
+    advisory: "KMC Drainage & Health Alert: KEIIP dewatering sumps fully operational • Anti-dengue drone spraying active across Borough VII & VIII • Talk to Mayor Jan Sunwai active.",
+    pins: [
+      { name: "Park Street", lat: 22.5513, lon: 88.3526 },
+      { name: "Salt Lake", lat: 22.5867, lon: 88.4178 },
+      { name: "Burrabazar", lat: 22.5847, lon: 88.3582 },
+      { name: "Ballygunge", lat: 22.5280, lon: 88.3659 }
+    ]
+  }
+};
 
 document.addEventListener('DOMContentLoaded', () => {
   // Restore language preference
@@ -13,7 +245,6 @@ document.addEventListener('DOMContentLoaded', () => {
   // Restore sunlight mode preference
   if (localStorage.getItem('civicsense_sunlight') === 'true') {
     document.body.classList.add('sunlight-mode');
-    updateSunlightButtonText();
   }
 
   // Restore lite mode preference
@@ -22,11 +253,167 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   initMap();
+  animateHeroCounters();
   loadKPIStats();
   loadMasterTickets();
+  loadTransformations();
+  loadRewards();
   loadPredictiveData();
   loadWardGovernanceData();
 });
+
+// Animate Dynamic Hero Impact Metrics Counters
+function animateHeroCounters() {
+  animateValue('impact-resolved-count', 17000, 18450, 1500, '+');
+  animateValue('impact-active-squads', 100, 142, 1200, '');
+}
+
+function animateValue(id, start, end, duration, suffix = '') {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const range = end - start;
+  const startTime = new Date().getTime();
+  const timer = setInterval(() => {
+    const now = new Date().getTime();
+    const progress = Math.min((now - startTime) / duration, 1);
+    const current = Math.floor(progress * range + start);
+    el.innerText = `${current.toLocaleString('en-IN')}${suffix}`;
+    if (progress >= 1) clearInterval(timer);
+  }, 30);
+}
+
+// City Switcher Handler
+function selectCity(cityId) {
+  currentSelectedCity = cityId;
+  const city = CITIES_DATA[cityId] || CITIES_DATA['all'];
+
+  // Update active pill UI
+  document.querySelectorAll('.city-pill').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('onclick').includes(`'${cityId}'`));
+  });
+
+  // Update Header titles & emblem
+  const emblemEl = document.getElementById('header-emblem-icon');
+  const titleLocalEl = document.getElementById('header-corp-title-local');
+  const titleEnEl = document.getElementById('header-corp-title-en');
+  const subEl = document.getElementById('header-corp-subtitle');
+  const tickerEl = document.getElementById('public-ticker-text');
+  const badgeLiveEl = document.getElementById('hero-live-badge-text');
+
+  if (emblemEl) emblemEl.innerText = city.emblem || "🏛️";
+  if (titleLocalEl) titleLocalEl.innerText = city.local_name;
+  if (titleEnEl) titleEnEl.innerText = `SamAashwas - ${city.corporation_full}`;
+  if (subEl) subEl.innerText = `Powered by CivicSense AI • Autonomous Multi-Agent Deduplication, Statutory SLAs & Jan Sunwai (${city.corporation})`;
+  if (tickerEl) tickerEl.innerHTML = `🚨 <strong>${city.corporation} CIVIC ADVISORY:</strong> ${city.advisory}`;
+  if (badgeLiveEl) badgeLiveEl.innerText = `${city.name} Civic Grid Active • ${city.corporation} Intelligent Redressal Shield`;
+
+  // Update Map Position
+  if (typeof flyToCity === 'function') {
+    flyToCity(city.lat, city.lon, city.zoom);
+  }
+
+  // Update Form Quick Pins for this city
+  updateFormPins(city);
+
+  // Update Helplines Grid
+  updateHelplinesGrid(city);
+
+  // Reload filtered tickets and data
+  const cityQuery = city.id === 'all' ? '' : city.name;
+  const commandCityFilter = document.getElementById('command-city-filter');
+  if (commandCityFilter) {
+    commandCityFilter.value = city.id === 'all' ? '' : city.name;
+  }
+  loadKPIStats(cityQuery);
+  loadMasterTickets(cityQuery);
+  loadPredictiveData(cityQuery);
+  loadWardGovernanceData(cityQuery);
+}
+
+function updateFormPins(city) {
+  const container = document.getElementById('form-quick-pins');
+  if (!container) return;
+
+  const pins = city.pins || CITIES_DATA['all'].pins;
+  let html = `
+    <button type="button" class="btn-primary" style="background: #334155; font-size: 0.8rem;" onclick="detectLocation()" data-i18n="btn_gps">
+      📍 Auto-Detect GPS Location
+    </button>
+  `;
+
+  pins.forEach(p => {
+    html += `
+      <button type="button" class="btn-secondary" style="font-size: 0.8rem;" onclick="setLocationCoords(${p.lat}, ${p.lon})">
+        📍 ${p.name}
+      </button>
+    `;
+  });
+
+  container.innerHTML = html;
+
+  // Set default form coordinates to first pin
+  if (pins.length > 0) {
+    setLocationCoords(pins[0].lat, pins[0].lon);
+  }
+}
+
+function updateHelplinesGrid(city) {
+  const container = document.getElementById('helpline-grid-container');
+  if (!container) return;
+
+  const h = city.helplines;
+  container.innerHTML = `
+    <a href="tel:112" class="helpline-card emergency">
+      <div class="helpline-icon-wrap">🚨</div>
+      <div>
+        <div class="helpline-num">112</div>
+        <div class="helpline-name">National Emergency & Police</div>
+        <div class="helpline-action">Tap to Call &bull; Toll-Free</div>
+      </div>
+    </a>
+
+    <a href="tel:${h.water.split(' ')[0]}" class="helpline-card water">
+      <div class="helpline-icon-wrap">💧</div>
+      <div>
+        <div class="helpline-num">${h.water}</div>
+        <div class="helpline-name">Water Supply & Pipeline Burst</div>
+        <div class="helpline-action">${city.name} Water Desk</div>
+      </div>
+    </a>
+
+    <a href="tel:${h.sanitation.split(' ')[0]}" class="helpline-card sanitation">
+      <div class="helpline-icon-wrap">🧹</div>
+      <div>
+        <div class="helpline-num">${h.sanitation}</div>
+        <div class="helpline-name">Municipal Sanitation & Waste</div>
+        <div class="helpline-action">${city.corporation} SBM Desk</div>
+      </div>
+    </a>
+
+    <a href="tel:${h.power.split(' ')[0]}" class="helpline-card power">
+      <div class="helpline-icon-wrap">⚡</div>
+      <div>
+        <div class="helpline-num">${h.power}</div>
+        <div class="helpline-name">Power Grid & Live Wire Sparks</div>
+        <div class="helpline-action">Discom Control Room</div>
+      </div>
+    </a>
+
+    <a href="tel:${h.medical}" class="helpline-card medical">
+      <div class="helpline-icon-wrap">🚑</div>
+      <div>
+        <div class="helpline-num">108</div>
+        <div class="helpline-name">Ambulance & Medical Emergency</div>
+        <div class="helpline-action">Emergency Medical Response</div>
+      </div>
+    </a>
+  `;
+}
+
+function onCommandCityChange(cityVal) {
+  const cityKey = Object.keys(CITIES_DATA).find(k => CITIES_DATA[k].name.toLowerCase() === (cityVal || '').toLowerCase()) || 'all';
+  selectCity(cityKey);
+}
 
 // Tab Switcher for Desktop & Mobile
 function switchTab(tabId) {
@@ -37,70 +424,72 @@ function switchTab(tabId) {
   const targetView = document.getElementById(tabId);
   if (targetView) targetView.classList.add('active');
 
-  // Highlight desktop tab
   const desktopBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
   if (desktopBtn) desktopBtn.classList.add('active');
 
-  // Highlight mobile nav button
   const mobileBtn = document.querySelector(`.mobile-nav-item[data-tab="${tabId}"]`);
   if (mobileBtn) mobileBtn.classList.add('active');
 
-  // Redraw leaflet if switching to map
   if (tabId === 'command-center' && typeof map !== 'undefined' && map) {
-    setTimeout(() => {
-      map.invalidateSize();
-    }, 200);
+    setTimeout(() => { map.invalidateSize(); }, 200);
   }
 
-  if (tabId === 'jan-sunwai-view') {
-    loadWardGovernanceData();
-  }
+  if (tabId === 'gallery-view') loadTransformations();
+  if (tabId === 'rewards-view') loadRewards();
+  if (tabId === 'jan-sunwai-view') loadWardGovernanceData();
+  if (tabId === 'predictive-view') loadPredictiveData();
 }
 
-// Fetch KPI Stats with National Missions & Jan Sunwai
-async function loadKPIStats() {
+// Fetch Real-time KPI Stats
+async function loadKPIStats(cityFilter = '') {
   try {
-    const res = await fetch('/api/v1/analytics/stats');
+    const activeCity = cityFilter || (currentSelectedCity !== 'all' ? CITIES_DATA[currentSelectedCity].name : '');
+    const url = activeCity ? `/api/v1/analytics/stats?city=${encodeURIComponent(activeCity)}` : '/api/v1/analytics/stats';
+    const res = await fetch(url);
     if (!res.ok) return;
     const stats = await res.json();
 
-    document.getElementById('kpi-total-reports').innerText = stats.total_complaints;
-    document.getElementById('kpi-master-tickets').innerText = stats.total_master_tickets;
-    document.getElementById('kpi-dedup-rate').innerText = `${stats.deduplication_rate_pct}%`;
-    document.getElementById('kpi-high-risk-wards').innerText = stats.high_risk_wards_count;
-    
-    const janCountEl = document.getElementById('kpi-jan-sunwai-count');
-    if (janCountEl) {
-      janCountEl.innerText = stats.jan_sunwai_escalated_count || 0;
-    }
+    const repEl = document.getElementById('kpi-total-reports');
+    const masEl = document.getElementById('kpi-master-tickets');
+    const dedEl = document.getElementById('kpi-dedup-rate');
+    const wrkEl = document.getElementById('kpi-high-risk-wards');
+    const janEl = document.getElementById('kpi-jan-sunwai-count');
+
+    if (repEl) repEl.innerText = stats.total_complaints;
+    if (masEl) masEl.innerText = stats.total_master_tickets;
+    if (dedEl) dedEl.innerText = `${stats.deduplication_rate_pct}%`;
+    if (wrkEl) wrkEl.innerText = stats.high_risk_wards_count;
+    if (janEl) janEl.innerText = stats.jan_sunwai_escalated_count || 0;
   } catch (e) {
     console.warn('Could not fetch stats:', e);
   }
 }
 
-// Load Master Tickets with Filters
-async function loadMasterTickets() {
-  const statusFilter = document.getElementById('status-filter').value;
-  let url = '/api/v1/master-tickets';
+// Load Master Tickets with Filters & City Selection
+async function loadMasterTickets(cityFilter = '') {
+  const statusFilterEl = document.getElementById('status-filter');
+  const statusFilter = statusFilterEl ? statusFilterEl.value : '';
 
+  let url = '/api/v1/master-tickets?';
+  const params = [];
   if (statusFilter === 'JAN_SUNWAI') {
-    url = '/api/v1/master-tickets?jan_sunwai_only=true';
+    params.push('jan_sunwai_only=true');
   } else if (statusFilter) {
-    url = `/api/v1/master-tickets?status=${statusFilter}`;
+    params.push(`status=${encodeURIComponent(statusFilter)}`);
   }
+
+  const activeCity = cityFilter || (currentSelectedCity !== 'all' ? CITIES_DATA[currentSelectedCity].name : '');
+  if (activeCity) {
+    params.push(`city=${encodeURIComponent(activeCity)}`);
+  }
+
+  url += params.join('&');
 
   try {
     const res = await fetch(url);
     if (!res.ok) return;
     currentTickets = await res.json();
-    const zoneFilterEl = document.getElementById('zone-filter-select');
-    const zoneVal = zoneFilterEl ? zoneFilterEl.value : '';
-    if (zoneVal) {
-      currentTickets = currentTickets.filter(t => 
-        (t.mcd_zone && t.mcd_zone.toLowerCase().includes(zoneVal.toLowerCase())) || 
-        (t.ward_name && t.ward_name.toLowerCase().includes(zoneVal.toLowerCase()))
-      );
-    }
+
     renderTicketList(currentTickets);
     renderMapIncidents(currentTickets);
     renderLiteWardGrid(currentTickets);
@@ -111,6 +500,7 @@ async function loadMasterTickets() {
 
 function renderTicketList(tickets) {
   const listEl = document.getElementById('ticket-list');
+  if (!listEl) return;
   listEl.innerHTML = '';
 
   if (tickets.length === 0) {
@@ -129,7 +519,7 @@ function renderTicketList(tickets) {
     else if (t.urgency === 'Low') badgeClass = 'badge-low';
 
     const janSunwaiTag = t.jan_sunwai_status === 'ESCALATED'
-      ? `<span class="badge badge-jan-sunwai">⚖️ Jan Sunwai Docket</span>`
+      ? `<span class="badge badge-jan-sunwai">⚖️ Jan Sunwai</span>`
       : '';
 
     const missionTag = t.national_mission
@@ -137,6 +527,7 @@ function renderTicketList(tickets) {
       : '';
 
     const corporatorName = t.corporator && t.corporator.name ? t.corporator.name : 'Ward Councillor';
+    const cityLabel = t.city ? `${t.city} &bull; ` : '';
 
     card.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; gap: 6px; flex-wrap: wrap;">
@@ -147,14 +538,14 @@ function renderTicketList(tickets) {
         </div>
         <span class="badge-count">${t.report_count} reports</span>
       </div>
-      <div style="font-weight: 600; font-size: 0.92rem; margin-bottom: 4px; color: var(--text-main);">${t.title}</div>
+      <div style="font-weight: 700; font-size: 0.9rem; margin-bottom: 4px; color: var(--text-main);">${t.title}</div>
       <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px;">
-        📍 ${t.ward_name} &bull; 🏛️ ${corporatorName}
+        📍 ${cityLabel}${t.ward_name} &bull; 🏛️ ${corporatorName}
       </div>
       <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #93c5fd;">
         <span>Status: <strong>${t.status}</strong></span>
         ${t.is_sla_breached || t.sla_hours_remaining <= 0
-          ? `<span style="color: #ef4444; font-weight: bold;">⚠️ SLA: Overdue (${t.sla_hours_remaining}h)</span>`
+          ? `<span style="color: #ef4444; font-weight: bold;">⚠️ SLA: Overdue</span>`
           : `<span>⏱️ SLA: <strong>${t.sla_hours_remaining}h</strong></span>`
         }
       </div>
@@ -173,7 +564,7 @@ function openTicketModal(ticketId) {
   document.getElementById('modal-ticket-id').innerText = ticket.master_ticket_id;
   document.getElementById('modal-ticket-title').innerText = ticket.title;
   document.getElementById('modal-dept').innerText = ticket.department;
-  document.getElementById('modal-ward').innerText = ticket.ward_name;
+  document.getElementById('modal-ward').innerText = `${ticket.city || ''} - ${ticket.ward_name}`;
   document.getElementById('modal-urgency').innerText = ticket.urgency;
   document.getElementById('modal-status').innerText = ticket.status;
   document.getElementById('modal-engineer').innerText = ticket.assigned_engineer;
@@ -182,7 +573,6 @@ function openTicketModal(ticketId) {
     : `${ticket.sla_hours_remaining} hours remaining (${ticket.citizen_charter_sla_hours || 48}h Citizen Charter)`;
   document.getElementById('modal-report-count').innerText = ticket.report_count;
 
-  // National Mission & Jan Sunwai
   document.getElementById('modal-mission').innerText = ticket.national_mission || "Swachh Bharat / AMRUT Urban Mission";
   const janTag = document.getElementById('modal-jan-sunwai-tag');
   const janBtn = document.getElementById('modal-btn-jan-sunwai');
@@ -198,17 +588,15 @@ function openTicketModal(ticketId) {
     janBtn.style.opacity = '1';
   }
 
-  // Representative details
   const corp = ticket.corporator || {};
   const mla = ticket.mla || {};
   document.getElementById('modal-corporator').innerText = corp.name ? `${corp.name} (${corp.phone || 'N/A'})` : 'Ward Councillor';
   document.getElementById('modal-mla').innerText = mla.name ? `${mla.name} (${mla.constituency || 'Constituency'})` : 'Constituency MLA';
 
-  // Render linked citizen reports
   const reportsList = document.getElementById('modal-reports-list');
   reportsList.innerHTML = '';
 
-  ticket.citizen_reports.forEach((r, idx) => {
+  (ticket.citizen_reports || []).forEach((r, idx) => {
     const reportItem = document.createElement('div');
     reportItem.style.background = '#1e293b';
     reportItem.style.padding = '8px 12px';
@@ -249,7 +637,7 @@ async function updateTicketStatus(newStatus) {
       loadWardGovernanceData();
     }
   } catch (e) {
-    console.error('Error updating status:', e);
+    alert('Failed to update ticket status');
   }
 }
 
@@ -260,693 +648,611 @@ async function escalateModalToJanSunwai() {
       method: 'POST'
     });
     if (res.ok) {
-      const data = await res.json();
-      alert(`Docketed! ${data.message}`);
+      alert(`Incident docketed for upcoming Friday Jan Sunwai before the Municipal Commissioner.`);
       closeModal();
       loadMasterTickets();
       loadKPIStats();
       loadWardGovernanceData();
     }
   } catch (e) {
-    console.error('Error escalating to Jan Sunwai:', e);
+    alert('Failed to escalate to Jan Sunwai');
   }
 }
 
-// Load Predictive Data & Monsoon Risk
-async function loadPredictiveData() {
+// BEFORE & AFTER TRANSFORMATION GALLERY
+async function loadTransformations() {
+  const container = document.getElementById('transformation-cards-container');
+  if (!container) return;
+
   try {
-    const riskRes = await fetch('/api/v1/predictive-maintenance/ward-risk');
-    const assetRes = await fetch('/api/v1/predictive-maintenance/assets');
+    const res = await fetch('/api/v1/transformations');
+    if (!res.ok) return;
+    const items = await res.json();
 
-    if (riskRes.ok) {
-      const wards = await riskRes.json();
-      allWardsData = wards;
-      renderWardRiskCards(wards);
-    }
+    container.innerHTML = '';
+    items.forEach(t => {
+      const card = document.createElement('div');
+      card.className = 'transformation-card';
+      card.innerHTML = `
+        <div class="transformation-header">
+          <div>
+            <div class="transformation-title">${t.title}</div>
+            <div class="transformation-location">📍 ${t.location} &bull; ${t.city}</div>
+          </div>
+          <span class="transformation-tag">${t.badge}</span>
+        </div>
 
-    if (assetRes.ok) {
-      const assets = await assetRes.json();
-      renderAssetTable(assets);
-    }
+        <div class="before-after-container">
+          <div class="ba-box before">
+            <div class="ba-label">⚠️ Before Report</div>
+            <div class="ba-icon">${t.before_icon}</div>
+            <div class="ba-desc">${t.before_desc}</div>
+          </div>
+          <div class="ba-box after">
+            <div class="ba-label">✅ After Redressal</div>
+            <div class="ba-icon">${t.after_icon}</div>
+            <div class="ba-desc">${t.after_desc}</div>
+          </div>
+        </div>
+
+        <div class="transformation-footer">
+          <div>
+            <span>Turnaround: </span>
+            <span class="turnaround-pill">⏱️ ${t.sla_turnaround_hours} Hours</span>
+          </div>
+          <button class="endorse-btn" onclick="endorseTransformation('${t.id}', this)">
+            👍 Verified (${t.endorsements})
+          </button>
+        </div>
+      `;
+      container.appendChild(card);
+    });
   } catch (e) {
-    console.error('Error loading predictive data:', e);
+    console.warn('Failed to load transformations:', e);
   }
 }
 
-function renderWardRiskCards(wards) {
-  const container = document.getElementById('ward-risk-cards');
-  container.innerHTML = '';
-
-  wards.forEach(w => {
-    const card = document.createElement('div');
-    card.className = 'risk-card';
-
-    let pillStyle = 'background: rgba(16, 185, 129, 0.2); color: #6ee7b7; border: 1px solid #10b981;';
-    if (w.risk_level === 'CRITICAL') {
-      pillStyle = 'background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid #ef4444;';
-    } else if (w.risk_level === 'HIGH') {
-      pillStyle = 'background: rgba(249, 115, 22, 0.2); color: #fb923c; border: 1px solid #f97316;';
-    } else if (w.risk_level === 'MEDIUM') {
-      pillStyle = 'background: rgba(245, 158, 11, 0.2); color: #fcd34d; border: 1px solid #f59e0b;';
-    }
-
-    const desiltingPct = w.desilting_readiness_pct || 75;
-
-    card.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: center;">
-        <h3 style="font-size: 1.05rem; color: var(--text-main);">${w.ward_name}</h3>
-        <span class="risk-score-pill" style="${pillStyle}">${w.risk_score}</span>
-      </div>
-      <div style="font-size: 0.78rem; color: var(--text-muted);">
-        🌧️ 48h Rain Forecast: <strong>${w.rainfall_forecast_48h_mm} mm</strong> &bull; Drainage Deficit: <strong>${w.drainage_vulnerability_score}%</strong>
-      </div>
-      <div>
-        <div style="display: flex; justify-content: space-between; font-size: 0.72rem; margin-bottom: 2px;">
-          <span>Pre-Monsoon Desilting Readiness</span>
-          <strong>${desiltingPct}%</strong>
-        </div>
-        <div class="progress-bar">
-          <div class="progress-fill" style="width: ${desiltingPct}%; background: ${desiltingPct < 60 ? '#ef4444' : '#10b981'};"></div>
-        </div>
-      </div>
-      <div style="font-size: 0.78rem; background: #0f172a; padding: 8px; border-radius: 4px; border-left: 3px solid #3b82f6;">
-        <strong>Root Cause:</strong> ${w.primary_risk_factor}
-      </div>
-      <div style="font-size: 0.78rem; color: #93c5fd;">
-        💡 <strong>Action:</strong> ${w.recommendation}
-      </div>
-    `;
-
-    container.appendChild(card);
-  });
+function endorseTransformation(id, btnEl) {
+  btnEl.style.background = '#10b981';
+  btnEl.style.borderColor = '#10b981';
+  btnEl.innerText = '✅ Endorsed by You';
+  btnEl.disabled = true;
 }
 
-function renderAssetTable(assets) {
-  const tbody = document.getElementById('assets-table-body');
-  tbody.innerHTML = '';
+// SWACHH NAGRIK COMMUNITY REWARDS & BADGES
+async function loadRewards() {
+  const badgesContainer = document.getElementById('rewards-badges-container');
+  const perksContainer = document.getElementById('rewards-perks-container');
+  if (!badgesContainer || !perksContainer) return;
 
-  assets.forEach(a => {
-    const tr = document.createElement('tr');
-    tr.style.borderBottom = '1px solid var(--border)';
-
-    let probColor = '#10b981';
-    if (a.failure_probability >= 70) probColor = '#ef4444';
-    else if (a.failure_probability >= 50) probColor = '#f97316';
-
-    tr.innerHTML = `
-      <td style="padding: 8px; font-weight: bold; color: #60a5fa;">${a.asset_id}</td>
-      <td style="padding: 8px;">${a.type}</td>
-      <td style="padding: 8px;">${a.ward_id}</td>
-      <td style="padding: 8px;">${a.structural_health_score}/100</td>
-      <td style="padding: 8px; color: ${probColor}; font-weight: bold;">${a.failure_probability}%</td>
-      <td style="padding: 8px; font-size: 0.8rem;">${a.recommended_action}</td>
-    `;
-    tbody.appendChild(tr);
-  });
-}
-
-// Load Ward Governance & Jan Sunwai Dashboard
-async function loadWardGovernanceData() {
   try {
-    const [wardRes, ticketRes] = await Promise.all([
-      fetch('/api/v1/predictive-maintenance/ward-risk'),
-      fetch('/api/v1/master-tickets?jan_sunwai_only=true')
+    const res = await fetch('/api/v1/rewards');
+    if (!res.ok) return;
+    const data = await res.json();
+
+    // Badges
+    badgesContainer.innerHTML = '';
+    data.badges.forEach(b => {
+      const isUnlocked = b.status === 'UNLOCKED';
+      const badgeCard = document.createElement('div');
+      badgeCard.className = 'reward-badge-card';
+      badgeCard.innerHTML = `
+        <div class="badge-icon-box" style="${isUnlocked ? 'background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4);' : 'opacity: 0.5;'}">
+          ${b.icon}
+        </div>
+        <div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <div style="font-weight: 700; font-size: 0.92rem; color: #ffffff;">${b.name}</div>
+            <span class="badge ${isUnlocked ? 'badge-low' : 'badge-medium'}">${isUnlocked ? 'UNLOCKED' : 'IN PROGRESS'}</span>
+          </div>
+          <div style="font-size: 0.76rem; color: #cbd5e1; margin-top: 4px;">${b.description}</div>
+          <div style="font-size: 0.68rem; color: #94a3b8; margin-top: 6px;">Points Required: <strong>${b.points_req} Karma</strong></div>
+        </div>
+      `;
+      badgesContainer.appendChild(badgeCard);
+    });
+
+    // Perks
+    perksContainer.innerHTML = '';
+    data.perks.forEach(p => {
+      const perkCard = document.createElement('div');
+      perkCard.className = 'perk-card';
+      perkCard.innerHTML = `
+        <div>
+          <div style="font-weight: 700; font-size: 0.95rem; color: #ffffff; margin-bottom: 6px;">${p.title}</div>
+          <div style="font-size: 0.78rem; color: #cbd5e1; line-height: 1.45; margin-bottom: 12px;">${p.desc}</div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.08);">
+          <span style="font-size: 0.78rem; color: #fef08a; font-weight: 700;">🪙 ${p.points_cost} Karma Points</span>
+          <button class="btn-primary" style="font-size: 0.75rem; padding: 5px 12px;" onclick="claimPerk('${p.title}', '${p.code}', '${p.desc}')">Claim Perk</button>
+        </div>
+      `;
+      perksContainer.appendChild(perkCard);
+    });
+  } catch (e) {
+    console.warn('Failed to load rewards:', e);
+  }
+}
+
+function claimPerk(title, code, desc) {
+  document.getElementById('perk-modal-title').innerText = title;
+  document.getElementById('perk-modal-desc').innerText = desc;
+  document.getElementById('perk-modal-code').innerText = code;
+  document.getElementById('perk-modal').style.display = 'flex';
+}
+
+function closePerkModal(event) {
+  if (event && event.target !== document.getElementById('perk-modal')) return;
+  document.getElementById('perk-modal').style.display = 'none';
+}
+
+// PREDICTIVE RISK DATA
+async function loadPredictiveData(cityFilter = '') {
+  const cardsContainer = document.getElementById('ward-risk-cards');
+  const tableBody = document.getElementById('assets-table-body');
+  if (!cardsContainer || !tableBody) return;
+
+  const activeCity = cityFilter || (currentSelectedCity !== 'all' ? CITIES_DATA[currentSelectedCity].name : '');
+  const riskUrl = activeCity ? `/api/v1/predictive-maintenance/ward-risk?city=${encodeURIComponent(activeCity)}` : '/api/v1/predictive-maintenance/ward-risk';
+  const assetsUrl = activeCity ? `/api/v1/predictive-maintenance/assets?city=${encodeURIComponent(activeCity)}` : '/api/v1/predictive-maintenance/assets';
+
+  try {
+    const [resRisk, resAssets] = await Promise.all([
+      fetch(riskUrl),
+      fetch(assetsUrl)
     ]);
 
-    if (wardRes.ok) {
-      const wards = await wardRes.json();
-      renderWardGovernanceCards(wards);
+    if (resRisk.ok) {
+      const wards = await resRisk.json();
+      allWardsData = wards;
+      cardsContainer.innerHTML = '';
+      wards.slice(0, 8).forEach(w => {
+        let badgeClass = 'low';
+        if (w.risk_level === 'CRITICAL') badgeClass = 'critical';
+        else if (w.risk_level === 'HIGH') badgeClass = 'high';
+        else if (w.risk_level === 'MEDIUM') badgeClass = 'medium';
+
+        const card = document.createElement('div');
+        card.className = 'risk-card';
+        card.innerHTML = `
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+            <div>
+              <div style="font-weight: 700; font-size: 0.95rem; color: #ffffff;">${w.ward_name}</div>
+              <div style="font-size: 0.72rem; color: #94a3b8;">${w.ward_id}</div>
+            </div>
+            <div class="risk-score-badge ${badgeClass}">${w.risk_score}</div>
+          </div>
+          <div style="font-size: 0.78rem; color: #cbd5e1; margin-bottom: 8px;">
+            🌧️ Rain 24h: <strong>${w.rainfall_forecast_24h_mm}mm</strong> &bull; Active Issues: <strong>${w.active_complaints_count}</strong>
+          </div>
+          <div style="font-size: 0.74rem; color: #f87171; background: rgba(239, 68, 68, 0.1); padding: 6px; border-radius: 4px; margin-bottom: 6px;">
+            ⚠️ ${w.recommendation}
+          </div>
+          <div style="font-size: 0.7rem; color: #64748b;">
+            Desilting Readiness: <strong>${w.desilting_readiness_pct}%</strong>
+          </div>
+        `;
+        cardsContainer.appendChild(card);
+      });
     }
 
-    if (ticketRes.ok) {
-      const janTickets = await ticketRes.json();
-      renderJanSunwaiTable(janTickets);
+    if (resAssets.ok) {
+      const assets = await resAssets.json();
+      tableBody.innerHTML = '';
+      assets.forEach(a => {
+        const row = document.createElement('tr');
+        row.style.borderBottom = '1px solid rgba(255, 255, 255, 0.05)';
+        row.innerHTML = `
+          <td style="padding: 10px; font-weight: 600; color: #38bdf8;">${a.asset_id}</td>
+          <td style="padding: 10px;">${a.type}</td>
+          <td style="padding: 10px;">${a.ward_id}</td>
+          <td style="padding: 10px;">${a.structural_health_score}/100</td>
+          <td style="padding: 10px; font-weight: 700; color: ${a.failure_probability > 0.4 ? '#f87171' : '#34d399'};">
+            ${(a.failure_probability * 100).toFixed(1)}%
+          </td>
+          <td style="padding: 10px; font-size: 0.75rem; color: #cbd5e1;">${a.recommended_action}</td>
+        `;
+        tableBody.appendChild(row);
+      });
     }
-  } catch (err) {
-    console.error('Error loading Ward Governance data:', err);
+  } catch (e) {
+    console.warn('Error loading predictive data:', e);
   }
 }
 
-function renderWardGovernanceCards(wards) {
-  const container = document.getElementById('ward-governance-cards');
-  if (!container) return;
-  container.innerHTML = '';
+// JAN SUNWAI & WARD GOVERNANCE
+async function loadWardGovernanceData(cityFilter = '') {
+  const cardsContainer = document.getElementById('ward-governance-cards');
+  const tableBody = document.getElementById('jan-sunwai-table-body');
+  const badgeTotal = document.getElementById('jan-sunwai-badge-total');
+  if (!cardsContainer || !tableBody) return;
 
-  wards.forEach(w => {
-    const corp = w.corporator || { name: 'Ward Councillor', designation: 'Parshad', phone: '+91-98450-XXXXX' };
-    const desiltingPct = w.desilting_readiness_pct || 75;
-    const schedule = w.ward_sabha_schedule || 'Every 1st Saturday, 10:30 AM';
+  const activeCity = cityFilter || (currentSelectedCity !== 'all' ? CITIES_DATA[currentSelectedCity].name : '');
+  const url = activeCity
+    ? `/api/v1/master-tickets?jan_sunwai_only=true&city=${encodeURIComponent(activeCity)}`
+    : '/api/v1/master-tickets?jan_sunwai_only=true';
 
-    const card = document.createElement('div');
-    card.className = 'ward-gov-card';
-    card.innerHTML = `
-      <div style="display: flex; justify-content: space-between; align-items: flex-start;">
-        <div>
-          <h3 style="font-size: 1.05rem; color: #60a5fa;">${w.ward_name}</h3>
-          <span style="font-size: 0.75rem; color: var(--text-muted);">${w.ward_id} &bull; Bangalore ULB</span>
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return;
+    const tickets = await res.json();
+
+    if (badgeTotal) badgeTotal.innerText = `${tickets.length} Docketed Cases`;
+
+    tableBody.innerHTML = '';
+    tickets.forEach(t => {
+      const row = document.createElement('tr');
+      row.style.borderBottom = '1px solid rgba(255, 255, 255, 0.05)';
+      const corpName = t.corporator && t.corporator.name ? t.corporator.name : 'Parshad';
+
+      row.innerHTML = `
+        <td style="padding: 10px; font-weight: 700; color: #f87171;">${t.master_ticket_id}</td>
+        <td style="padding: 10px; font-weight: 600;">${t.title}</td>
+        <td style="padding: 10px;">${t.ward_name}<br/><span style="font-size: 0.7rem; color: #94a3b8;">${corpName}</span></td>
+        <td style="padding: 10px;"><span class="badge badge-mission">${(t.national_mission || '').split('/')[0]}</span></td>
+        <td style="padding: 10px; font-weight: bold;">${t.report_count} Citizens</td>
+        <td style="padding: 10px;">
+          ${t.is_sla_breached ? '<span style="color: #ef4444; font-weight: bold;">⚠️ SLA Breached</span>' : `${t.sla_hours_remaining}h rem.`}
+        </td>
+        <td style="padding: 10px;">
+          <button class="btn-primary" style="font-size: 0.72rem; padding: 4px 8px;" onclick="openTicketModal('${t.master_ticket_id}')">Inspect</button>
+        </td>
+      `;
+      tableBody.appendChild(row);
+    });
+
+    // Populate Ward Governance representative cards
+    cardsContainer.innerHTML = '';
+    const uniqueWards = {};
+    currentTickets.forEach(t => {
+      if (!uniqueWards[t.ward_id]) {
+        uniqueWards[t.ward_id] = t;
+      }
+    });
+
+    Object.values(uniqueWards).slice(0, 6).forEach(w => {
+      const corp = w.corporator || {};
+      const mla = w.mla || {};
+      const card = document.createElement('div');
+      card.className = 'ward-gov-card';
+      card.innerHTML = `
+        <div style="font-weight: 800; font-size: 1rem; color: #ffffff; margin-bottom: 4px;">${w.ward_name}</div>
+        <div style="font-size: 0.75rem; color: #38bdf8; margin-bottom: 8px;">Corporation: ${w.city || 'Municipal'} &bull; ${w.ward_id}</div>
+        <div style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 4px;">
+          🏛️ <strong>Parshad:</strong> ${corp.name || 'Elected Ward Councillor'} (${corp.phone || 'N/A'})
         </div>
-        <span class="badge badge-low">Active Council</span>
-      </div>
-
-      <div style="background: #0f172a; padding: 10px; border-radius: 6px; font-size: 0.8rem; display: flex; flex-direction: column; gap: 4px;">
-        <div>🏛️ <strong>Corporator:</strong> ${corp.name} (${corp.designation || 'Parshad'})</div>
-        <div>📞 <strong>Helpline:</strong> <a href="tel:${corp.phone}" style="color: #38bdf8; text-decoration: none;">${corp.phone || 'N/A'}</a></div>
-        <div>🗓️ <strong>Ward Sabha:</strong> ${schedule}</div>
-      </div>
-
-      <div>
-        <div style="display: flex; justify-content: space-between; font-size: 0.75rem; margin-bottom: 4px;">
-          <span>Pre-Monsoon Desilting Progress</span>
-          <strong>${desiltingPct}%</strong>
+        <div style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 8px;">
+          🏛️ <strong>MLA:</strong> ${mla.name || 'Constituency MLA'} (${mla.constituency || 'Assembly'})
         </div>
-        <div class="progress-bar">
-          <div class="progress-fill" style="width: ${desiltingPct}%; background: ${desiltingPct < 60 ? '#ef4444' : '#10b981'};"></div>
+        <div style="font-size: 0.72rem; color: #94a3b8; background: rgba(15, 23, 42, 0.6); padding: 6px; border-radius: 4px;">
+          📅 <strong>Ward Sabha:</strong> ${w.ward_sabha_schedule || '1st Saturday of Month, 10:30 AM'}
         </div>
-      </div>
-    `;
-    container.appendChild(card);
-  });
+      `;
+      cardsContainer.appendChild(card);
+    });
+  } catch (e) {
+    console.warn('Error loading governance data:', e);
+  }
 }
 
-function renderJanSunwaiTable(tickets) {
-  const tbody = document.getElementById('jan-sunwai-table-body');
-  const badgeTotal = document.getElementById('jan-sunwai-badge-total');
-  if (!tbody) return;
-  tbody.innerHTML = '';
+// FAST APPLICATION / GRIEVANCE TRACKER
+async function trackApplication() {
+  const inputEl = document.getElementById('track-id-input');
+  const resultEl = document.getElementById('quick-track-result');
+  if (!inputEl || !resultEl) return;
 
-  if (badgeTotal) badgeTotal.innerText = `${tickets.length} Docketed Cases`;
+  const trackingId = inputEl.value.trim();
+  if (!trackingId) return;
 
-  if (tickets.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7" style="padding: 1.5rem; text-align: center; color: var(--text-muted);">No grievances currently escalated to Jan Sunwai.</td></tr>';
+  resultEl.style.display = 'block';
+  resultEl.innerHTML = '<div style="color: #94a3b8;">Searching municipal database...</div>';
+
+  try {
+    const res = await fetch(`/api/v1/tracking/${encodeURIComponent(trackingId)}`);
+    if (!res.ok) {
+      resultEl.innerHTML = `<div style="color: #f87171;">Tracking ID '${trackingId}' not found. Please verify.</div>`;
+      return;
+    }
+
+    const data = await res.json();
+    resultEl.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
+        <strong style="color: #60a5fa; font-size: 0.95rem;">${data.tracking_id}</strong>
+        <span class="badge ${data.urgency === 'Critical' ? 'badge-critical' : 'badge-low'}">${data.status}</span>
+      </div>
+      <div style="font-weight: 600; color: #ffffff; margin-bottom: 4px;">${data.title}</div>
+      <div style="color: #94a3b8; font-size: 0.75rem; margin-bottom: 6px;">
+        📍 Ward: ${data.ward_name} &bull; Officer: ${data.assigned_engineer}
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #93c5fd; margin-bottom: 8px;">
+        <span>SLA Remaining: <strong>${data.sla_hours_remaining} Hours</strong></span>
+        <span>Citizens Endorsed: <strong>${data.report_count}</strong></span>
+      </div>
+      <button class="btn-primary" style="font-size: 0.72rem; padding: 4px 10px; width: 100%;" onclick="openTrackingModal('${data.tracking_id}')">
+        Open Full Multi-Agent Dossier &rarr;
+      </button>
+    `;
+  } catch (e) {
+    resultEl.innerHTML = `<div style="color: #f87171;">Error tracking application.</div>`;
+  }
+}
+
+function quickTrackDemo(demoId) {
+  const inputEl = document.getElementById('track-id-input');
+  if (inputEl) {
+    inputEl.value = demoId;
+    trackApplication();
+  }
+}
+
+async function openTrackingModal(trackingId) {
+  try {
+    const res = await fetch(`/api/v1/tracking/${encodeURIComponent(trackingId)}`);
+    if (!res.ok) return;
+    const data = await res.json();
+
+    document.getElementById('track-modal-id').innerText = data.tracking_id;
+    const body = document.getElementById('track-modal-body');
+
+    let traceHtml = '';
+    (data.agent_trace || []).forEach((st, idx) => {
+      traceHtml += `
+        <div style="border-left: 2px solid #38bdf8; padding-left: 8px; margin-bottom: 6px; font-size: 0.75rem;">
+          <div style="color: #fef08a; font-weight: bold;">Step ${idx + 1}: ${st.agent_name} [${st.status}]</div>
+          <div style="color: #cbd5e1;">${st.thought_log}</div>
+        </div>
+      `;
+    });
+
+    body.innerHTML = `
+      <div style="background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 6px; margin-bottom: 12px; font-size: 0.82rem;">
+        <div><strong>Title:</strong> ${data.title}</div>
+        <div><strong>Department:</strong> ${data.department}</div>
+        <div><strong>Ward & Zone:</strong> ${data.ward_name} (${data.mcd_zone || ''})</div>
+        <div><strong>Assigned Officer:</strong> ${data.assigned_engineer}</div>
+        <div><strong>Statutory SLA:</strong> ${data.sla_hours_remaining} Hours remaining</div>
+        <div><strong>Jan Sunwai Status:</strong> ${data.jan_sunwai_status || 'NONE'}</div>
+      </div>
+      <h4 style="font-size: 0.88rem; color: #38bdf8; margin-bottom: 6px;">Autonomous 6-Agent Deliberation Trail</h4>
+      <div style="max-height: 220px; overflow-y: auto; background: #070d18; padding: 10px; border-radius: 6px;">
+        ${traceHtml || '<div style="color: #64748b; font-style: italic;">Standard SLA intake processing.</div>'}
+      </div>
+    `;
+
+    document.getElementById('tracking-modal').style.display = 'flex';
+  } catch (e) {
+    alert('Failed to load tracking modal');
+  }
+}
+
+function closeTrackingModal(event) {
+  if (event && event.target !== document.getElementById('tracking-modal')) return;
+  document.getElementById('tracking-modal').style.display = 'none';
+}
+
+// CITIZEN FORM SUBMISSION
+async function handleCitizenSubmit(event) {
+  event.preventDefault();
+  const rawText = document.getElementById('complaint-text').value;
+  const lat = parseFloat(document.getElementById('form-lat').value);
+  const lon = parseFloat(document.getElementById('form-lon').value);
+  const name = document.getElementById('citizen-name').value;
+  const phone = document.getElementById('citizen-phone').value;
+  const imageHint = document.getElementById('form-image-hint').value;
+  const resultEl = document.getElementById('submission-result');
+
+  resultEl.style.display = 'block';
+  resultEl.innerHTML = '<div style="color: #60a5fa;">Submitting and processing with 6 autonomous agents...</div>';
+
+  try {
+    const payload = {
+      raw_text: rawText,
+      lat: lat,
+      lon: lon,
+      citizen_name: name,
+      citizen_phone: phone,
+      channel: 'web_portal',
+      image_category_hint: imageHint || null
+    };
+
+    const res = await fetch('/api/v1/complaints/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) throw new Error('Submission failed');
+    const data = await res.json();
+
+    const isDup = data.is_duplicate;
+    const dupNotice = isDup
+      ? `<div style="color: #f59e0b; margin-top: 4px;">🤝 <strong>Merged into Existing Master Incident:</strong> 300m spatial clustering detected neighborhood duplicate. You are linked as an active endorsement.</div>`
+      : `<div style="color: #10b981; margin-top: 4px;">✨ <strong>New Master Incident Created:</strong> Automatically routed to Ward Junior Engineer with statutory SLA.</div>`;
+
+    resultEl.innerHTML = `
+      <div style="font-weight: bold; font-size: 1rem; color: #ffffff; margin-bottom: 4px;">
+        Grievance Successfully Registered!
+      </div>
+      <div>Tracking ID: <strong style="color: #38bdf8;">${data.complaint_id}</strong></div>
+      <div>Master Incident ID: <strong style="color: #fef08a;">${data.master_ticket_id}</strong></div>
+      <div>Department: <strong>${data.department}</strong> &bull; Urgency: <strong>${data.urgency}</strong></div>
+      <div>Assigned Ward: <strong>${data.ward_extracted}</strong> &bull; Corporator: <strong>${data.corporator_name}</strong></div>
+      <div>Statutory SLA: <strong>${data.citizen_charter_sla_hours} Hours</strong></div>
+      ${dupNotice}
+    `;
+
+    document.getElementById('citizen-form').reset();
+    loadKPIStats();
+    loadMasterTickets();
+  } catch (err) {
+    resultEl.innerHTML = `<div style="color: #ef4444;">Error: ${err.message}</div>`;
+  }
+}
+
+// VERNACULAR VOICE RECORDING
+function toggleVoiceRecording() {
+  const btn = document.getElementById('voice-record-btn');
+  const label = document.getElementById('voice-btn-label');
+  const statusLabel = document.getElementById('voice-status-label');
+  const langSelect = document.getElementById('voice-lang-select');
+
+  if (isRecording) {
+    if (speechRecognizer) speechRecognizer.stop();
+    isRecording = false;
+    btn.style.background = '#2563eb';
+    label.innerText = 'Start Speaking';
+    statusLabel.innerText = 'Recording completed and transcribed';
     return;
   }
 
-  tickets.forEach(t => {
-    const tr = document.createElement('tr');
-    tr.style.borderBottom = '1px solid var(--border)';
-    const corpName = t.corporator && t.corporator.name ? t.corporator.name : 'Ward Officer';
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    statusLabel.innerText = 'Speech recognition not supported in browser. Using simulated transcription.';
+    fillSampleGrievance('hi');
+    return;
+  }
 
-    tr.innerHTML = `
-      <td style="padding: 8px; font-weight: bold; color: #f87171;">${t.master_ticket_id}</td>
-      <td style="padding: 8px; font-weight: 600;">${t.title}</td>
-      <td style="padding: 8px; font-size: 0.78rem;">${t.ward_name}<br><span style="color: #94a3b8;">${corpName}</span></td>
-      <td style="padding: 8px;"><span class="badge badge-mission">${t.national_mission || 'Civic Mission'}</span></td>
-      <td style="padding: 8px; text-align: center;"><span class="badge-count">${t.report_count}</span></td>
-      <td style="padding: 8px; font-weight: bold; color: #fb923c;">${t.sla_hours_remaining}h left</td>
-      <td style="padding: 8px;">
-        <button class="btn-primary" style="font-size: 0.75rem; padding: 4px 8px;" onclick="openTicketModal('${t.master_ticket_id}')">Inspect</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
+  try {
+    speechRecognizer = new SpeechRecognition();
+    speechRecognizer.lang = langSelect.value === 'hinglish' ? 'hi-IN' : langSelect.value;
+    speechRecognizer.interimResults = false;
+
+    speechRecognizer.onstart = () => {
+      isRecording = true;
+      btn.style.background = '#ef4444';
+      label.innerText = 'Listening... Tap to Stop';
+      statusLabel.innerText = 'Listening in ' + langSelect.options[langSelect.selectedIndex].text;
+    };
+
+    speechRecognizer.onresult = (e) => {
+      const transcript = e.results[0][0].transcript;
+      document.getElementById('complaint-text').value = transcript;
+      statusLabel.innerText = `Transcribed: "${transcript}"`;
+    };
+
+    speechRecognizer.onerror = (e) => {
+      statusLabel.innerText = `Microphone notice: ${e.error}. Selected sample loaded.`;
+      isRecording = false;
+      btn.style.background = '#2563eb';
+      label.innerText = 'Start Speaking';
+      fillSampleGrievance('hi');
+    };
+
+    speechRecognizer.onend = () => {
+      isRecording = false;
+      btn.style.background = '#2563eb';
+      label.innerText = 'Start Speaking';
+    };
+
+    speechRecognizer.start();
+  } catch (e) {
+    fillSampleGrievance('hi');
+  }
 }
 
-// 2G Lite Data Mode Toggle & Grid Rendering
-function toggleLiteMode() {
-  document.body.classList.toggle('lite-data-mode');
-  const isLite = document.body.classList.contains('lite-data-mode');
-  localStorage.setItem('civicsense_lite', isLite ? 'true' : 'false');
-  const btn = document.getElementById('btn-lite-toggle');
-  if (btn) btn.innerText = isLite ? "📶 Lite Mode ON" : "📶 2G Lite Data";
-  renderLiteWardGrid(currentTickets);
+function fillSampleGrievance(lang) {
+  const samples = {
+    hi: "सड़क पर बड़ा गड्ढा है, दो-पहिया वाहन गिर रहे हैं, कृपया जल्द मरम्मत कराएं",
+    kn: "ರಸ್ತೆಯಲ್ಲಿ ದೊಡ್ಡ ಗುಂಡಿ ಬಿದ್ದಿದೆ, ವಾಹನ ಸವಾರರಿಗೆ ಅಪಘಾತವಾಗುವ ಸಂಭವವಿದೆ ಬೇಗ ಸರಿಮಾಡಿ",
+    ta: "தெரு விளக்கு எரியவில்லை, இரவு நேரத்தில் மிகவும் இருட்டாக உள்ளது, சரிசெய்யவும்",
+    hg: "Bhaiya road par street light 4 din se band hai, near Sharma general store pura andhera hai",
+    en: "Dangerous sewer water overflowing on main road near gate, terrible smell please clear"
+  };
+  const txt = samples[lang] || samples.en;
+  document.getElementById('complaint-text').value = txt;
+  const statusLabel = document.getElementById('voice-status-label');
+  if (statusLabel) statusLabel.innerText = `Loaded sample: "${txt}"`;
 }
 
+function setLocationCoords(lat, lon) {
+  document.getElementById('form-lat').value = lat;
+  document.getElementById('form-lon').value = lon;
+}
+
+function detectLocation() {
+  const city = (typeof CITIES_DATA !== 'undefined' && CITIES_DATA[currentSelectedCity]) ? CITIES_DATA[currentSelectedCity] : CITIES_DATA['all'];
+  const fallbackLat = (city.pins && city.pins[0]) ? city.pins[0].lat : city.lat;
+  const fallbackLon = (city.pins && city.pins[0]) ? city.pins[0].lon : city.lon;
+
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setLocationCoords(pos.coords.latitude.toFixed(6), pos.coords.longitude.toFixed(6));
+        alert(`Detected GPS: (${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)})`);
+      },
+      () => {
+        setLocationCoords(fallbackLat, fallbackLon);
+        alert(`Simulated GPS location set to ${city.name} Central.`);
+      }
+    );
+  } else {
+    setLocationCoords(fallbackLat, fallbackLon);
+  }
+}
+
+// 2G LITE DATA WARD GRID
 function renderLiteWardGrid(tickets) {
   const container = document.getElementById('lite-wards-container');
   if (!container) return;
   container.innerHTML = '';
 
-  const wardGroups = {};
+  const wardsMap = {};
   tickets.forEach(t => {
-    wardGroups[t.ward_name] = wardGroups[t.ward_name] || [];
-    wardGroups[t.ward_name].push(t);
+    if (!wardsMap[t.ward_name]) {
+      wardsMap[t.ward_name] = { name: t.ward_name, count: 0, critical: 0 };
+    }
+    wardsMap[t.ward_name].count += t.report_count;
+    if (t.urgency === 'Critical') wardsMap[t.ward_name].critical++;
   });
 
-  Object.keys(wardGroups).forEach(wardName => {
-    const items = wardGroups[wardName];
-    const el = document.createElement('div');
-    el.style.background = '#1e293b';
-    el.style.border = '1px solid var(--border)';
-    el.style.borderRadius = '6px';
-    el.style.padding = '10px';
-
-    el.innerHTML = `
-      <div style="font-weight: bold; color: #60a5fa; margin-bottom: 4px;">${wardName}</div>
-      <div style="font-size: 0.75rem; color: #cbd5e1;">Active Master Incidents: <strong>${items.length}</strong></div>
-      <div style="font-size: 0.75rem; color: #f87171;">Critical / High: <strong>${items.filter(i => i.urgency === 'Critical' || i.urgency === 'High').length}</strong></div>
+  Object.values(wardsMap).forEach(w => {
+    const card = document.createElement('div');
+    card.style.background = '#1e293b';
+    card.style.padding = '10px';
+    card.style.borderRadius = '6px';
+    card.style.border = '1px solid var(--border)';
+    card.innerHTML = `
+      <div style="font-weight: bold; color: #ffffff;">${w.name}</div>
+      <div style="font-size: 0.75rem; color: #94a3b8;">Reports: ${w.count} &bull; Critical: ${w.critical}</div>
     `;
-    container.appendChild(el);
+    container.appendChild(card);
   });
 }
 
-// Outdoor Sunlight Readability Mode Toggle
-function toggleSunlightMode() {
-  document.body.classList.toggle('sunlight-mode');
-  const isSunlight = document.body.classList.contains('sunlight-mode');
-  localStorage.setItem('civicsense_sunlight', isSunlight ? 'true' : 'false');
-  updateSunlightButtonText();
-}
-
-function updateSunlightButtonText() {
-  const btn = document.getElementById('btn-sunlight-toggle');
-  if (!btn) return;
-  const isSunlight = document.body.classList.contains('sunlight-mode');
-  btn.innerText = isSunlight ? "🌙 Indoor / Dark Mode" : "☀️ Outdoor Sunlight Mode";
-}
-
-// Vernacular Audio / Speech-to-Text Grievance Simulation
-function toggleVoiceRecording() {
-  const btnLabel = document.getElementById('voice-btn-label');
-  const statusLabel = document.getElementById('voice-status-label');
-  const recordBtn = document.getElementById('voice-record-btn');
-  const langSelect = document.getElementById('voice-lang-select');
-  const chosenLang = langSelect ? langSelect.value : 'hi-IN';
-
-  if (!isRecording) {
-    isRecording = true;
-    recordBtn.classList.add('voice-btn-pulse');
-    recordBtn.style.background = '#dc2626';
-    btnLabel.innerText = "Listening...";
-    statusLabel.innerText = `Recording speech in ${chosenLang} (speak now)...`;
-
-    // Attempt browser Web Speech API if supported
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      try {
-        speechRecognizer = new SpeechRecognition();
-        speechRecognizer.lang = chosenLang;
-        speechRecognizer.continuous = false;
-        speechRecognizer.interimResults = false;
-
-        speechRecognizer.onresult = (event) => {
-          const transcript = event.results[0][0].transcript;
-          document.getElementById('complaint-text').value = transcript;
-          statusLabel.innerText = `Transcribed: "${transcript}"`;
-          stopRecordingUI();
-        };
-
-        speechRecognizer.onerror = () => {
-          simulateVernacularVoice(chosenLang);
-        };
-
-        speechRecognizer.start();
-        return;
-      } catch (e) {
-        // Fall through to simulation
-      }
-    }
-
-    // High fidelity vernacular speech-to-text simulation fallback
-    setTimeout(() => {
-      simulateVernacularVoice(chosenLang);
-    }, 2000);
-  } else {
-    stopRecordingUI();
-  }
-}
-
-function stopRecordingUI() {
-  isRecording = false;
-  const recordBtn = document.getElementById('voice-record-btn');
-  const btnLabel = document.getElementById('voice-btn-label');
-  if (recordBtn) {
-    recordBtn.classList.remove('voice-btn-pulse');
-    recordBtn.style.background = '#2563eb';
-  }
-  if (btnLabel) btnLabel.innerText = "Start Speaking";
-  if (speechRecognizer) {
-    try { speechRecognizer.stop(); } catch(e) {}
-  }
-}
-
-let lastInputSource = 'text';
-let lastSpokenLanguage = 'hi-IN';
-
-function simulateVernacularVoice(lang) {
-  lastInputSource = 'voice';
-  lastSpokenLanguage = lang;
-  const sampleMap = {
-    'hi-IN': "सड़क पर गहरा गड्ढा है, 27th मेन रोड के पास, कभी भी दुर्घटना हो सकती है, वार्ड 3",
-    'kn-IN': "ರಸ್ತೆಯಲ್ಲಿ ದೊಡ್ಡ ಗುಂಡಿ ಬಿದ್ದಿದೆ, ವಾಹನ ಸವಾರರಿಗೆ ಅಪಘಾತವಾಗುವ ಸಂಭವವಿದೆ ಬೇಗ ಸರಿಮಾಡಿ, ವಾರ್ಡ್ 3",
-    'ta-IN': "தெரு விளக்கு 4 நாட்களாக எரியவில்லை, இரவு நேரத்தில் மிகவும் இருட்டாக உள்ளது, வார்டு 1",
-    'hinglish': "Bhaiya road par street light 4 din se band hai, near Sharma General Store, Ward 1",
-    'en-IN': "Dangerous open transformer sparking near school entrance, Ward 1"
-  };
-
-  const text = sampleMap[lang] || sampleMap['hinglish'];
-  document.getElementById('complaint-text').value = text;
-  const statusLabel = document.getElementById('voice-status-label');
-  if (statusLabel) {
-    statusLabel.innerHTML = `✓ Voice transcribed (${lang}): <em>"${text}"</em>`;
-  }
-  stopRecordingUI();
-}
-
-function fillSampleGrievance(langKey) {
-  lastInputSource = 'voice';
-  lastSpokenLanguage = langKey === 'hi' ? 'hi-IN' : (langKey === 'kn' ? 'kn-IN' : (langKey === 'ta' ? 'ta-IN' : (langKey === 'hg' ? 'hinglish' : 'en-IN')));
-  const samples = {
-    hi: "सड़क पर गहरा गड्ढा है, 27th मेन रोड के पास, कभी भी दुर्घटना हो सकती है, वार्ड 3",
-    kn: "ರಸ್ತೆಯಲ್ಲಿ ದೊಡ್ಡ ಗುಂಡಿ ಬಿದ್ದಿದೆ, ವಾಹನ ಸವಾರರಿಗೆ ಅಪಘಾತವಾಗುವ ಸಂಭವವಿದೆ ಬೇಗ ಸರಿಮಾಡಿ, ವಾರ್ಡ್ 3",
-    ta: "தெரு விளக்கு 4 நாட்களாக எரியவில்லை, இரவு நேரத்தில் மிகவும் இருட்டாக உள்ளது, வார்டு 1",
-    hg: "Bhaiya road par street light 4 din se band hai, near Sharma General Store, Ward 1",
-    en: "Sewer pipeline leakage and dirty water overflowing on main road, Ward 2"
-  };
-  const text = samples[langKey] || samples.en;
-  document.getElementById('complaint-text').value = text;
-  const statusLabel = document.getElementById('voice-status-label');
-  if (statusLabel) {
-    statusLabel.innerHTML = `Selected sample (${langKey}): <em>"${text}"</em>`;
-  }
-}
-
-// Citizen Grievance Submission
-async function handleCitizenSubmit(event) {
-  event.preventDefault();
-
-  const text = document.getElementById('complaint-text').value;
-  const lat = parseFloat(document.getElementById('form-lat').value);
-  const lon = parseFloat(document.getElementById('form-lon').value);
-  const imageHint = document.getElementById('form-image-hint').value;
-  const citizenName = document.getElementById('citizen-name').value;
-  const citizenPhone = document.getElementById('citizen-phone').value;
-
-  const resultContainer = document.getElementById('submission-result');
-  resultContainer.style.display = 'block';
-  resultContainer.innerHTML = '<div style="color: #60a5fa;">Submitting to AI Pipeline (Multilingual NLP + Vision Verification + Deduplication)...</div>';
-
-  try {
-    let endpoint = '/api/v1/complaints/submit';
-    let reqBody = {
-      raw_text: text,
-      lat: lat,
-      lon: lon,
-      citizen_name: citizenName,
-      citizen_phone: citizenPhone,
-      image_category_hint: imageHint || null
-    };
-
-    if (lastInputSource === 'voice' && !imageHint) {
-      endpoint = '/api/v1/complaints/voice-note';
-      reqBody = {
-        spoken_language: lastSpokenLanguage || 'hi-IN',
-        audio_transcript: text,
-        lat: lat,
-        lon: lon,
-        citizen_name: citizenName,
-        citizen_phone: citizenPhone
-      };
-    }
-
-    const res = await fetch(endpoint, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(reqBody)
-    });
-
-    if (res.ok) {
-      const data = await res.json();
-      const isDup = data.is_duplicate;
-      const vision = data.image_verification;
-
-      let visionBadge = '';
-      if (vision) {
-        visionBadge = vision.is_authentic
-          ? `<span class="badge badge-low">Vision: ${vision.status_label}</span>`
-          : `<span class="badge badge-critical">Vision: ${vision.status_label}</span>`;
-      }
-
-      const janBadge = data.jan_sunwai_eligible
-        ? `<span class="badge badge-jan-sunwai">⚖️ Eligible for Jan Sunwai Review</span>`
-        : '';
-
-      resultContainer.innerHTML = `
-        <div style="font-weight: bold; color: #34d399; margin-bottom: 6px;">
-          ✓ Grievance Processed Successfully!
-        </div>
-        <div><strong>Assigned Ticket:</strong> ${data.master_ticket_id}</div>
-        <div><strong>Department:</strong> ${data.department} (${data.issue_type})</div>
-        <div><strong>National Mission:</strong> ${data.national_mission || 'Swachh Bharat / AMRUT'}</div>
-        <div><strong>Ward & Corporator:</strong> ${data.ward_extracted} (${data.corporator_name || 'Ward Parshad'})</div>
-        <div><strong>Urgency:</strong> ${data.urgency} | <strong>Language:</strong> ${data.language_detected}</div>
-        <div style="margin-top: 6px; display: flex; gap: 6px; flex-wrap: wrap;">
-          ${isDup
-            ? '<span class="badge badge-high">Duplicate Merged: Linked to existing neighborhood master ticket</span>'
-            : '<span class="badge badge-low">Unique Incident: New Master Ticket Created</span>'
-          }
-          ${visionBadge}
-          ${janBadge}
-        </div>
-      `;
-
-      loadMasterTickets();
-      loadKPIStats();
-      loadWardGovernanceData();
-    } else {
-      resultContainer.innerHTML = '<div style="color: #ef4444;">Failed to submit grievance. Please try again.</div>';
-    }
-  } catch (err) {
-    resultContainer.innerHTML = `<div style="color: #ef4444;">Network error: ${err.message}</div>`;
-  }
-}
-
-function detectLocation() {
-  const coords = [
-    { lat: 28.6514, lon: 77.1907 }, // Karol Bagh
-    { lat: 28.7166, lon: 77.1189 }, // Rohini
-    { lat: 28.6814, lon: 77.2228 }, // Civil Lines
-    { lat: 28.6506, lon: 77.2303 }, // City-SP
-    { lat: 28.5494, lon: 77.2001 }, // South
-    { lat: 28.6415, lon: 77.1209 }, // West
-    { lat: 12.9352, lon: 77.6245 }, // Koramangala
-    { lat: 12.9716, lon: 77.6412 }  // Indiranagar
-  ];
-  const chosen = coords[Math.floor(Math.random() * coords.length)];
-  document.getElementById('form-lat').value = chosen.lat;
-  document.getElementById('form-lon').value = chosen.lon;
-}
-
-function setLocationCoords(lat, lon) {
-  const latEl = document.getElementById('form-lat');
-  const lonEl = document.getElementById('form-lon');
-  if (latEl && lonEl) {
-    latEl.value = lat;
-    lonEl.value = lon;
-  }
-}
-
-// 12 MCD Zones Selector Change
-function onZoneSelectChange(zone) {
-  const zoneDropdown = document.getElementById('mcd-zone-dropdown');
-  if (zoneDropdown && zone !== zoneDropdown.value) {
-    zoneDropdown.value = zone;
-  }
-
-  const zoneFilterSelect = document.getElementById('zone-filter-select');
-  if (zoneFilterSelect) {
-    zoneFilterSelect.value = (zone === 'ALL' ? '' : zone);
-  }
-
-  // Reload tickets filtered by zone
-  loadMasterTickets();
-
-  // Highlight or center map if coordinates exist
-  const zoneCoords = {
-    'City-SP': [28.6506, 77.2303],
-    'Karol Bagh': [28.6514, 77.1907],
-    'Civil Lines': [28.6814, 77.2228],
-    'Keshav Puram': [28.6942, 77.1642],
-    'Rohini': [28.7166, 77.1189],
-    'Narela': [28.8527, 77.0924],
-    'Najafgarh': [28.5921, 77.0460],
-    'West': [28.6415, 77.1209],
-    'South': [28.5494, 77.2001],
-    'Central': [28.5700, 77.2400],
-    'Shahdara South': [28.6300, 77.2770],
-    'Shahdara North': [28.6750, 77.2750]
-  };
-
-  if (zone in zoneCoords && typeof map !== 'undefined' && map) {
-    const [cLat, cLon] = zoneCoords[zone];
-    map.setView([cLat, cLon], 13);
-  }
-}
-
-// Fast Application / Grievance Tracker
-async function trackApplication(customId) {
-  const inputEl = document.getElementById('track-id-input');
-  const trackId = (customId || (inputEl ? inputEl.value.trim() : '')).trim();
-
-  if (!trackId) {
-    alert('Please enter a valid Tracking ID (e.g. CMP-xxxx or MST-xxxx).');
-    return;
-  }
-
-  const resultContainer = document.getElementById('quick-track-result');
-  if (resultContainer) {
-    resultContainer.style.display = 'block';
-    resultContainer.innerHTML = '<span style="color: #60a5fa;">Searching MCD databases & multi-agent records...</span>';
-  }
-
-  try {
-    const res = await fetch(`/api/v1/tracking/${encodeURIComponent(trackId)}`);
-    if (!res.ok) {
-      if (resultContainer) {
-        resultContainer.innerHTML = `<span style="color: #ef4444;">❌ No record found for Tracking ID '${trackId}'. Please verify the ID.</span>`;
-      }
-      return;
-    }
-
-    const data = await res.json();
-
-    if (resultContainer) {
-      resultContainer.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-          <strong style="color: #fef08a;">${data.tracking_id}</strong>
-          <span class="badge ${data.status === 'RESOLVED' ? 'badge-low' : 'badge-high'}">${data.status}</span>
-        </div>
-        <div style="color: #cbd5e1; margin-bottom: 4px;"><strong>${data.title}</strong></div>
-        <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 6px;">
-          📍 ${data.mcd_zone || 'Delhi Zone'} &bull; Ward: ${data.ward_name} &bull; Engineer: ${data.assigned_engineer}
-        </div>
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-          <span style="font-size: 0.72rem; color: #60a5fa;">⏱️ SLA Remaining: <strong>${data.sla_hours_remaining} Hours</strong></span>
-          <button class="btn-primary" style="padding: 3px 8px; font-size: 0.72rem;" onclick="openTrackingModalDirectly('${data.tracking_id}')">View Full Dossier</button>
-        </div>
-      `;
-    }
-
-    openTrackingModalWithData(data);
-  } catch (err) {
-    if (resultContainer) {
-      resultContainer.innerHTML = `<span style="color: #ef4444;">Network error: ${err.message}</span>`;
-    }
-  }
-}
-
-function quickTrackDemo(id) {
-  const inputEl = document.getElementById('track-id-input');
-  if (inputEl) inputEl.value = id;
-  trackApplication(id);
-}
-
-function openTrackingModalWithData(data) {
-  const modal = document.getElementById('tracking-modal');
-  if (!modal) return;
-
-  document.getElementById('track-modal-id').innerText = `${data.tracking_id} (${data.type.toUpperCase()})`;
-
-  const modalBody = document.getElementById('track-modal-body');
-  
-  let agentStepsHtml = '';
-  if (data.agent_trace && data.agent_trace.length > 0) {
-    agentStepsHtml = data.agent_trace.map((step, idx) => `
-      <div style="background: rgba(15, 23, 42, 0.7); border-left: 3px solid #38bdf8; padding: 6px 10px; margin-bottom: 6px; border-radius: 0 4px 4px 0; font-size: 0.76rem;">
-        <div style="display: flex; justify-content: space-between; color: #60a5fa; font-weight: bold;">
-          <span>${step.agent_name}</span>
-          <span style="color: #34d399;">${step.status}</span>
-        </div>
-        <div style="color: #e2e8f0; margin-top: 2px;">${step.thought_log}</div>
-        <div style="color: #94a3b8; font-size: 0.7rem; margin-top: 2px;">Action: ${step.action_taken}</div>
-      </div>
-    `).join('');
-  } else {
-    agentStepsHtml = '<div style="color: var(--text-muted); font-style: italic;">Standard pipeline routing active.</div>';
-  }
-
-  const corpName = data.corporator && data.corporator.name ? data.corporator.name : 'Ward Parshad';
-
-  modalBody.innerHTML = `
-    <div style="background: #0f172a; border: 1px solid var(--border); border-radius: 6px; padding: 1rem; margin-bottom: 1rem; font-size: 0.82rem;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-        <h4 style="margin: 0; color: #ffffff; font-size: 1rem;">${data.title}</h4>
-        <span class="badge ${data.status === 'RESOLVED' ? 'badge-low' : 'badge-high'}">${data.status}</span>
-      </div>
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; color: #cbd5e1;">
-        <div><strong>Department:</strong> ${data.department}</div>
-        <div><strong>Urgency:</strong> ${data.urgency}</div>
-        <div><strong>MCD Zone:</strong> ${data.mcd_zone || 'MCD Zone'}</div>
-        <div><strong>Ward:</strong> ${data.ward_name}</div>
-        <div><strong>Assigned Officer:</strong> ${data.assigned_engineer}</div>
-        <div><strong>Parshad / Corporator:</strong> ${corpName}</div>
-        <div><strong>Jan Sunwai Status:</strong> ${data.jan_sunwai_status}</div>
-        <div><strong>Citizen Charter SLA:</strong> ${data.sla_hours_remaining}h remaining</div>
-      </div>
-    </div>
-
-    <h4 style="margin-bottom: 0.5rem; font-size: 0.9rem; color: #38bdf8;">Autonomous AI Agent Deliberation Trail:</h4>
-    <div style="max-height: 240px; overflow-y: auto; padding-right: 4px;">
-      ${agentStepsHtml}
-    </div>
-
-    <div style="margin-top: 1rem; text-align: right;">
-      <button class="btn-primary" onclick="closeTrackingModal()">Close Dossier</button>
-    </div>
-  `;
-
-  modal.classList.add('active');
-}
-
-async function openTrackingModalDirectly(trackingId) {
-  try {
-    const res = await fetch(`/api/v1/tracking/${encodeURIComponent(trackingId)}`);
-    if (res.ok) {
-      const data = await res.json();
-      openTrackingModalWithData(data);
-    }
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-function closeTrackingModal(e) {
-  if (e && e.target !== e.currentTarget && e.target.tagName !== 'BUTTON') return;
-  const modal = document.getElementById('tracking-modal');
-  if (modal) modal.classList.remove('active');
-}
-
-// Multi-Agent Scenario Simulator
-async function simulateAgentScenario(scenarioName) {
-  switchTab('agent-view');
+// SIMULATE MULTI-AGENT SCENARIO
+async function simulateAgentScenario(scenarioType) {
   const consoleEl = document.getElementById('deliberation-console');
   const statusEl = document.getElementById('sim-status-indicator');
+  if (!consoleEl) return;
 
   if (statusEl) {
-    statusEl.innerText = `Orchestrating scenario '${scenarioName}'...`;
+    statusEl.innerText = 'Deliberating across 6 Autonomous Civic Agents...';
     statusEl.style.color = '#f59e0b';
   }
 
-  if (consoleEl) {
-    consoleEl.innerHTML = `
-      <div style="color: #60a5fa; font-weight: bold; margin-bottom: 8px;">
-        &gt; INITIATING 6-AGENT COGNITIVE ORCHESTRATION PIPELINE [SCENARIO: ${scenarioName.toUpperCase()}]...
-      </div>
-    `;
-  }
+  consoleEl.innerHTML = `
+    <div style="color: #fef08a; font-weight: bold;">
+      &gt; INITIATING MULTI-AGENT CIVIC DELIBERATION PIPELINE FOR [${scenarioType.toUpperCase()}]...
+    </div>
+  `;
 
   try {
     const res = await fetch('/api/v1/agents/simulate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ scenario: scenarioName })
+      body: JSON.stringify({ scenario: scenarioType })
     });
 
-    if (!res.ok) {
-      if (consoleEl) consoleEl.innerHTML += '<div style="color: #ef4444;">Failed to run scenario simulation.</div>';
-      return;
-    }
-
+    if (!res.ok) throw new Error('Simulation failed');
     const data = await res.json();
 
-    if (consoleEl && data.agent_trace) {
-      // Step-by-step animated rendering
-      let delay = 0;
+    if (data.agent_trace && data.agent_trace.length > 0) {
+      let delay = 250;
       data.agent_trace.forEach((step, idx) => {
         setTimeout(() => {
           const stepDiv = document.createElement('div');
-          const isAlert = step.status.includes('FLAGGED') || step.status.includes('ALERT') || step.status.includes('ESCALATED');
-          const isVerified = step.status.includes('VERIFIED') || step.status.includes('SUCCESS');
-          stepDiv.className = `deliberation-step ${isAlert ? 'alert' : (isVerified ? 'verified' : '')}`;
+          stepDiv.className = 'deliberation-step';
+          const isAlert = step.status.includes('FLAGGED') || step.status === 'ALERT' || step.status === 'ESCALATED';
 
           stepDiv.innerHTML = `
             <div class="step-header">
@@ -959,7 +1265,6 @@ async function simulateAgentScenario(scenarioName) {
           consoleEl.appendChild(stepDiv);
           consoleEl.scrollTop = consoleEl.scrollHeight;
 
-          // If last step completed
           if (idx === data.agent_trace.length - 1) {
             const summaryDiv = document.createElement('div');
             summaryDiv.style.marginTop = '10px';
@@ -984,9 +1289,7 @@ async function simulateAgentScenario(scenarioName) {
       });
     }
   } catch (err) {
-    if (consoleEl) {
-      consoleEl.innerHTML += `<div style="color: #ef4444;">Error: ${err.message}</div>`;
-    }
+    consoleEl.innerHTML += `<div style="color: #ef4444;">Error: ${err.message}</div>`;
   }
 }
 
@@ -1002,34 +1305,34 @@ async function loadAgentStatus() {
   }
 }
 
-// Official MCD Services Information Modal / Prompt
+// Official Municipal Online Services Modal / Prompt
 function openServiceInfo(serviceKey) {
   const serviceDetails = {
     birth_death: {
-      title: "Civil Registration System (CRS Delhi) - Birth & Death Registration",
-      body: "Institutional and home births/deaths within the jurisdiction of the 12 MCD zones can be registered online within 21 days with no government fee. Digitize existing paper records, download verifiable QR certificates, or apply for corrections through the Delhi CRS gateway."
+      title: "Civil Registration System (CRS) - Birth & Death Registration",
+      body: "Institutional and home births/deaths within municipal jurisdiction can be registered online within 21 days with zero government fee. Digitize existing paper records, download verifiable QR certificates, or apply for corrections through the digital CRS gateway."
     },
     property_tax: {
-      title: "MCD Online Property Tax (PTR) & Mutation Gateway",
-      body: "Compute property tax under Unit Area Method with geo-tagging validation. Access the 2026 Amnesty Rebate Scheme, view UPIC ownership dossiers, generate tax receipts, or apply for official property mutation."
+      title: "Municipal Online Property Tax (PTR) & Mutation Gateway",
+      body: "Compute property tax under Self-Assessment System (SAS) with geo-tagging validation. Access the 2026 Amnesty Rebate Scheme, view UPIC ownership dossiers, generate digital receipts, or track property mutation."
     },
     trade_license: {
-      title: "MCD Single Window Factory & Trade Licensing",
-      body: "Issue and auto-renew General Trade, Health, Factory, and Veterinary trade licenses under the Ease of Doing Business framework with statutory e-SLA turnaround."
+      title: "Single Window Factory & Trade Licensing Gateway",
+      body: "Instant issuance and auto-renewal of General Trade, Health, Factory, and Veterinary trade operating permits under the Ease of Doing Business framework with statutory e-SLA turnaround."
     },
     building_plan: {
-      title: "Online Building Plan Sanction (OBPS Delhi)",
-      body: "Submit architectural drawings, obtain structural stability scrutiny, and track sanction orders online with zero physical contact."
+      title: "Online Building Plan Sanction (OBPS)",
+      body: "Submit architectural drawings, obtain automated structural stability scrutiny, and track sanction orders online with zero physical contact."
     },
     community_hall: {
-      title: "MCD Barat Ghar & Community Hall Online Booking",
-      body: "Reserve air-conditioned Barat Ghars, community centers, and municipal parks across all 12 zones with real-time slot availability."
+      title: "Community Hall & Park Online Booking",
+      body: "Reserve air-conditioned community centers, Barat Ghars, and municipal parks across all zones with transparent digital tariff payment."
     }
   };
 
   const s = serviceDetails[serviceKey];
   if (s) {
-    alert(`${s.title}\n\n${s.body}\n\n(Official link enabled for citizens of NCT of Delhi)`);
+    alert(`${s.title}\n\n${s.body}\n\n(Official link enabled for participating urban municipal corporations)`);
   }
 }
 
@@ -1049,4 +1352,14 @@ function toggleHighContrast() {
   document.body.classList.toggle('sunlight-mode');
   const isHighContrast = document.body.classList.contains('sunlight-mode');
   localStorage.setItem('civicsense_sunlight', isHighContrast ? 'true' : 'false');
+}
+
+function toggleSunlightMode() {
+  toggleHighContrast();
+}
+
+function toggleLiteMode() {
+  document.body.classList.toggle('lite-data-mode');
+  const isLite = document.body.classList.contains('lite-data-mode');
+  localStorage.setItem('civicsense_lite', isLite ? 'true' : 'false');
 }

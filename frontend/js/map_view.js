@@ -23,6 +23,11 @@ function initMap() {
   radiusLayer = L.layerGroup().addTo(map);
 }
 
+function flyToCity(lat, lon, zoom = 12) {
+  if (!map) initMap();
+  map.flyTo([lat, lon], zoom, { duration: 1.2 });
+}
+
 function renderMapIncidents(masterTickets) {
   if (!map) initMap();
   markersLayer.clearLayers();

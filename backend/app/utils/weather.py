@@ -13,7 +13,7 @@ async def fetch_open_meteo_forecast(lat: float, lon: float) -> Dict[str, Any]:
     Fetch precipitation and wind forecast for next 48 hours from Open-Meteo free API.
     Provides in-memory caching and graceful fallback to realistic simulated data.
     """
-    cache_key = f"{round(lat, 2)}_{round(lon, 2)}"
+    cache_key = f"{round(lat, 1)}_{round(lon, 1)}"
     now = time.time()
     if cache_key in _WEATHER_CACHE:
         entry = _WEATHER_CACHE[cache_key]
@@ -22,15 +22,15 @@ async def fetch_open_meteo_forecast(lat: float, lon: float) -> Dict[str, Any]:
 
     url = "https://api.open-meteo.com/v1/forecast"
     params = {
-        "latitude": lat,
-        "longitude": lon,
+        "latitude": round(lat, 2),
+        "longitude": round(lon, 2),
         "hourly": "precipitation,rain,wind_speed_10m",
         "timezone": "auto",
         "forecast_days": 2
     }
     
     try:
-        async with httpx.AsyncClient(timeout=4.0) as client:
+        async with httpx.AsyncClient(timeout=2.0) as client:
             response = await client.get(url, params=params)
             if response.status_code == 200:
                 data = response.json()

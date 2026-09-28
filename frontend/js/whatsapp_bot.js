@@ -23,6 +23,13 @@ async function sendWhatsAppMessage(overrideText = null) {
   chatBody.appendChild(typingEl);
   chatBody.scrollTop = chatBody.scrollHeight;
 
+  // Determine dynamic city coordinates
+  const cityObj = (typeof CITIES_DATA !== 'undefined' && typeof currentSelectedCity !== 'undefined' && CITIES_DATA[currentSelectedCity])
+    ? CITIES_DATA[currentSelectedCity]
+    : (typeof CITIES_DATA !== 'undefined' ? CITIES_DATA['delhi'] || CITIES_DATA['all'] : null);
+  const waLat = (cityObj && cityObj.pins && cityObj.pins.length > 0) ? cityObj.pins[0].lat : (cityObj ? cityObj.lat : 28.6139);
+  const waLon = (cityObj && cityObj.pins && cityObj.pins.length > 0) ? cityObj.pins[0].lon : (cityObj ? cityObj.lon : 77.2090);
+
   try {
     const response = await fetch('/api/v1/webhook/whatsapp', {
       method: 'POST',
@@ -30,8 +37,8 @@ async function sendWhatsAppMessage(overrideText = null) {
       body: JSON.stringify({
         From: 'whatsapp:+919876543210',
         Body: text,
-        Latitude: 12.9352,
-        Longitude: 77.6245,
+        Latitude: waLat,
+        Longitude: waLon,
         LanguagePref: typeof currentLang !== 'undefined' ? (currentLang === 'hi' ? 'Hindi (Devanagari)' : (currentLang === 'kn' ? 'Kannada' : (currentLang === 'ta' ? 'Tamil' : null))) : null
       })
     });
@@ -106,14 +113,20 @@ function sendWhatsAppVoice() {
     chatBody.appendChild(typingEl);
     chatBody.scrollTop = chatBody.scrollHeight;
 
+    const cityObj = (typeof CITIES_DATA !== 'undefined' && typeof currentSelectedCity !== 'undefined' && CITIES_DATA[currentSelectedCity])
+      ? CITIES_DATA[currentSelectedCity]
+      : (typeof CITIES_DATA !== 'undefined' ? CITIES_DATA['delhi'] || CITIES_DATA['all'] : null);
+    const waLat = (cityObj && cityObj.pins && cityObj.pins.length > 0) ? cityObj.pins[0].lat : (cityObj ? cityObj.lat : 28.6139);
+    const waLon = (cityObj && cityObj.pins && cityObj.pins.length > 0) ? cityObj.pins[0].lon : (cityObj ? cityObj.lon : 77.2090);
+
     fetch('/api/v1/webhook/whatsapp', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         From: 'whatsapp:+919876543210',
         Body: cleanText,
-        Latitude: 12.9352,
-        Longitude: 77.6245,
+        Latitude: waLat,
+        Longitude: waLon,
         LanguagePref: langPref
       })
     }).then(res => res.json()).then(data => {

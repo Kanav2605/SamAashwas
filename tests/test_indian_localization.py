@@ -218,3 +218,60 @@ def test_dynamic_sla_breach_calculation():
     assert d["sla_hours_remaining"] == 0
     assert d["jan_sunwai_status"] == "ESCALATED"
 
+def test_cities_and_transformations_api():
+    # 1. Test cities list
+    res_cities = client.get("/api/v1/cities")
+    assert res_cities.status_code == 200
+    cities = res_cities.json()
+    assert len(cities) >= 8
+    city_ids = [c["id"] for c in cities]
+    for expected_city in ["bengaluru", "delhi", "mumbai", "pune", "chennai", "hyderabad", "lucknow", "kolkata"]:
+        assert expected_city in city_ids
+
+    # 2. Test specific city lookup
+    res_delhi = client.get("/api/v1/cities/delhi")
+    assert res_delhi.status_code == 200
+    assert res_delhi.json()["corporation"] == "MCD"
+
+    # 3. Test before & after transformations gallery
+    res_tr = client.get("/api/v1/transformations")
+    assert res_tr.status_code == 200
+    transformations = res_tr.json()
+    assert len(transformations) > 0
+    assert "before_desc" in transformations[0]
+    assert "after_desc" in transformations[0]
+    assert "sla_turnaround_hours" in transformations[0]
+
+    # 4. Test Swachh Nagrik rewards
+    res_rew = client.get("/api/v1/rewards")
+    assert res_rew.status_code == 200
+    rew = res_rew.json()
+    assert "badges" in rew
+    assert "perks" in rew
+    assert len(rew["badges"]) >= 4
+
+def test_pan_india_multi_city_routing_and_filtering():
+    from backend.app.db.seed_data import seed_database_and_export
+    seed_database_and_export()
+
+    # Verify seeded master tickets across multiple Indian cities
+    for city_name in ["Delhi", "Mumbai", "Bengaluru", "Pune", "Chennai", "Hyderabad", "Lucknow", "Kolkata"]:
+        res = client.get(f"/api/v1/master-tickets?city={city_name}")
+        assert res.status_code == 200
+        tickets = res.json()
+        assert len(tickets) > 0, f"Expected seeded tickets for {city_name}"
+        # Verify city or corporation tag
+        assert any(
+            city_name.lower() in (t.get("city") or "").lower() or
+            city_name.lower() in (t.get("ward_name") or "").lower()
+            for t in tickets
+        )
+
+    # Verify city-filtered analytics stats
+    res_stats_delhi = client.get("/api/v1/analytics/stats?city=Delhi")
+    assert res_stats_delhi.status_code == 200
+    delhi_stats = res_stats_delhi.json()
+    assert delhi_stats["total_complaints"] > 0
+    assert delhi_stats["total_master_tickets"] > 0
+
+

@@ -29,6 +29,9 @@ class ComplaintRecord:
         mla_name: Optional[str] = None,
         audio_transcript: Optional[str] = None,
         mcd_zone: Optional[str] = None,
+        city: Optional[str] = None,
+        corporation: Optional[str] = None,
+        zone: Optional[str] = None,
         agent_trace: Optional[List[Dict[str, Any]]] = None
     ):
         self.complaint_id = complaint_id or f"CMP-{uuid.uuid4().hex[:8].upper()}"
@@ -54,7 +57,10 @@ class ComplaintRecord:
         self.corporator_name = corporator_name or "Ward Councillor"
         self.mla_name = mla_name or "Constituency MLA"
         self.audio_transcript = audio_transcript
-        self.mcd_zone = mcd_zone or "Karol Bagh Zone"
+        self.mcd_zone = mcd_zone or "Central Zone"
+        self.city = city or "Pan-India"
+        self.corporation = corporation or "Municipal Corporation"
+        self.zone = zone or self.mcd_zone
         self.agent_trace = agent_trace or []
 
     def to_dict(self) -> Dict[str, Any]:
@@ -83,6 +89,9 @@ class ComplaintRecord:
             "mla_name": self.mla_name,
             "audio_transcript": self.audio_transcript,
             "mcd_zone": self.mcd_zone,
+            "city": self.city,
+            "corporation": self.corporation,
+            "zone": self.zone,
             "agent_trace": self.agent_trace
         }
 
@@ -110,6 +119,9 @@ class MasterTicketRecord:
         ward_sabha_schedule: Optional[str] = None,
         desilting_readiness_pct: Optional[int] = None,
         mcd_zone: Optional[str] = None,
+        city: Optional[str] = None,
+        corporation: Optional[str] = None,
+        zone: Optional[str] = None,
         agent_trace: Optional[List[Dict[str, Any]]] = None,
         report_count: Optional[int] = None
     ):
@@ -139,6 +151,9 @@ class MasterTicketRecord:
         self.ward_sabha_schedule = ward_sabha_schedule or "1st Saturday of Month, 10:30 AM"
         self.desilting_readiness_pct = desilting_readiness_pct or 75
         self.mcd_zone = mcd_zone or "Karol Bagh Zone"
+        self.city = city or "Pan-India"
+        self.corporation = corporation or "Municipal Corporation"
+        self.zone = zone or self.mcd_zone
         self.agent_trace = agent_trace or []
 
     @property
@@ -242,5 +257,8 @@ class MasterTicketRecord:
             "ward_sabha_schedule": self.ward_sabha_schedule,
             "desilting_readiness_pct": self.desilting_readiness_pct,
             "mcd_zone": self.mcd_zone,
+            "city": self.city,
+            "corporation": self.corporation,
+            "zone": self.zone,
             "agent_trace": self.agent_trace
         }

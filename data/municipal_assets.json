@@ -22,7 +22,10 @@
       "ward_sabha_schedule": "Every 1st Saturday, 10:30 AM @ Ward Community Hall",
       "pre_monsoon_desilting_pct": 86,
       "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
-      "primary_mission": "Smart Cities & Urban Drainage"
+      "primary_mission": "Smart Cities & Urban Drainage",
+      "corporation": "BBMP",
+      "zone": "Bengaluru East / South",
+      "mcd_zone": "Indiranagar Central"
     },
     {
       "ward_id": "WARD-02",
@@ -46,7 +49,10 @@
       "ward_sabha_schedule": "Every 2nd Saturday, 11:00 AM @ Koramangala Club Hall",
       "pre_monsoon_desilting_pct": 62,
       "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
-      "primary_mission": "AMRUT 2.0 & Jal Jeevan Mission"
+      "primary_mission": "AMRUT 2.0 & Jal Jeevan Mission",
+      "corporation": "BBMP",
+      "zone": "Bengaluru East / South",
+      "mcd_zone": "Koramangala 4th Block"
     },
     {
       "ward_id": "WARD-03",
@@ -70,7 +76,10 @@
       "ward_sabha_schedule": "Every 1st Sunday, 10:00 AM @ BDA Complex Sector 7",
       "pre_monsoon_desilting_pct": 71,
       "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
-      "primary_mission": "State PWD & Municipal Road Safety Program"
+      "primary_mission": "State PWD & Municipal Road Safety Program",
+      "corporation": "BBMP",
+      "zone": "Bengaluru East / South",
+      "mcd_zone": "HSR Layout Sector 7"
     },
     {
       "ward_id": "WARD-04",
@@ -94,7 +103,10 @@
       "ward_sabha_schedule": "Every 3rd Saturday, 10:00 AM @ Seva Sadan Hall",
       "pre_monsoon_desilting_pct": 92,
       "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
-      "primary_mission": "Swachh Bharat Mission (SBM-Urban 2.0)"
+      "primary_mission": "Swachh Bharat Mission (SBM-Urban 2.0)",
+      "corporation": "BBMP",
+      "zone": "Bengaluru East / South",
+      "mcd_zone": "Malleshwaram 8th Cross"
     },
     {
       "ward_id": "WARD-05",
@@ -118,7 +130,10 @@
       "ward_sabha_schedule": "Every 2nd Sunday, 11:00 AM @ Bellandur Panchayat Bhavan",
       "pre_monsoon_desilting_pct": 49,
       "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
-      "primary_mission": "AMRUT 2.0 Lake Rejuvenation & Stormwater Drain"
+      "primary_mission": "AMRUT 2.0 Lake Rejuvenation & Stormwater Drain",
+      "corporation": "BBMP",
+      "zone": "Bengaluru East / South",
+      "mcd_zone": "Bellandur Outer Ring"
     },
     {
       "ward_id": "MCD-CSP-72",
@@ -143,7 +158,9 @@
       "ward_sabha_schedule": "Every 1st Friday, 11:00 AM @ Town Hall Zonal Office",
       "pre_monsoon_desilting_pct": 88,
       "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
-      "primary_mission": "Heritage City Development & SBM-Urban"
+      "primary_mission": "Heritage City Development & SBM-Urban",
+      "corporation": "MCD",
+      "zone": "City-SP"
     },
     {
       "ward_id": "MCD-KB-83",
@@ -168,7 +185,9 @@
       "ward_sabha_schedule": "Every 2nd Saturday, 10:30 AM @ Pusa Road Zonal Office",
       "pre_monsoon_desilting_pct": 82,
       "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
-      "primary_mission": "AMRUT 2.0 & Urban Water Drainage"
+      "primary_mission": "AMRUT 2.0 & Urban Water Drainage",
+      "corporation": "MCD",
+      "zone": "Karol Bagh"
     },
     {
       "ward_id": "MCD-CL-15",
@@ -193,7 +212,9 @@
       "ward_sabha_schedule": "Every 1st Saturday, 10:30 AM @ Civil Lines DC Office",
       "pre_monsoon_desilting_pct": 64,
       "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
-      "primary_mission": "Yamuna Catchment Flood Mitigation"
+      "primary_mission": "Yamuna Catchment Flood Mitigation",
+      "corporation": "MCD",
+      "zone": "Civil Lines"
     },
     {
       "ward_id": "MCD-KP-61",
@@ -218,7 +239,9 @@
       "ward_sabha_schedule": "Every 3rd Saturday, 11:00 AM @ Keshav Puram Community Hall",
       "pre_monsoon_desilting_pct": 85,
       "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
-      "primary_mission": "Smart Cities & Model Solid Waste Ward"
+      "primary_mission": "Smart Cities & Model Solid Waste Ward",
+      "corporation": "MCD",
+      "zone": "Keshav Puram"
     },
     {
       "ward_id": "MCD-ROH-54",
@@ -243,7 +266,9 @@
       "ward_sabha_schedule": "Every 2nd Sunday, 10:00 AM @ Rohini Zonal Building",
       "pre_monsoon_desilting_pct": 91,
       "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
-      "primary_mission": "Swachh Bharat Mission (SBM-Urban 2.0)"
+      "primary_mission": "Swachh Bharat Mission (SBM-Urban 2.0)",
+      "corporation": "MCD",
+      "zone": "Rohini"
     },
     {
       "ward_id": "MCD-NAR-01",
@@ -268,7 +293,9 @@
       "ward_sabha_schedule": "Every 1st Sunday, 11:30 AM @ Narela Mandi Office",
       "pre_monsoon_desilting_pct": 58,
       "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
-      "primary_mission": "Rural-Urban Transition Drainage"
+      "primary_mission": "Rural-Urban Transition Drainage",
+      "corporation": "MCD",
+      "zone": "Narela"
     },
     {
       "ward_id": "MCD-NAJ-128",
@@ -276,7 +303,7 @@
       "city": "Delhi",
       "mcd_zone": "Najafgarh",
       "center_lat": 28.5921,
-      "center_lon": 77.0460,
+      "center_lon": 77.046,
       "population": 140000,
       "elevation_m": 217,
       "low_lying_zone": false,
@@ -293,7 +320,9 @@
       "ward_sabha_schedule": "Every 3rd Sunday, 10:30 AM @ Najafgarh Zonal Complex",
       "pre_monsoon_desilting_pct": 79,
       "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
-      "primary_mission": "Sub-City Stormwater Trunk Infrastructure"
+      "primary_mission": "Sub-City Stormwater Trunk Infrastructure",
+      "corporation": "MCD",
+      "zone": "Najafgarh"
     },
     {
       "ward_id": "MCD-WST-105",
@@ -318,7 +347,9 @@
       "ward_sabha_schedule": "Every 2nd Saturday, 11:00 AM @ Shivaji Enclave Hall",
       "pre_monsoon_desilting_pct": 84,
       "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
-      "primary_mission": "Road Safety & Smart Streetlighting"
+      "primary_mission": "Road Safety & Smart Streetlighting",
+      "corporation": "MCD",
+      "zone": "West"
     },
     {
       "ward_id": "MCD-STH-142",
@@ -343,15 +374,17 @@
       "ward_sabha_schedule": "Every 1st Saturday, 10:00 AM @ Green Park Zonal Office",
       "pre_monsoon_desilting_pct": 89,
       "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
-      "primary_mission": "Swachh Bharat & Green Heritage Parks"
+      "primary_mission": "Swachh Bharat & Green Heritage Parks",
+      "corporation": "MCD",
+      "zone": "South"
     },
     {
       "ward_id": "MCD-CNT-76",
       "ward_name": "Lajpat Nagar - Daryaganj",
       "city": "Delhi",
       "mcd_zone": "Central",
-      "center_lat": 28.5700,
-      "center_lon": 77.2400,
+      "center_lat": 28.57,
+      "center_lon": 77.24,
       "population": 128000,
       "elevation_m": 212,
       "low_lying_zone": true,
@@ -368,15 +401,17 @@
       "ward_sabha_schedule": "Every 3rd Saturday, 10:30 AM @ Shiv Mandir Marg Office",
       "pre_monsoon_desilting_pct": 55,
       "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
-      "primary_mission": "Barapullah Drain Dewatering & Desilting"
+      "primary_mission": "Barapullah Drain Dewatering & Desilting",
+      "corporation": "MCD",
+      "zone": "Central"
     },
     {
       "ward_id": "MCD-SDS-204",
       "ward_name": "Laxmi Nagar - Mayur Vihar",
       "city": "Delhi",
       "mcd_zone": "Shahdara South",
-      "center_lat": 28.6300,
-      "center_lon": 77.2770,
+      "center_lat": 28.63,
+      "center_lon": 77.277,
       "population": 145000,
       "elevation_m": 208,
       "low_lying_zone": true,
@@ -393,15 +428,17 @@
       "ward_sabha_schedule": "Every 4th Saturday, 11:00 AM @ Karkardooma Zonal Building",
       "pre_monsoon_desilting_pct": 60,
       "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
-      "primary_mission": "Trans-Yamuna Pre-Monsoon Drainage"
+      "primary_mission": "Trans-Yamuna Pre-Monsoon Drainage",
+      "corporation": "MCD",
+      "zone": "Shahdara South"
     },
     {
       "ward_id": "MCD-SDN-221",
       "ward_name": "Seelampur - Yamuna Vihar",
       "city": "Delhi",
       "mcd_zone": "Shahdara North",
-      "center_lat": 28.6750,
-      "center_lon": 77.2750,
+      "center_lat": 28.675,
+      "center_lon": 77.275,
       "population": 150000,
       "elevation_m": 206,
       "low_lying_zone": true,
@@ -418,7 +455,819 @@
       "ward_sabha_schedule": "Every 2nd Sunday, 11:00 AM @ Welcome Metro Zonal Hall",
       "pre_monsoon_desilting_pct": 52,
       "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
-      "primary_mission": "Dense Settlement Sanitation & Vector Control"
+      "primary_mission": "Dense Settlement Sanitation & Vector Control",
+      "corporation": "MCD",
+      "zone": "Shahdara North"
+    },
+    {
+      "ward_id": "BMC-HW-96",
+      "ward_name": "Bandra West - Hill Road (H/West Ward)",
+      "city": "Mumbai",
+      "corporation": "BMC",
+      "zone": "Zone 3 (Western Suburbs)",
+      "mcd_zone": "Bandra West Zone",
+      "center_lat": 19.0596,
+      "center_lon": 72.8295,
+      "population": 135000,
+      "elevation_m": 12,
+      "low_lying_zone": false,
+      "drainage_coverage_pct": 84,
+      "corporator": {
+        "name": "Shri Asif Zakaria",
+        "designation": "Elected Corporator (Nagar Sewak)",
+        "phone": "+91-98200-34501"
+      },
+      "mla": {
+        "name": "Shri Ashish Shelar",
+        "constituency": "Vandre West Assembly"
+      },
+      "ward_sabha_schedule": "Every 1st Saturday, 11:00 AM @ BMC H/West Ward Office, Bandra",
+      "pre_monsoon_desilting_pct": 89,
+      "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
+      "primary_mission": "Smart Coastal Cities & Urban Resilience"
+    },
+    {
+      "ward_id": "BMC-KE-112",
+      "ward_name": "Andheri East - Chakala (K/East Ward)",
+      "city": "Mumbai",
+      "corporation": "BMC",
+      "zone": "Zone 4 (Western Suburbs)",
+      "mcd_zone": "Andheri East Zone",
+      "center_lat": 19.1136,
+      "center_lon": 72.8697,
+      "population": 165000,
+      "elevation_m": 18,
+      "low_lying_zone": true,
+      "drainage_coverage_pct": 64,
+      "corporator": {
+        "name": "Smt. Rutuja Latke",
+        "designation": "Elected Corporator (Nagar Sewak)",
+        "phone": "+91-98200-34502"
+      },
+      "mla": {
+        "name": "Smt. Rutuja Latke",
+        "constituency": "Andheri East Assembly"
+      },
+      "ward_sabha_schedule": "Every 2nd Saturday, 10:30 AM @ K/East Ward Office, Gundavali",
+      "pre_monsoon_desilting_pct": 72,
+      "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
+      "primary_mission": "AMRUT 2.0 & Urban Stormwater Management"
+    },
+    {
+      "ward_id": "BMC-GN-182",
+      "ward_name": "Dadar West - Shivaji Park (G/North Ward)",
+      "city": "Mumbai",
+      "corporation": "BMC",
+      "zone": "Zone 2 (Island City)",
+      "mcd_zone": "Dadar West Zone",
+      "center_lat": 19.0178,
+      "center_lon": 72.8478,
+      "population": 120000,
+      "elevation_m": 8,
+      "low_lying_zone": true,
+      "drainage_coverage_pct": 78,
+      "corporator": {
+        "name": "Shri Sandeep Deshpande",
+        "designation": "Elected Corporator (Nagar Sewak)",
+        "phone": "+91-98200-34503"
+      },
+      "mla": {
+        "name": "Shri Sada Sarvankar",
+        "constituency": "Mahim Assembly"
+      },
+      "ward_sabha_schedule": "Every 1st Sunday, 10:00 AM @ G/North Ward Office, Dadar",
+      "pre_monsoon_desilting_pct": 85,
+      "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
+      "primary_mission": "Heritage City Urban Drainage & Swachh Bharat"
+    },
+    {
+      "ward_id": "BMC-A-01",
+      "ward_name": "Colaba - Fort - Nariman Point (A Ward)",
+      "city": "Mumbai",
+      "corporation": "BMC",
+      "zone": "Zone 1 (Island City)",
+      "mcd_zone": "Colaba Zone",
+      "center_lat": 18.9067,
+      "center_lon": 72.8147,
+      "population": 95000,
+      "elevation_m": 10,
+      "low_lying_zone": false,
+      "drainage_coverage_pct": 92,
+      "corporator": {
+        "name": "Shri Makarand Narwekar",
+        "designation": "Elected Corporator (Nagar Sewak)",
+        "phone": "+91-98200-34504"
+      },
+      "mla": {
+        "name": "Shri Rahul Narwekar",
+        "constituency": "Colaba Assembly"
+      },
+      "ward_sabha_schedule": "Every 3rd Saturday, 11:00 AM @ A Ward Office, Fort",
+      "pre_monsoon_desilting_pct": 94,
+      "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
+      "primary_mission": "Swachh Bharat Mission (SBM-Urban 2.0)"
+    },
+    {
+      "ward_id": "BMC-RC-08",
+      "ward_name": "Borivali West - Shimpoli (R/Central Ward)",
+      "city": "Mumbai",
+      "corporation": "BMC",
+      "zone": "Zone 7 (Northern Suburbs)",
+      "mcd_zone": "Borivali West Zone",
+      "center_lat": 19.2307,
+      "center_lon": 72.8567,
+      "population": 140000,
+      "elevation_m": 14,
+      "low_lying_zone": false,
+      "drainage_coverage_pct": 80,
+      "corporator": {
+        "name": "Smt. Bina Doshi",
+        "designation": "Elected Corporator (Nagar Sewak)",
+        "phone": "+91-98200-34505"
+      },
+      "mla": {
+        "name": "Shri Sunil Rane",
+        "constituency": "Borivali Assembly"
+      },
+      "ward_sabha_schedule": "Every 2nd Sunday, 11:00 AM @ R/Central Ward Office, Borivali",
+      "pre_monsoon_desilting_pct": 81,
+      "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
+      "primary_mission": "State PWD & Municipal Road Safety Program"
+    },
+    {
+      "ward_id": "PMC-07",
+      "ward_name": "Shivajinagar - FC Road - Model Colony",
+      "city": "Pune",
+      "corporation": "PMC",
+      "zone": "Zone 1 (Central Pune)",
+      "mcd_zone": "Shivajinagar Zone",
+      "center_lat": 18.5314,
+      "center_lon": 73.8446,
+      "population": 88000,
+      "elevation_m": 560,
+      "low_lying_zone": false,
+      "drainage_coverage_pct": 88,
+      "corporator": {
+        "name": "Smt. Nilima Khade",
+        "designation": "Elected Corporator (Nagar Sewak)",
+        "phone": "+91-98500-11201"
+      },
+      "mla": {
+        "name": "Shri Siddharth Shirole",
+        "constituency": "Shivajinagar Assembly"
+      },
+      "ward_sabha_schedule": "Every 1st Saturday, 10:30 AM @ Ghole Road Ward Office",
+      "pre_monsoon_desilting_pct": 86,
+      "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
+      "primary_mission": "Smart Cities Mission & Urban Mobility"
+    },
+    {
+      "ward_id": "PMC-12",
+      "ward_name": "Kothrud - Paud Road - Vanaz",
+      "city": "Pune",
+      "corporation": "PMC",
+      "zone": "Zone 2 (West Pune)",
+      "mcd_zone": "Kothrud Zone",
+      "center_lat": 18.5074,
+      "center_lon": 73.8077,
+      "population": 115000,
+      "elevation_m": 575,
+      "low_lying_zone": false,
+      "drainage_coverage_pct": 85,
+      "corporator": {
+        "name": "Shri Amol Balwadkar",
+        "designation": "Elected Corporator (Nagar Sewak)",
+        "phone": "+91-98500-11202"
+      },
+      "mla": {
+        "name": "Shri Chandrakant Patil",
+        "constituency": "Kothrud Assembly"
+      },
+      "ward_sabha_schedule": "Every 2nd Saturday, 11:00 AM @ Kothrud Ward Office",
+      "pre_monsoon_desilting_pct": 83,
+      "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
+      "primary_mission": "Swachh Bharat & Green Infrastructure"
+    },
+    {
+      "ward_id": "PMC-04",
+      "ward_name": "Viman Nagar - Kalyani Nagar - Airport Road",
+      "city": "Pune",
+      "corporation": "PMC",
+      "zone": "Zone 3 (East Pune)",
+      "mcd_zone": "Viman Nagar Zone",
+      "center_lat": 18.5679,
+      "center_lon": 73.9143,
+      "population": 95000,
+      "elevation_m": 570,
+      "low_lying_zone": false,
+      "drainage_coverage_pct": 82,
+      "corporator": {
+        "name": "Shri Yogesh Mulik",
+        "designation": "Elected Corporator (Nagar Sewak)",
+        "phone": "+91-98500-11203"
+      },
+      "mla": {
+        "name": "Shri Sunil Tingre",
+        "constituency": "Vadgaon Sheri Assembly"
+      },
+      "ward_sabha_schedule": "Every 3rd Saturday, 10:00 AM @ Nagar Road Ward Office",
+      "pre_monsoon_desilting_pct": 79,
+      "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
+      "primary_mission": "AMRUT 2.0 & Urban Water Drainage"
+    },
+    {
+      "ward_id": "PMC-21",
+      "ward_name": "Hadapsar - Magarpatta - Malwadi",
+      "city": "Pune",
+      "corporation": "PMC",
+      "zone": "Zone 4 (South-East Pune)",
+      "mcd_zone": "Hadapsar Zone",
+      "center_lat": 18.5089,
+      "center_lon": 73.9259,
+      "population": 130000,
+      "elevation_m": 555,
+      "low_lying_zone": true,
+      "drainage_coverage_pct": 68,
+      "corporator": {
+        "name": "Shri Chetan Tupe",
+        "designation": "Elected Corporator (Nagar Sewak)",
+        "phone": "+91-98500-11204"
+      },
+      "mla": {
+        "name": "Shri Chetan Tupe",
+        "constituency": "Hadapsar Assembly"
+      },
+      "ward_sabha_schedule": "Every 1st Sunday, 10:30 AM @ Hadapsar Ward Office",
+      "pre_monsoon_desilting_pct": 71,
+      "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
+      "primary_mission": "Mutha River Catchment Flood Mitigation"
+    },
+    {
+      "ward_id": "PMC-09",
+      "ward_name": "Baner - Balewadi High Street",
+      "city": "Pune",
+      "corporation": "PMC",
+      "zone": "Zone 5 (North-West Pune)",
+      "mcd_zone": "Baner Zone",
+      "center_lat": 18.559,
+      "center_lon": 73.7868,
+      "population": 78000,
+      "elevation_m": 580,
+      "low_lying_zone": false,
+      "drainage_coverage_pct": 89,
+      "corporator": {
+        "name": "Smt. Jyoti Kalamkar",
+        "designation": "Elected Corporator (Nagar Sewak)",
+        "phone": "+91-98500-11205"
+      },
+      "mla": {
+        "name": "Shri Siddharth Shirole",
+        "constituency": "Shivajinagar Assembly"
+      },
+      "ward_sabha_schedule": "Every 4th Saturday, 10:00 AM @ Aundh Ward Office",
+      "pre_monsoon_desilting_pct": 88,
+      "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Citizen Grievance Day)",
+      "primary_mission": "Smart Cities Mission & Urban Drainage"
+    },
+    {
+      "ward_id": "GCC-Z10-136",
+      "ward_name": "T. Nagar - Panagal Park (Zone 10)",
+      "city": "Chennai",
+      "corporation": "GCC",
+      "zone": "Zone 10 (Kodambakkam)",
+      "mcd_zone": "T. Nagar Zone",
+      "center_lat": 13.0418,
+      "center_lon": 80.2341,
+      "population": 98000,
+      "elevation_m": 11,
+      "low_lying_zone": true,
+      "drainage_coverage_pct": 72,
+      "corporator": {
+        "name": "Thiru J. Karunanidhi",
+        "designation": "Elected Ward Councillor",
+        "phone": "+91-94440-12301"
+      },
+      "mla": {
+        "name": "Thiru J. Karunanidhi",
+        "constituency": "T. Nagar Assembly"
+      },
+      "ward_sabha_schedule": "Every 1st Saturday, 10:00 AM @ Zone 10 Office, Arcot Road",
+      "pre_monsoon_desilting_pct": 82,
+      "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Makkaludan Mudhalvar)",
+      "primary_mission": "Singara Chennai 2.0 & Stormwater Drainage"
+    },
+    {
+      "ward_id": "GCC-Z09-122",
+      "ward_name": "Mylapore - Santhome - Luz (Zone 9)",
+      "city": "Chennai",
+      "corporation": "GCC",
+      "zone": "Zone 9 (Teynampet)",
+      "mcd_zone": "Mylapore Zone",
+      "center_lat": 13.0339,
+      "center_lon": 80.2676,
+      "population": 110000,
+      "elevation_m": 7,
+      "low_lying_zone": false,
+      "drainage_coverage_pct": 86,
+      "corporator": {
+        "name": "Thirumathi D. Velankanni",
+        "designation": "Elected Ward Councillor",
+        "phone": "+91-94440-12302"
+      },
+      "mla": {
+        "name": "Thiru Dha. Velu",
+        "constituency": "Mylapore Assembly"
+      },
+      "ward_sabha_schedule": "Every 2nd Saturday, 10:30 AM @ Zone 9 Office, Anna Salai",
+      "pre_monsoon_desilting_pct": 87,
+      "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Makkaludan Mudhalvar)",
+      "primary_mission": "Heritage Coastal City & SBM-Urban"
+    },
+    {
+      "ward_id": "GCC-Z13-174",
+      "ward_name": "Adyar - Besant Nagar (Zone 13)",
+      "city": "Chennai",
+      "corporation": "GCC",
+      "zone": "Zone 13 (Adyar)",
+      "mcd_zone": "Adyar Zone",
+      "center_lat": 13.0012,
+      "center_lon": 80.2565,
+      "population": 85000,
+      "elevation_m": 6,
+      "low_lying_zone": true,
+      "drainage_coverage_pct": 75,
+      "corporator": {
+        "name": "Thiru K. Dhanasekaran",
+        "designation": "Elected Ward Councillor",
+        "phone": "+91-94440-12303"
+      },
+      "mla": {
+        "name": "Thiru J.M.H. Aassan Maulaana",
+        "constituency": "Velachery Assembly"
+      },
+      "ward_sabha_schedule": "Every 1st Sunday, 11:00 AM @ Zone 13 Office, LB Road",
+      "pre_monsoon_desilting_pct": 78,
+      "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Makkaludan Mudhalvar)",
+      "primary_mission": "Adyar Basin Flood Resilience & Coastal Care"
+    },
+    {
+      "ward_id": "GCC-Z08-101",
+      "ward_name": "Anna Nagar West - Roundtana (Zone 8)",
+      "city": "Chennai",
+      "corporation": "GCC",
+      "zone": "Zone 8 (Anna Nagar)",
+      "mcd_zone": "Anna Nagar Zone",
+      "center_lat": 13.085,
+      "center_lon": 80.2101,
+      "population": 105000,
+      "elevation_m": 15,
+      "low_lying_zone": false,
+      "drainage_coverage_pct": 91,
+      "corporator": {
+        "name": "Thiru T.V. Shemmozhi",
+        "designation": "Elected Ward Councillor",
+        "phone": "+91-94440-12304"
+      },
+      "mla": {
+        "name": "Thiru M.K. Mohan",
+        "constituency": "Anna Nagar Assembly"
+      },
+      "ward_sabha_schedule": "Every 3rd Saturday, 10:00 AM @ Zone 8 Office, 2nd Avenue",
+      "pre_monsoon_desilting_pct": 92,
+      "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Makkaludan Mudhalvar)",
+      "primary_mission": "Smart Cities Mission & Urban Mobility"
+    },
+    {
+      "ward_id": "GCC-Z05-055",
+      "ward_name": "Royapuram - Kasimedu (Zone 5)",
+      "city": "Chennai",
+      "corporation": "GCC",
+      "zone": "Zone 5 (Royapuram)",
+      "mcd_zone": "Royapuram Zone",
+      "center_lat": 13.114,
+      "center_lon": 80.298,
+      "population": 125000,
+      "elevation_m": 5,
+      "low_lying_zone": true,
+      "drainage_coverage_pct": 65,
+      "corporator": {
+        "name": "Thiru R. Moorthy",
+        "designation": "Elected Ward Councillor",
+        "phone": "+91-94440-12305"
+      },
+      "mla": {
+        "name": "Thiru Idream R. Murthy",
+        "constituency": "Royapuram Assembly"
+      },
+      "ward_sabha_schedule": "Every 2nd Sunday, 10:30 AM @ Zone 5 Office, Royapuram",
+      "pre_monsoon_desilting_pct": 69,
+      "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Makkaludan Mudhalvar)",
+      "primary_mission": "Swachh Bharat & Dense Coastal Sanitation"
+    },
+    {
+      "ward_id": "GHMC-98",
+      "ward_name": "Jubilee Hills - Road No 36",
+      "city": "Hyderabad",
+      "corporation": "GHMC",
+      "zone": "Khairatabad Zone",
+      "mcd_zone": "Jubilee Hills Zone",
+      "center_lat": 17.4319,
+      "center_lon": 78.4073,
+      "population": 82000,
+      "elevation_m": 540,
+      "low_lying_zone": false,
+      "drainage_coverage_pct": 87,
+      "corporator": {
+        "name": "Smt. K. Kavitha Reddy",
+        "designation": "Elected Corporator",
+        "phone": "+91-99890-56701"
+      },
+      "mla": {
+        "name": "Shri Maganti Gopinath",
+        "constituency": "Jubilee Hills Assembly"
+      },
+      "ward_sabha_schedule": "Every 1st Saturday, 10:30 AM @ Khairatabad Zonal Office",
+      "pre_monsoon_desilting_pct": 88,
+      "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Prajavani)",
+      "primary_mission": "Smart Cities & Urban Drainage"
+    },
+    {
+      "ward_id": "GHMC-106",
+      "ward_name": "Hitec City - Madhapur - Kondapur",
+      "city": "Hyderabad",
+      "corporation": "GHMC",
+      "zone": "Serilingampally Zone",
+      "mcd_zone": "Hitec City Zone",
+      "center_lat": 17.4474,
+      "center_lon": 78.3762,
+      "population": 120000,
+      "elevation_m": 565,
+      "low_lying_zone": false,
+      "drainage_coverage_pct": 84,
+      "corporator": {
+        "name": "Shri V. Jagadeeshwar Goud",
+        "designation": "Elected Corporator",
+        "phone": "+91-99890-56702"
+      },
+      "mla": {
+        "name": "Shri Arekapudi Gandhi",
+        "constituency": "Serilingampally Assembly"
+      },
+      "ward_sabha_schedule": "Every 2nd Saturday, 11:00 AM @ Serilingampally Zonal Office",
+      "pre_monsoon_desilting_pct": 82,
+      "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Prajavani)",
+      "primary_mission": "Strategic Nala Development Program (SNDP)"
+    },
+    {
+      "ward_id": "GHMC-45",
+      "ward_name": "Charminar - Old City - Moghalpura",
+      "city": "Hyderabad",
+      "corporation": "GHMC",
+      "zone": "Charminar Zone",
+      "mcd_zone": "Charminar Zone",
+      "center_lat": 17.3616,
+      "center_lon": 78.4747,
+      "population": 145000,
+      "elevation_m": 495,
+      "low_lying_zone": true,
+      "drainage_coverage_pct": 66,
+      "corporator": {
+        "name": "Janab Mir Zulfeqar Ali",
+        "designation": "Elected Corporator",
+        "phone": "+91-99890-56703"
+      },
+      "mla": {
+        "name": "Janab Mumtaz Ahmed Khan",
+        "constituency": "Charminar Assembly"
+      },
+      "ward_sabha_schedule": "Every 1st Sunday, 10:00 AM @ Sardar Mahal Zonal Office",
+      "pre_monsoon_desilting_pct": 68,
+      "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Prajavani)",
+      "primary_mission": "Heritage City Urban Drainage & SBM-Urban"
+    },
+    {
+      "ward_id": "GHMC-148",
+      "ward_name": "Secunderabad Clock Tower - Paradise",
+      "city": "Hyderabad",
+      "corporation": "GHMC",
+      "zone": "Secunderabad Zone",
+      "mcd_zone": "Secunderabad Zone",
+      "center_lat": 17.4399,
+      "center_lon": 78.4983,
+      "population": 92000,
+      "elevation_m": 530,
+      "low_lying_zone": false,
+      "drainage_coverage_pct": 89,
+      "corporator": {
+        "name": "Smt. Manjula Ravinder",
+        "designation": "Elected Corporator",
+        "phone": "+91-99890-56704"
+      },
+      "mla": {
+        "name": "Shri T. Padma Rao Goud",
+        "constituency": "Secunderabad Assembly"
+      },
+      "ward_sabha_schedule": "Every 3rd Saturday, 10:30 AM @ Secunderabad Zonal Office",
+      "pre_monsoon_desilting_pct": 91,
+      "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Prajavani)",
+      "primary_mission": "State PWD & Municipal Road Safety Program"
+    },
+    {
+      "ward_id": "GHMC-120",
+      "ward_name": "Kukatpally Housing Board - KPHB",
+      "city": "Hyderabad",
+      "corporation": "GHMC",
+      "zone": "Kukatpally Zone",
+      "mcd_zone": "Kukatpally Zone",
+      "center_lat": 17.4938,
+      "center_lon": 78.3995,
+      "population": 138000,
+      "elevation_m": 550,
+      "low_lying_zone": true,
+      "drainage_coverage_pct": 70,
+      "corporator": {
+        "name": "Shri M. Madhava Rao",
+        "designation": "Elected Corporator",
+        "phone": "+91-99890-56705"
+      },
+      "mla": {
+        "name": "Shri Madhavaram Krishna Rao",
+        "constituency": "Kukatpally Assembly"
+      },
+      "ward_sabha_schedule": "Every 2nd Sunday, 11:00 AM @ Kukatpally Zonal Office",
+      "pre_monsoon_desilting_pct": 74,
+      "jan_sunwai_day": "Friday 11:00 AM (Jan Sunwai / Prajavani)",
+      "primary_mission": "AMRUT 2.0 & Urban Water Drainage"
+    },
+    {
+      "ward_id": "LMC-Z1-08",
+      "ward_name": "Hazratganj - Raj Bhavan (Zone 1)",
+      "city": "Lucknow",
+      "corporation": "LMC",
+      "zone": "Zone 1 (Central Lucknow)",
+      "mcd_zone": "Hazratganj Zone",
+      "center_lat": 26.8536,
+      "center_lon": 80.9452,
+      "population": 84000,
+      "elevation_m": 123,
+      "low_lying_zone": false,
+      "drainage_coverage_pct": 91,
+      "corporator": {
+        "name": "Shri Anand Rai",
+        "designation": "Elected Corporator (Parshad)",
+        "phone": "+91-94150-78901"
+      },
+      "mla": {
+        "name": "Shri O.P. Srivastava",
+        "constituency": "Lucknow Cantt Assembly"
+      },
+      "ward_sabha_schedule": "Every 1st Saturday, 10:30 AM @ Lalbagh LMC Headquarters",
+      "pre_monsoon_desilting_pct": 93,
+      "jan_sunwai_day": "Tuesday & Friday 11:00 AM (Sambhav Diwas)",
+      "primary_mission": "Smart Cities Mission & Urban Heritage"
+    },
+    {
+      "ward_id": "LMC-Z4-32",
+      "ward_name": "Gomti Nagar - Vibhuti Khand (Zone 4)",
+      "city": "Lucknow",
+      "corporation": "LMC",
+      "zone": "Zone 4 (Gomti Nagar)",
+      "mcd_zone": "Gomti Nagar Zone",
+      "center_lat": 26.8568,
+      "center_lon": 81.0028,
+      "population": 115000,
+      "elevation_m": 120,
+      "low_lying_zone": false,
+      "drainage_coverage_pct": 86,
+      "corporator": {
+        "name": "Smt. Shweta Rai",
+        "designation": "Elected Corporator (Parshad)",
+        "phone": "+91-94150-78902"
+      },
+      "mla": {
+        "name": "Dr. Neeraj Bora",
+        "constituency": "Lucknow North Assembly"
+      },
+      "ward_sabha_schedule": "Every 2nd Saturday, 11:00 AM @ Zone 4 Office, Manoj Pandey Chowk",
+      "pre_monsoon_desilting_pct": 84,
+      "jan_sunwai_day": "Tuesday & Friday 11:00 AM (Sambhav Diwas)",
+      "primary_mission": "Gomti Riverfront Ecological Drainage"
+    },
+    {
+      "ward_id": "LMC-Z5-51",
+      "ward_name": "Alambagh - Charbagh (Zone 5)",
+      "city": "Lucknow",
+      "corporation": "LMC",
+      "zone": "Zone 5 (Alambagh)",
+      "mcd_zone": "Alambagh Zone",
+      "center_lat": 26.8184,
+      "center_lon": 80.9082,
+      "population": 128000,
+      "elevation_m": 118,
+      "low_lying_zone": true,
+      "drainage_coverage_pct": 68,
+      "corporator": {
+        "name": "Shri Rajesh Malviya",
+        "designation": "Elected Corporator (Parshad)",
+        "phone": "+91-94150-78903"
+      },
+      "mla": {
+        "name": "Shri Rajnish Gupta",
+        "constituency": "Lucknow Central Assembly"
+      },
+      "ward_sabha_schedule": "Every 1st Sunday, 10:30 AM @ Zone 5 Office, Singar Nagar",
+      "pre_monsoon_desilting_pct": 69,
+      "jan_sunwai_day": "Tuesday & Friday 11:00 AM (Sambhav Diwas)",
+      "primary_mission": "AMRUT 2.0 & Urban Water Drainage"
+    },
+    {
+      "ward_id": "LMC-Z2-19",
+      "ward_name": "Chowk - Aminabad (Zone 2)",
+      "city": "Lucknow",
+      "corporation": "LMC",
+      "zone": "Zone 2 (Chowk)",
+      "mcd_zone": "Chowk Zone",
+      "center_lat": 26.8667,
+      "center_lon": 80.9083,
+      "population": 140000,
+      "elevation_m": 122,
+      "low_lying_zone": false,
+      "drainage_coverage_pct": 79,
+      "corporator": {
+        "name": "Janab Sayeed Akhtar",
+        "designation": "Elected Corporator (Parshad)",
+        "phone": "+91-94150-78904"
+      },
+      "mla": {
+        "name": "Shri Ravidas Mehrotra",
+        "constituency": "Lucknow Central Assembly"
+      },
+      "ward_sabha_schedule": "Every 3rd Saturday, 10:00 AM @ Zone 2 Office, Chowk",
+      "pre_monsoon_desilting_pct": 77,
+      "jan_sunwai_day": "Tuesday & Friday 11:00 AM (Sambhav Diwas)",
+      "primary_mission": "Swachh Bharat Mission (SBM-Urban 2.0)"
+    },
+    {
+      "ward_id": "LMC-Z7-68",
+      "ward_name": "Indira Nagar - Ring Road (Zone 7)",
+      "city": "Lucknow",
+      "corporation": "LMC",
+      "zone": "Zone 7 (Indira Nagar)",
+      "mcd_zone": "Indira Nagar Zone",
+      "center_lat": 26.885,
+      "center_lon": 80.985,
+      "population": 98000,
+      "elevation_m": 121,
+      "low_lying_zone": false,
+      "drainage_coverage_pct": 85,
+      "corporator": {
+        "name": "Smt. Poonam Singh",
+        "designation": "Elected Corporator (Parshad)",
+        "phone": "+91-94150-78905"
+      },
+      "mla": {
+        "name": "Dr. Neeraj Bora",
+        "constituency": "Lucknow North Assembly"
+      },
+      "ward_sabha_schedule": "Every 2nd Sunday, 11:00 AM @ Zone 7 Office, Sector 14",
+      "pre_monsoon_desilting_pct": 82,
+      "jan_sunwai_day": "Tuesday & Friday 11:00 AM (Sambhav Diwas)",
+      "primary_mission": "State PWD & Municipal Road Safety Program"
+    },
+    {
+      "ward_id": "KMC-B07-063",
+      "ward_name": "Park Street - Camac Street (Borough VII)",
+      "city": "Kolkata",
+      "corporation": "KMC",
+      "zone": "Borough VII (South Central)",
+      "mcd_zone": "Park Street Zone",
+      "center_lat": 22.5513,
+      "center_lon": 88.3526,
+      "population": 75000,
+      "elevation_m": 9,
+      "low_lying_zone": false,
+      "drainage_coverage_pct": 88,
+      "corporator": {
+        "name": "Smt. Sushmita Bhattacharya",
+        "designation": "Elected Councillor",
+        "phone": "+91-98300-45601"
+      },
+      "mla": {
+        "name": "Shri Debashis Kumar",
+        "constituency": "Rashbehari Assembly"
+      },
+      "ward_sabha_schedule": "Every 1st Saturday, 11:00 AM @ KMC Borough VII Office",
+      "pre_monsoon_desilting_pct": 89,
+      "jan_sunwai_day": "Friday 11:00 AM (Talk to Mayor / Jan Sunwai)",
+      "primary_mission": "Smart Cities Mission & Urban Heritage"
+    },
+    {
+      "ward_id": "KMC-SL-03",
+      "ward_name": "Salt Lake Sector V - Karunamoyee",
+      "city": "Kolkata",
+      "corporation": "KMC",
+      "zone": "Bidhannagar Sector V",
+      "mcd_zone": "Salt Lake Zone",
+      "center_lat": 22.5867,
+      "center_lon": 88.4178,
+      "population": 92000,
+      "elevation_m": 11,
+      "low_lying_zone": false,
+      "drainage_coverage_pct": 91,
+      "corporator": {
+        "name": "Shri Krishna Chakraborty",
+        "designation": "Elected Councillor",
+        "phone": "+91-98300-45602"
+      },
+      "mla": {
+        "name": "Shri Sujit Bose",
+        "constituency": "Bidhannagar Assembly"
+      },
+      "ward_sabha_schedule": "Every 2nd Saturday, 10:30 AM @ Poura Bhavan, Salt Lake",
+      "pre_monsoon_desilting_pct": 92,
+      "jan_sunwai_day": "Friday 11:00 AM (Talk to Mayor / Jan Sunwai)",
+      "primary_mission": "IT Corridor Urban Drainage & SBM-Urban"
+    },
+    {
+      "ward_id": "KMC-B04-021",
+      "ward_name": "Howrah Bridge - Burrabazar (Borough IV)",
+      "city": "Kolkata",
+      "corporation": "KMC",
+      "zone": "Borough IV (North Kolkata)",
+      "mcd_zone": "Burrabazar Zone",
+      "center_lat": 22.5847,
+      "center_lon": 88.3582,
+      "population": 135000,
+      "elevation_m": 8,
+      "low_lying_zone": true,
+      "drainage_coverage_pct": 65,
+      "corporator": {
+        "name": "Shri Rajesh Sinha",
+        "designation": "Elected Councillor",
+        "phone": "+91-98300-45603"
+      },
+      "mla": {
+        "name": "Smt. Naina Bandyopadhyay",
+        "constituency": "Chowrangee Assembly"
+      },
+      "ward_sabha_schedule": "Every 1st Sunday, 10:00 AM @ Borough IV Office, Beadon Street",
+      "pre_monsoon_desilting_pct": 70,
+      "jan_sunwai_day": "Friday 11:00 AM (Talk to Mayor / Jan Sunwai)",
+      "primary_mission": "Heritage Riverfront Drainage & Hooghly Catchment"
+    },
+    {
+      "ward_id": "KMC-B08-085",
+      "ward_name": "Ballygunge - Gariahat (Borough VIII)",
+      "city": "Kolkata",
+      "corporation": "KMC",
+      "zone": "Borough VIII (South Kolkata)",
+      "mcd_zone": "Ballygunge Zone",
+      "center_lat": 22.528,
+      "center_lon": 88.3659,
+      "population": 110000,
+      "elevation_m": 9,
+      "low_lying_zone": true,
+      "drainage_coverage_pct": 74,
+      "corporator": {
+        "name": "Shri Baishanor Chatterjee",
+        "designation": "Elected Councillor",
+        "phone": "+91-98300-45604"
+      },
+      "mla": {
+        "name": "Shri Babul Supriyo",
+        "constituency": "Ballygunge Assembly"
+      },
+      "ward_sabha_schedule": "Every 3rd Saturday, 10:30 AM @ Borough VIII Office, Gariahat",
+      "pre_monsoon_desilting_pct": 76,
+      "jan_sunwai_day": "Friday 11:00 AM (Talk to Mayor / Jan Sunwai)",
+      "primary_mission": "AMRUT 2.0 & Urban Water Drainage"
+    },
+    {
+      "ward_id": "KMC-NT-01",
+      "ward_name": "New Town Action Area 1 - Eco Park",
+      "city": "Kolkata",
+      "corporation": "KMC",
+      "zone": "New Town WNKMA",
+      "mcd_zone": "New Town Zone",
+      "center_lat": 22.595,
+      "center_lon": 88.468,
+      "population": 80000,
+      "elevation_m": 12,
+      "low_lying_zone": false,
+      "drainage_coverage_pct": 93,
+      "corporator": {
+        "name": "Shri Debashis Sen",
+        "designation": "Administrator / Councillor",
+        "phone": "+91-98300-45605"
+      },
+      "mla": {
+        "name": "Shri Tapas Chatterjee",
+        "constituency": "Rajarhat New Town Assembly"
+      },
+      "ward_sabha_schedule": "Every 2nd Sunday, 11:00 AM @ NKDA Community Centre",
+      "pre_monsoon_desilting_pct": 95,
+      "jan_sunwai_day": "Friday 11:00 AM (Talk to Mayor / Jan Sunwai)",
+      "primary_mission": "Smart Cities Mission & Green Building Initiative"
     }
   ],
   "assets": [
@@ -466,7 +1315,7 @@
       "type": "Arterial Asphalt Road",
       "ward_id": "WARD-03",
       "lat": 12.9118,
-      "lon": 77.6450,
+      "lon": 77.645,
       "installed_year": 2018,
       "material": "Bituminous Concrete",
       "last_tarred_date": "2021-02-14",
@@ -477,7 +1326,7 @@
       "asset_id": "PUMP-BWSSB-109",
       "type": "Sewage Lift Station Pump",
       "ward_id": "WARD-02",
-      "lat": 12.9360,
+      "lat": 12.936,
       "lon": 77.6238,
       "installed_year": 2012,
       "material": "Submersible High Discharge",
@@ -489,8 +1338,8 @@
       "asset_id": "MCD-PUMP-MINTO",
       "type": "Minto Bridge High-Discharge Dewatering Sump",
       "ward_id": "MCD-CSP-72",
-      "lat": 28.6410,
-      "lon": 77.2250,
+      "lat": 28.641,
+      "lon": 77.225,
       "installed_year": 2018,
       "material": "Submersible Heavy Duty Pump",
       "last_serviced_date": "2024-03-10",
@@ -502,8 +1351,8 @@
       "asset_id": "MCD-PUMP-PRAHLAD",
       "type": "Pul Prahladpur Underpass Dewatering Station",
       "ward_id": "MCD-CNT-76",
-      "lat": 28.5120,
-      "lon": 77.2910,
+      "lat": 28.512,
+      "lon": 77.291,
       "installed_year": 2015,
       "material": "Dual Centrifugal Submersible",
       "last_serviced_date": "2023-10-05",
@@ -515,8 +1364,8 @@
       "asset_id": "MCD-DRAIN-NAJAF",
       "type": "Najafgarh Trunk Stormwater Drain Outfall",
       "ward_id": "MCD-NAJ-128",
-      "lat": 28.6100,
-      "lon": 77.0600,
+      "lat": 28.61,
+      "lon": 77.06,
       "installed_year": 2010,
       "material": "Reinforced Concrete Open Channel",
       "last_desilted_date": "2023-05-12",
@@ -528,8 +1377,8 @@
       "asset_id": "MCD-DRAIN-BARA",
       "type": "Barapullah Stormwater Outfall Chute",
       "ward_id": "MCD-CNT-76",
-      "lat": 28.5800,
-      "lon": 77.2500,
+      "lat": 28.58,
+      "lon": 77.25,
       "installed_year": 2012,
       "material": "Masonry Channel & Culvert",
       "last_desilted_date": "2023-06-01",
@@ -541,7 +1390,7 @@
       "asset_id": "MCD-XFMR-KB",
       "type": "Karol Bagh Market Substation Transformer 400kVA",
       "ward_id": "MCD-KB-83",
-      "lat": 28.6520,
+      "lat": 28.652,
       "lon": 77.1915,
       "installed_year": 2019,
       "material": "Oil Immersed Step-Down",
@@ -554,13 +1403,104 @@
       "asset_id": "MCD-ROAD-ROH",
       "type": "Rohini Sector 15 Arterial Corridor",
       "ward_id": "MCD-ROH-54",
-      "lat": 28.7180,
-      "lon": 77.1190,
+      "lat": 28.718,
+      "lon": 77.119,
       "installed_year": 2021,
       "material": "Mastic Asphalt",
       "last_tarred_date": "2023-08-20",
       "structural_health_score": 82,
       "vulnerability_flag": "NORMAL"
+    },
+    {
+      "asset_id": "BMC-PUMP-HINDMATA",
+      "type": "Hindmata Underground Water Holding Tank & Heavy Dewatering Pump",
+      "ward_id": "BMC-GN-182",
+      "lat": 19.0112,
+      "lon": 72.8431,
+      "installed_year": 2021,
+      "material": "Submersible Heavy Duty Multi-Discharge",
+      "last_serviced_date": "2024-04-12",
+      "capacity_m3_per_sec": 25.0,
+      "structural_health_score": 82,
+      "vulnerability_flag": "NORMAL"
+    },
+    {
+      "asset_id": "BMC-DRAIN-MITHI",
+      "type": "Mithi River Outfall Stormwater Sluice Gate",
+      "ward_id": "BMC-KE-112",
+      "lat": 19.083,
+      "lon": 72.862,
+      "installed_year": 2012,
+      "material": "Hydraulic Automated Sluice Gate",
+      "last_desilted_date": "2024-03-25",
+      "capacity_m3_per_sec": 45.0,
+      "structural_health_score": 52,
+      "vulnerability_flag": "HIGH_SILT_ACCUMULATION"
+    },
+    {
+      "asset_id": "PMC-SWD-MUTHA",
+      "type": "Mutha River Confluence Stormwater Outfall",
+      "ward_id": "PMC-07",
+      "lat": 18.528,
+      "lon": 73.849,
+      "installed_year": 2017,
+      "material": "Reinforced Concrete Culvert",
+      "last_desilted_date": "2023-11-10",
+      "capacity_m3_per_sec": 19.5,
+      "structural_health_score": 68,
+      "vulnerability_flag": "NORMAL"
+    },
+    {
+      "asset_id": "GCC-PUMP-PANAGAL",
+      "type": "Panagal Park Dewatering Station & Macro-Drain Outfall",
+      "ward_id": "GCC-Z10-136",
+      "lat": 13.0415,
+      "lon": 80.2335,
+      "installed_year": 2019,
+      "material": "Dual Centrifugal High-Discharge Pump",
+      "last_serviced_date": "2024-02-18",
+      "capacity_m3_per_sec": 16.0,
+      "structural_health_score": 61,
+      "vulnerability_flag": "SILT_DEPOSIT"
+    },
+    {
+      "asset_id": "GHMC-NALA-SERI",
+      "type": "Kondapur-Madhapur SNDP Trunk Stormwater Drain",
+      "ward_id": "GHMC-106",
+      "lat": 17.452,
+      "lon": 78.371,
+      "installed_year": 2022,
+      "material": "Precast Box Drain Channel",
+      "last_desilted_date": "2024-01-20",
+      "capacity_m3_per_sec": 22.0,
+      "structural_health_score": 88,
+      "vulnerability_flag": "NORMAL"
+    },
+    {
+      "asset_id": "LMC-PUMP-GOMTI",
+      "type": "Gomti Riverfront Stormwater Lift Pump Station",
+      "ward_id": "LMC-Z4-32",
+      "lat": 26.858,
+      "lon": 81.001,
+      "installed_year": 2018,
+      "material": "Vertical Turbine High-Head Pump",
+      "last_serviced_date": "2023-12-05",
+      "capacity_m3_per_sec": 15.0,
+      "structural_health_score": 74,
+      "vulnerability_flag": "NORMAL"
+    },
+    {
+      "asset_id": "KMC-PUMP-PALMER",
+      "type": "Palmer Bridge High-Capacity Drainage Pumping Station",
+      "ward_id": "KMC-B07-063",
+      "lat": 22.548,
+      "lon": 88.359,
+      "installed_year": 2014,
+      "material": "Heavy Duty Diesel Submersible Array",
+      "last_serviced_date": "2024-03-01",
+      "capacity_m3_per_sec": 32.0,
+      "structural_health_score": 55,
+      "vulnerability_flag": "HIGH_SILT_ACCUMULATION"
     }
   ]
 }

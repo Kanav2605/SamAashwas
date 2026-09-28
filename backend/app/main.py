@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
 from .config import settings
-from .api import complaints, master_tickets, predictive, whatsapp, analytics, agents
+from .api import complaints, master_tickets, predictive, whatsapp, analytics, agents, cities
 from .db.seed_data import seed_database_and_export
 
 from contextlib import asynccontextmanager
@@ -41,6 +41,7 @@ app.add_middleware(
 
 # Register API Routers under /api/v1
 api_prefix = "/api/v1"
+app.include_router(cities.router, prefix=api_prefix)
 app.include_router(complaints.router, prefix=api_prefix)
 app.include_router(master_tickets.router, prefix=api_prefix)
 app.include_router(predictive.router, prefix=api_prefix)

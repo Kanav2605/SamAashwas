@@ -143,6 +143,9 @@ class MunicipalDatabase:
         ward_id = assigned_ward.get("ward_id", "WARD-01")
         ward_name = assigned_ward.get("ward_name", "Local Ward")
         mcd_zone = assigned_ward.get("mcd_zone") or assigned_ward.get("zone", "Karol Bagh Zone")
+        city = assigned_ward.get("city", "Delhi")
+        corporation = assigned_ward.get("corporation", "MCD")
+        zone = assigned_ward.get("zone") or mcd_zone
         corporator_info = assigned_ward.get("corporator", {})
         mla_info = assigned_ward.get("mla", {})
         ward_sabha = assigned_ward.get("ward_sabha_schedule", "1st Saturday of Month, 10:30 AM")
@@ -173,7 +176,10 @@ class MunicipalDatabase:
             corporator_name=corporator_info.get("name", "Ward Councillor"),
             mla_name=mla_info.get("name", "Constituency MLA"),
             audio_transcript=req.audio_transcript,
-            mcd_zone=mcd_zone
+            mcd_zone=mcd_zone,
+            city=city,
+            corporation=corporation,
+            zone=zone
         )
 
         # Execute 6-Agent Civic Orchestration Pipeline with bound complaint record
@@ -232,6 +238,9 @@ class MunicipalDatabase:
                 ward_sabha_schedule=ward_sabha,
                 desilting_readiness_pct=desilting_pct,
                 mcd_zone=mcd_zone,
+                city=city,
+                corporation=corporation,
+                zone=zone,
                 agent_trace=agent_trace
             )
             new_master.add_report(complaint)
@@ -252,7 +261,8 @@ class MunicipalDatabase:
         self,
         status: Optional[str] = None,
         jan_sunwai_only: bool = False,
-        mission: Optional[str] = None
+        mission: Optional[str] = None,
+        city: Optional[str] = None
     ) -> List[Dict[str, Any]]:
         tickets = list(self.master_tickets.values())
         if status:
@@ -261,6 +271,15 @@ class MunicipalDatabase:
             tickets = [t for t in tickets if t.jan_sunwai_status == "ESCALATED"]
         if mission:
             tickets = [t for t in tickets if mission.lower() in (t.national_mission or "").lower()]
+        if city:
+            c_low = city.lower().strip()
+            tickets = [
+                t for t in tickets
+                if c_low in (getattr(t, "city", "") or "").lower()
+                or c_low in (getattr(t, "corporation", "") or "").lower()
+                or c_low in (getattr(t, "ward_name", "") or "").lower()
+                or c_low in (getattr(t, "mcd_zone", "") or "").lower()
+            ]
 
         tickets.sort(key=lambda x: (
             x.jan_sunwai_status == "ESCALATED",
@@ -287,10 +306,35 @@ class MunicipalDatabase:
             ticket.jan_sunwai_status = update.jan_sunwai_status
         return ticket
 
-    def get_analytics_stats(self) -> AnalyticsStatsResponse:
-        total_complaints = len(self.complaints)
-        total_masters = len(self.master_tickets)
-        duplicates = sum(1 for c in self.complaints.values() if c.is_duplicate)
+    def get_analytics_stats(self, city: Optional[str] = None) -> AnalyticsStatsResponse:
+        complaints = list(self.complaints.values())
+        masters = list(self.master_tickets.values())
+        wards = self.wards
+
+        if city:
+            c_low = city.lower().strip()
+            complaints = [
+                c for c in complaints
+                if c_low in (getattr(c, "city", "") or "").lower()
+                or c_low in (getattr(c, "ward_extracted", "") or "").lower()
+                or c_low in (getattr(c, "mcd_zone", "") or "").lower()
+            ]
+            masters = [
+                m for m in masters
+                if c_low in (getattr(m, "city", "") or "").lower()
+                or c_low in (getattr(m, "corporation", "") or "").lower()
+                or c_low in (getattr(m, "ward_name", "") or "").lower()
+                or c_low in (getattr(m, "mcd_zone", "") or "").lower()
+            ]
+            wards = [
+                w for w in self.wards
+                if c_low in (w.get("city") or "").lower()
+                or c_low in (w.get("corporation") or "").lower()
+            ]
+
+        total_complaints = len(complaints)
+        total_masters = len(masters)
+        duplicates = sum(1 for c in complaints if c.is_duplicate)
         rate = round((duplicates / total_complaints * 100.0), 1) if total_complaints > 0 else 0.0
 
         dept_counts: Dict[str, int] = {}
@@ -299,7 +343,7 @@ class MunicipalDatabase:
         mission_counts: Dict[str, int] = {}
         lang_counts: Dict[str, int] = {}
 
-        for c in self.complaints.values():
+        for c in complaints:
             dept_counts[c.department] = dept_counts.get(c.department, 0) + 1
             ward_counts[c.ward_extracted] = ward_counts.get(c.ward_extracted, 0) + 1
             urgency_counts[c.urgency] = urgency_counts.get(c.urgency, 0) + 1
@@ -307,7 +351,7 @@ class MunicipalDatabase:
             if c.national_mission:
                 mission_counts[c.national_mission] = mission_counts.get(c.national_mission, 0) + 1
 
-        jan_sunwai_count = sum(1 for m in self.master_tickets.values() if m.jan_sunwai_status == "ESCALATED")
+        jan_sunwai_count = sum(1 for m in masters if m.jan_sunwai_status == "ESCALATED")
 
         return AnalyticsStatsResponse(
             total_complaints=total_complaints,
@@ -317,7 +361,7 @@ class MunicipalDatabase:
             department_breakdown=dept_counts,
             ward_breakdown=ward_counts,
             urgency_breakdown=urgency_counts,
-            high_risk_wards_count=sum(1 for w in self.wards if w.get("low_lying_zone")),
+            high_risk_wards_count=sum(1 for w in wards if w.get("low_lying_zone")),
             national_mission_breakdown=mission_counts,
             jan_sunwai_escalated_count=jan_sunwai_count,
             language_breakdown=lang_counts
