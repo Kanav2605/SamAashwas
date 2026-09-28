@@ -16,6 +16,7 @@ from ..core.nlp_engine import nlp_engine
 from ..core.vision_engine import vision_engine
 from ..core.deduplication import deduplicator
 from ..utils.geo_utils import find_closest_ward
+from ..agents.orchestrator import agent_orchestrator
 
 logger = logging.getLogger(__name__)
 
@@ -105,11 +106,32 @@ class MunicipalDatabase:
         assigned_ward = find_closest_ward(req.lat, req.lon, self.wards)
         ward_id = assigned_ward.get("ward_id", "WARD-01")
         ward_name = assigned_ward.get("ward_name", "Local Ward")
+        mcd_zone = assigned_ward.get("mcd_zone") or assigned_ward.get("zone", "Karol Bagh Zone")
         corporator_info = assigned_ward.get("corporator", {})
         mla_info = assigned_ward.get("mla", {})
         ward_sabha = assigned_ward.get("ward_sabha_schedule", "1st Saturday of Month, 10:30 AM")
         desilting_pct = assigned_ward.get("pre_monsoon_desilting_pct", 75)
         mission_name = nlp_result.national_mission or assigned_ward.get("primary_mission", "Swachh Bharat / AMRUT Urban Mission")
+
+        active_masters = [m for m in self.master_tickets.values() if m.status != "RESOLVED"]
+        channel_str = req.channel.value if hasattr(req.channel, "value") else str(req.channel)
+
+        # Execute 6-Agent Civic Orchestration Pipeline
+        orchestration = agent_orchestrator.orchestrate_complaint(
+            raw_text=req.raw_text,
+            lat=req.lat,
+            lon=req.lon,
+            channel=channel_str,
+            citizen_name=req.citizen_name or "Citizen",
+            citizen_phone=req.citizen_phone or "9876543210",
+            image_url=req.image_url,
+            image_category_hint=req.image_category_hint,
+            audio_transcript=req.audio_transcript,
+            wards=self.wards,
+            active_masters=active_masters,
+            assets=self.assets
+        )
+        agent_trace = orchestration.get("agent_trace", [])
 
         # Create Complaint Record
         complaint = ComplaintRecord(
@@ -122,7 +144,7 @@ class MunicipalDatabase:
             language_detected=nlp_result.language_detected,
             lat=req.lat,
             lon=req.lon,
-            channel=req.channel.value,
+            channel=channel_str,
             citizen_name=req.citizen_name or "Citizen",
             citizen_phone=req.citizen_phone or "9876543210",
             image_verification=vision_result.dict() if vision_result else None,
@@ -131,11 +153,12 @@ class MunicipalDatabase:
             jan_sunwai_eligible=(nlp_result.urgency.value in ["High", "Critical"]),
             corporator_name=corporator_info.get("name", "Ward Councillor"),
             mla_name=mla_info.get("name", "Constituency MLA"),
-            audio_transcript=req.audio_transcript
+            audio_transcript=req.audio_transcript,
+            mcd_zone=mcd_zone,
+            agent_trace=agent_trace
         )
 
         # Step 4: Spatio-Temporal Deduplication Check
-        active_masters = [m for m in self.master_tickets.values() if m.status != "RESOLVED"]
         matching_master, dist, sim = deduplicator.find_matching_master_ticket(
             complaint,
             active_masters
@@ -146,6 +169,7 @@ class MunicipalDatabase:
             complaint.master_ticket_id = matching_master.master_ticket_id
             complaint.is_duplicate = True
             matching_master.add_report(complaint)
+            matching_master.agent_trace = agent_trace
             logger.info(f"Duplicate merged into {matching_master.master_ticket_id} (Dist: {dist:.1f}m, Sim: {sim:.2f})")
         else:
             # Unique incident! Generate new Master Ticket
@@ -166,7 +190,9 @@ class MunicipalDatabase:
                 corporator=corporator_info,
                 mla=mla_info,
                 ward_sabha_schedule=ward_sabha,
-                desilting_readiness_pct=desilting_pct
+                desilting_readiness_pct=desilting_pct,
+                mcd_zone=mcd_zone,
+                agent_trace=agent_trace
             )
             new_master.add_report(complaint)
             complaint.master_ticket_id = new_master.master_ticket_id
@@ -256,6 +282,71 @@ class MunicipalDatabase:
             jan_sunwai_escalated_count=jan_sunwai_count,
             language_breakdown=lang_counts
         )
+
+    def track_by_id(self, tracking_id: str) -> Optional[Dict[str, Any]]:
+        tid = tracking_id.strip()
+        # Direct lookup in complaints
+        if tid in self.complaints:
+            c = self.complaints[tid]
+            mt = self.master_tickets.get(c.master_ticket_id)
+            sla_rem = mt.current_sla_hours_remaining if mt else (c.citizen_charter_sla_hours or 24)
+            is_breached = mt.is_sla_breached if mt else False
+            status = mt.status if mt else "OPEN"
+            eng = mt.assigned_engineer if mt else f"{c.mcd_zone} Ward Junior Engineer"
+            corp = mt.corporator if mt else {"name": c.corporator_name}
+            js_status = mt.jan_sunwai_status if mt else ("ESCALATED" if c.jan_sunwai_eligible else "NONE")
+            return {
+                "tracking_id": c.complaint_id,
+                "type": "complaint",
+                "title": f"{c.issue_type} near {c.location_landmark}",
+                "department": c.department,
+                "urgency": c.urgency,
+                "status": status,
+                "ward_name": c.ward_extracted,
+                "mcd_zone": c.mcd_zone,
+                "sla_hours_remaining": sla_rem,
+                "is_sla_breached": is_breached,
+                "assigned_engineer": eng,
+                "jan_sunwai_status": js_status,
+                "created_at": c.created_at,
+                "report_count": mt.report_count if mt else 1,
+                "national_mission": c.national_mission,
+                "corporator": corp,
+                "agent_trace": c.agent_trace
+            }
+        
+        # Direct lookup in master tickets
+        if tid in self.master_tickets:
+            mt = self.master_tickets[tid]
+            return {
+                "tracking_id": mt.master_ticket_id,
+                "type": "master_ticket",
+                "title": mt.title,
+                "department": mt.department,
+                "urgency": mt.urgency,
+                "status": mt.status,
+                "ward_name": mt.ward_name,
+                "mcd_zone": mt.mcd_zone,
+                "sla_hours_remaining": mt.current_sla_hours_remaining,
+                "is_sla_breached": mt.is_sla_breached,
+                "assigned_engineer": mt.assigned_engineer,
+                "jan_sunwai_status": mt.jan_sunwai_status,
+                "created_at": mt.first_reported_at,
+                "report_count": mt.report_count,
+                "national_mission": mt.national_mission,
+                "corporator": mt.corporator,
+                "agent_trace": mt.agent_trace
+            }
+
+        # Case-insensitive or partial match
+        for c_id, c in self.complaints.items():
+            if tid.lower() == c_id.lower() or tid.lower() in c_id.lower():
+                return self.track_by_id(c_id)
+        for m_id, mt in self.master_tickets.items():
+            if tid.lower() == m_id.lower() or tid.lower() in m_id.lower():
+                return self.track_by_id(m_id)
+
+        return None
 
 # Global database singleton
 db = MunicipalDatabase()

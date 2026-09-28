@@ -93,6 +93,14 @@ async function loadMasterTickets() {
     const res = await fetch(url);
     if (!res.ok) return;
     currentTickets = await res.json();
+    const zoneFilterEl = document.getElementById('zone-filter-select');
+    const zoneVal = zoneFilterEl ? zoneFilterEl.value : '';
+    if (zoneVal) {
+      currentTickets = currentTickets.filter(t => 
+        (t.mcd_zone && t.mcd_zone.toLowerCase().includes(zoneVal.toLowerCase())) || 
+        (t.ward_name && t.ward_name.toLowerCase().includes(zoneVal.toLowerCase()))
+      );
+    }
     renderTicketList(currentTickets);
     renderMapIncidents(currentTickets);
     renderLiteWardGrid(currentTickets);
@@ -704,13 +712,341 @@ async function handleCitizenSubmit(event) {
 
 function detectLocation() {
   const coords = [
-    { lat: 12.9352, lon: 77.6245 },
-    { lat: 12.9716, lon: 77.6412 },
-    { lat: 12.9121, lon: 77.6446 },
-    { lat: 13.0067, lon: 77.5694 },
-    { lat: 12.9304, lon: 77.6784 }
+    { lat: 28.6514, lon: 77.1907 }, // Karol Bagh
+    { lat: 28.7166, lon: 77.1189 }, // Rohini
+    { lat: 28.6814, lon: 77.2228 }, // Civil Lines
+    { lat: 28.6506, lon: 77.2303 }, // City-SP
+    { lat: 28.5494, lon: 77.2001 }, // South
+    { lat: 28.6415, lon: 77.1209 }, // West
+    { lat: 12.9352, lon: 77.6245 }, // Koramangala
+    { lat: 12.9716, lon: 77.6412 }  // Indiranagar
   ];
   const chosen = coords[Math.floor(Math.random() * coords.length)];
   document.getElementById('form-lat').value = chosen.lat;
   document.getElementById('form-lon').value = chosen.lon;
+}
+
+function setLocationCoords(lat, lon) {
+  const latEl = document.getElementById('form-lat');
+  const lonEl = document.getElementById('form-lon');
+  if (latEl && lonEl) {
+    latEl.value = lat;
+    lonEl.value = lon;
+  }
+}
+
+// 12 MCD Zones Selector Change
+function onZoneSelectChange(zone) {
+  const zoneDropdown = document.getElementById('mcd-zone-dropdown');
+  if (zoneDropdown && zone !== zoneDropdown.value) {
+    zoneDropdown.value = zone;
+  }
+
+  const zoneFilterSelect = document.getElementById('zone-filter-select');
+  if (zoneFilterSelect) {
+    zoneFilterSelect.value = (zone === 'ALL' ? '' : zone);
+  }
+
+  // Reload tickets filtered by zone
+  loadMasterTickets();
+
+  // Highlight or center map if coordinates exist
+  const zoneCoords = {
+    'City-SP': [28.6506, 77.2303],
+    'Karol Bagh': [28.6514, 77.1907],
+    'Civil Lines': [28.6814, 77.2228],
+    'Keshav Puram': [28.6942, 77.1642],
+    'Rohini': [28.7166, 77.1189],
+    'Narela': [28.8527, 77.0924],
+    'Najafgarh': [28.5921, 77.0460],
+    'West': [28.6415, 77.1209],
+    'South': [28.5494, 77.2001],
+    'Central': [28.5700, 77.2400],
+    'Shahdara South': [28.6300, 77.2770],
+    'Shahdara North': [28.6750, 77.2750]
+  };
+
+  if (zone in zoneCoords && typeof map !== 'undefined' && map) {
+    const [cLat, cLon] = zoneCoords[zone];
+    map.setView([cLat, cLon], 13);
+  }
+}
+
+// Fast Application / Grievance Tracker
+async function trackApplication(customId) {
+  const inputEl = document.getElementById('track-id-input');
+  const trackId = (customId || (inputEl ? inputEl.value.trim() : '')).trim();
+
+  if (!trackId) {
+    alert('Please enter a valid Tracking ID (e.g. CMP-xxxx or MST-xxxx).');
+    return;
+  }
+
+  const resultContainer = document.getElementById('quick-track-result');
+  if (resultContainer) {
+    resultContainer.style.display = 'block';
+    resultContainer.innerHTML = '<span style="color: #60a5fa;">Searching MCD databases & multi-agent records...</span>';
+  }
+
+  try {
+    const res = await fetch(`/api/v1/tracking/${encodeURIComponent(trackId)}`);
+    if (!res.ok) {
+      if (resultContainer) {
+        resultContainer.innerHTML = `<span style="color: #ef4444;">❌ No record found for Tracking ID '${trackId}'. Please verify the ID.</span>`;
+      }
+      return;
+    }
+
+    const data = await res.json();
+
+    if (resultContainer) {
+      resultContainer.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <strong style="color: #fef08a;">${data.tracking_id}</strong>
+          <span class="badge ${data.status === 'RESOLVED' ? 'badge-low' : 'badge-high'}">${data.status}</span>
+        </div>
+        <div style="color: #cbd5e1; margin-bottom: 4px;"><strong>${data.title}</strong></div>
+        <div style="font-size: 0.75rem; color: #94a3b8; margin-bottom: 6px;">
+          📍 ${data.mcd_zone || 'Delhi Zone'} &bull; Ward: ${data.ward_name} &bull; Engineer: ${data.assigned_engineer}
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+          <span style="font-size: 0.72rem; color: #60a5fa;">⏱️ SLA Remaining: <strong>${data.sla_hours_remaining} Hours</strong></span>
+          <button class="btn-primary" style="padding: 3px 8px; font-size: 0.72rem;" onclick="openTrackingModalDirectly('${data.tracking_id}')">View Full Dossier</button>
+        </div>
+      `;
+    }
+
+    openTrackingModalWithData(data);
+  } catch (err) {
+    if (resultContainer) {
+      resultContainer.innerHTML = `<span style="color: #ef4444;">Network error: ${err.message}</span>`;
+    }
+  }
+}
+
+function quickTrackDemo(id) {
+  const inputEl = document.getElementById('track-id-input');
+  if (inputEl) inputEl.value = id;
+  trackApplication(id);
+}
+
+function openTrackingModalWithData(data) {
+  const modal = document.getElementById('tracking-modal');
+  if (!modal) return;
+
+  document.getElementById('track-modal-id').innerText = `${data.tracking_id} (${data.type.toUpperCase()})`;
+
+  const modalBody = document.getElementById('track-modal-body');
+  
+  let agentStepsHtml = '';
+  if (data.agent_trace && data.agent_trace.length > 0) {
+    agentStepsHtml = data.agent_trace.map((step, idx) => `
+      <div style="background: rgba(15, 23, 42, 0.7); border-left: 3px solid #38bdf8; padding: 6px 10px; margin-bottom: 6px; border-radius: 0 4px 4px 0; font-size: 0.76rem;">
+        <div style="display: flex; justify-content: space-between; color: #60a5fa; font-weight: bold;">
+          <span>${step.agent_name}</span>
+          <span style="color: #34d399;">${step.status}</span>
+        </div>
+        <div style="color: #e2e8f0; margin-top: 2px;">${step.thought_log}</div>
+        <div style="color: #94a3b8; font-size: 0.7rem; margin-top: 2px;">Action: ${step.action_taken}</div>
+      </div>
+    `).join('');
+  } else {
+    agentStepsHtml = '<div style="color: var(--text-muted); font-style: italic;">Standard pipeline routing active.</div>';
+  }
+
+  const corpName = data.corporator && data.corporator.name ? data.corporator.name : 'Ward Parshad';
+
+  modalBody.innerHTML = `
+    <div style="background: #0f172a; border: 1px solid var(--border); border-radius: 6px; padding: 1rem; margin-bottom: 1rem; font-size: 0.82rem;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <h4 style="margin: 0; color: #ffffff; font-size: 1rem;">${data.title}</h4>
+        <span class="badge ${data.status === 'RESOLVED' ? 'badge-low' : 'badge-high'}">${data.status}</span>
+      </div>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; color: #cbd5e1;">
+        <div><strong>Department:</strong> ${data.department}</div>
+        <div><strong>Urgency:</strong> ${data.urgency}</div>
+        <div><strong>MCD Zone:</strong> ${data.mcd_zone || 'MCD Zone'}</div>
+        <div><strong>Ward:</strong> ${data.ward_name}</div>
+        <div><strong>Assigned Officer:</strong> ${data.assigned_engineer}</div>
+        <div><strong>Parshad / Corporator:</strong> ${corpName}</div>
+        <div><strong>Jan Sunwai Status:</strong> ${data.jan_sunwai_status}</div>
+        <div><strong>Citizen Charter SLA:</strong> ${data.sla_hours_remaining}h remaining</div>
+      </div>
+    </div>
+
+    <h4 style="margin-bottom: 0.5rem; font-size: 0.9rem; color: #38bdf8;">Autonomous AI Agent Deliberation Trail:</h4>
+    <div style="max-height: 240px; overflow-y: auto; padding-right: 4px;">
+      ${agentStepsHtml}
+    </div>
+
+    <div style="margin-top: 1rem; text-align: right;">
+      <button class="btn-primary" onclick="closeTrackingModal()">Close Dossier</button>
+    </div>
+  `;
+
+  modal.classList.add('active');
+}
+
+async function openTrackingModalDirectly(trackingId) {
+  try {
+    const res = await fetch(`/api/v1/tracking/${encodeURIComponent(trackingId)}`);
+    if (res.ok) {
+      const data = await res.json();
+      openTrackingModalWithData(data);
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
+
+function closeTrackingModal(e) {
+  if (e && e.target !== e.currentTarget && e.target.tagName !== 'BUTTON') return;
+  const modal = document.getElementById('tracking-modal');
+  if (modal) modal.classList.remove('active');
+}
+
+// Multi-Agent Scenario Simulator
+async function simulateAgentScenario(scenarioName) {
+  switchTab('agent-view');
+  const consoleEl = document.getElementById('deliberation-console');
+  const statusEl = document.getElementById('sim-status-indicator');
+
+  if (statusEl) {
+    statusEl.innerText = `Orchestrating scenario '${scenarioName}'...`;
+    statusEl.style.color = '#f59e0b';
+  }
+
+  if (consoleEl) {
+    consoleEl.innerHTML = `
+      <div style="color: #60a5fa; font-weight: bold; margin-bottom: 8px;">
+        &gt; INITIATING 6-AGENT COGNITIVE ORCHESTRATION PIPELINE [SCENARIO: ${scenarioName.toUpperCase()}]...
+      </div>
+    `;
+  }
+
+  try {
+    const res = await fetch('/api/v1/agents/simulate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ scenario: scenarioName })
+    });
+
+    if (!res.ok) {
+      if (consoleEl) consoleEl.innerHTML += '<div style="color: #ef4444;">Failed to run scenario simulation.</div>';
+      return;
+    }
+
+    const data = await res.json();
+
+    if (consoleEl && data.agent_trace) {
+      // Step-by-step animated rendering
+      let delay = 0;
+      data.agent_trace.forEach((step, idx) => {
+        setTimeout(() => {
+          const stepDiv = document.createElement('div');
+          const isAlert = step.status.includes('FLAGGED') || step.status.includes('ALERT') || step.status.includes('ESCALATED');
+          const isVerified = step.status.includes('VERIFIED') || step.status.includes('SUCCESS');
+          stepDiv.className = `deliberation-step ${isAlert ? 'alert' : (isVerified ? 'verified' : '')}`;
+
+          stepDiv.innerHTML = `
+            <div class="step-header">
+              <span>Step ${idx + 1}: ${step.agent_name}</span>
+              <span class="badge ${isAlert ? 'badge-critical' : 'badge-low'}">${step.status}</span>
+            </div>
+            <div class="step-thought">&gt; ${step.thought_log}</div>
+            <div class="step-action">Action: ${step.action_taken} &bull; Confidence: ${(step.confidence * 100).toFixed(1)}%</div>
+          `;
+          consoleEl.appendChild(stepDiv);
+          consoleEl.scrollTop = consoleEl.scrollHeight;
+
+          // If last step completed
+          if (idx === data.agent_trace.length - 1) {
+            const summaryDiv = document.createElement('div');
+            summaryDiv.style.marginTop = '10px';
+            summaryDiv.style.padding = '10px';
+            summaryDiv.style.background = 'rgba(56, 189, 248, 0.1)';
+            summaryDiv.style.border = '1px solid #38bdf8';
+            summaryDiv.style.borderRadius = '6px';
+            summaryDiv.innerHTML = `
+              <div style="font-weight: bold; color: #fef08a; margin-bottom: 4px;">Executive Multi-Agent Summary:</div>
+              <div style="color: #f8fafc; font-size: 0.8rem; line-height: 1.4;">${data.narrative_summary}</div>
+            `;
+            consoleEl.appendChild(summaryDiv);
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+
+            if (statusEl) {
+              statusEl.innerText = 'Orchestration Completed Successfully';
+              statusEl.style.color = '#34d399';
+            }
+          }
+        }, delay);
+        delay += 350;
+      });
+    }
+  } catch (err) {
+    if (consoleEl) {
+      consoleEl.innerHTML += `<div style="color: #ef4444;">Error: ${err.message}</div>`;
+    }
+  }
+}
+
+// Refresh Agent Manifest
+async function loadAgentStatus() {
+  try {
+    const res = await fetch('/api/v1/agents/status');
+    if (!res.ok) return;
+    const agents = await res.json();
+    console.log('Operational Agents Manifest:', agents);
+  } catch (e) {
+    console.warn('Failed to load agent status:', e);
+  }
+}
+
+// Official MCD Services Information Modal / Prompt
+function openServiceInfo(serviceKey) {
+  const serviceDetails = {
+    birth_death: {
+      title: "Civil Registration System (CRS Delhi) - Birth & Death Registration",
+      body: "Institutional and home births/deaths within the jurisdiction of the 12 MCD zones can be registered online within 21 days with no government fee. Digitize existing paper records, download verifiable QR certificates, or apply for corrections through the Delhi CRS gateway."
+    },
+    property_tax: {
+      title: "MCD Online Property Tax (PTR) & Mutation Gateway",
+      body: "Compute property tax under Unit Area Method with geo-tagging validation. Access the 2026 Amnesty Rebate Scheme, view UPIC ownership dossiers, generate tax receipts, or apply for official property mutation."
+    },
+    trade_license: {
+      title: "MCD Single Window Factory & Trade Licensing",
+      body: "Issue and auto-renew General Trade, Health, Factory, and Veterinary trade licenses under the Ease of Doing Business framework with statutory e-SLA turnaround."
+    },
+    building_plan: {
+      title: "Online Building Plan Sanction (OBPS Delhi)",
+      body: "Submit architectural drawings, obtain structural stability scrutiny, and track sanction orders online with zero physical contact."
+    },
+    community_hall: {
+      title: "MCD Barat Ghar & Community Hall Online Booking",
+      body: "Reserve air-conditioned Barat Ghars, community centers, and municipal parks across all 12 zones with real-time slot availability."
+    }
+  };
+
+  const s = serviceDetails[serviceKey];
+  if (s) {
+    alert(`${s.title}\n\n${s.body}\n\n(Official link enabled for citizens of NCT of Delhi)`);
+  }
+}
+
+// Accessibility Controls: Font Resizer
+let currentFontSizeMultiplier = 1.0;
+function changeFontSize(delta) {
+  if (delta === 0) {
+    currentFontSizeMultiplier = 1.0;
+  } else {
+    currentFontSizeMultiplier = Math.max(0.85, Math.min(1.25, currentFontSizeMultiplier + (delta * 0.08)));
+  }
+  document.documentElement.style.fontSize = `${currentFontSizeMultiplier * 100}%`;
+}
+
+// Accessibility Controls: High Contrast Mode
+function toggleHighContrast() {
+  document.body.classList.toggle('sunlight-mode');
+  const isHighContrast = document.body.classList.contains('sunlight-mode');
+  localStorage.setItem('civicsense_sunlight', isHighContrast ? 'true' : 'false');
 }

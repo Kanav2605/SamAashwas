@@ -1,14 +1,25 @@
 import httpx
 import logging
 from typing import Dict, Any, Optional
+import time
 
 logger = logging.getLogger(__name__)
+
+_WEATHER_CACHE: Dict[str, Dict[str, Any]] = {}
+_CACHE_TTL_SECONDS = 600 # 10 minutes
 
 async def fetch_open_meteo_forecast(lat: float, lon: float) -> Dict[str, Any]:
     """
     Fetch precipitation and wind forecast for next 48 hours from Open-Meteo free API.
-    Provides graceful fallback to realistic simulated data if offline or rate-limited.
+    Provides in-memory caching and graceful fallback to realistic simulated data.
     """
+    cache_key = f"{round(lat, 2)}_{round(lon, 2)}"
+    now = time.time()
+    if cache_key in _WEATHER_CACHE:
+        entry = _WEATHER_CACHE[cache_key]
+        if now - entry["timestamp"] < _CACHE_TTL_SECONDS:
+            return entry["data"]
+
     url = "https://api.open-meteo.com/v1/forecast"
     params = {
         "latitude": lat,
@@ -31,22 +42,26 @@ async def fetch_open_meteo_forecast(lat: float, lon: float) -> Dict[str, Any]:
                 precip_48h = sum(precip_list[:48]) if len(precip_list) >= 48 else sum(precip_list)
                 max_intensity = max(precip_list[:48]) if precip_list else 0.0
 
-                return {
+                res = {
                     "source": "Open-Meteo API (Live)",
                     "rainfall_24h_mm": round(float(precip_24h), 1),
                     "rainfall_48h_mm": round(float(precip_48h), 1),
                     "max_intensity_mm_hr": round(float(max_intensity), 1),
                     "is_simulated": False
                 }
+                _WEATHER_CACHE[cache_key] = {"data": res, "timestamp": now}
+                return res
     except Exception as e:
         logger.warning(f"Open-Meteo API call failed or timed out: {e}. Using calibrated fallback.")
 
     # High-accuracy Indian monsoon simulation fallback based on coordinates
     base_rain = 45.0 + (abs(lat * 10) % 30.0)
-    return {
+    fallback_res = {
         "source": "Calibrated Weather Engine (Monsoon Fallback)",
         "rainfall_24h_mm": round(base_rain, 1),
         "rainfall_48h_mm": round(base_rain * 1.55, 1),
         "max_intensity_mm_hr": round(base_rain * 0.35, 1),
         "is_simulated": True
     }
+    _WEATHER_CACHE[cache_key] = {"data": fallback_res, "timestamp": now}
+    return fallback_res

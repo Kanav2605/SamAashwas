@@ -138,16 +138,24 @@ def seed_database_and_export():
     Generate the 1,000 complaints dataset, save to data/synthetic_complaints_1000.json,
     and seed the initial database with a representative sample for fast startup.
     """
-    dataset = generate_synthetic_dataset(1000)
-    
     base_dir = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
     data_file = os.path.join(base_dir, "data", "synthetic_complaints_1000.json")
 
-    os.makedirs(os.path.dirname(data_file), exist_ok=True)
-    with open(data_file, "w", encoding="utf-8") as f:
-        json.dump(dataset, f, indent=2, ensure_ascii=False)
+    if os.path.exists(data_file):
+        try:
+            with open(data_file, "r", encoding="utf-8") as f:
+                dataset = json.load(f)
+        except Exception:
+            dataset = generate_synthetic_dataset(1000)
+            with open(data_file, "w", encoding="utf-8") as f:
+                json.dump(dataset, f, indent=2, ensure_ascii=False)
+    else:
+        dataset = generate_synthetic_dataset(1000)
+        os.makedirs(os.path.dirname(data_file), exist_ok=True)
+        with open(data_file, "w", encoding="utf-8") as f:
+            json.dump(dataset, f, indent=2, ensure_ascii=False)
 
-    print(f"Generated and saved {len(dataset)} synthetic complaints to {data_file}")
+    print(f"Loaded {len(dataset)} synthetic complaints from {data_file}")
 
     # Seed the in-memory database with the first 45 complaints to illustrate clustering
     for item in dataset[:45]:

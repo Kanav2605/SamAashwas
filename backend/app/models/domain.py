@@ -27,7 +27,9 @@ class ComplaintRecord:
         jan_sunwai_eligible: bool = False,
         corporator_name: Optional[str] = None,
         mla_name: Optional[str] = None,
-        audio_transcript: Optional[str] = None
+        audio_transcript: Optional[str] = None,
+        mcd_zone: Optional[str] = None,
+        agent_trace: Optional[List[Dict[str, Any]]] = None
     ):
         self.complaint_id = complaint_id or f"CMP-{uuid.uuid4().hex[:8].upper()}"
         self.raw_text = raw_text
@@ -52,6 +54,8 @@ class ComplaintRecord:
         self.corporator_name = corporator_name or "Ward Councillor"
         self.mla_name = mla_name or "Constituency MLA"
         self.audio_transcript = audio_transcript
+        self.mcd_zone = mcd_zone or "Karol Bagh Zone"
+        self.agent_trace = agent_trace or []
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -77,7 +81,9 @@ class ComplaintRecord:
             "jan_sunwai_eligible": self.jan_sunwai_eligible,
             "corporator_name": self.corporator_name,
             "mla_name": self.mla_name,
-            "audio_transcript": self.audio_transcript
+            "audio_transcript": self.audio_transcript,
+            "mcd_zone": self.mcd_zone,
+            "agent_trace": self.agent_trace
         }
 
 
@@ -102,7 +108,9 @@ class MasterTicketRecord:
         corporator: Optional[Dict[str, str]] = None,
         mla: Optional[Dict[str, str]] = None,
         ward_sabha_schedule: Optional[str] = None,
-        desilting_readiness_pct: Optional[int] = None
+        desilting_readiness_pct: Optional[int] = None,
+        mcd_zone: Optional[str] = None,
+        agent_trace: Optional[List[Dict[str, Any]]] = None
     ):
         self.master_ticket_id = master_ticket_id or f"MST-{uuid.uuid4().hex[:8].upper()}"
         self.department = department
@@ -128,6 +136,8 @@ class MasterTicketRecord:
         self.mla = mla or {"name": "Constituency MLA", "constituency": "Constituency"}
         self.ward_sabha_schedule = ward_sabha_schedule or "1st Saturday of Month, 10:30 AM"
         self.desilting_readiness_pct = desilting_readiness_pct or 75
+        self.mcd_zone = mcd_zone or "Karol Bagh Zone"
+        self.agent_trace = agent_trace or []
 
     @property
     def report_count(self) -> int:
@@ -226,5 +236,7 @@ class MasterTicketRecord:
             "corporator": self.corporator,
             "mla": self.mla,
             "ward_sabha_schedule": self.ward_sabha_schedule,
-            "desilting_readiness_pct": self.desilting_readiness_pct
+            "desilting_readiness_pct": self.desilting_readiness_pct,
+            "mcd_zone": self.mcd_zone,
+            "agent_trace": self.agent_trace
         }

@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
 from .config import settings
-from .api import complaints, master_tickets, predictive, whatsapp, analytics
+from .api import complaints, master_tickets, predictive, whatsapp, analytics, agents
 from .db.seed_data import seed_database_and_export
 
 from contextlib import asynccontextmanager
@@ -46,6 +46,7 @@ app.include_router(master_tickets.router, prefix=api_prefix)
 app.include_router(predictive.router, prefix=api_prefix)
 app.include_router(whatsapp.router, prefix=api_prefix)
 app.include_router(analytics.router, prefix=api_prefix)
+app.include_router(agents.router, prefix=api_prefix)
 
 @app.get(f"{api_prefix}/health", tags=["System Health"])
 async def health_check():

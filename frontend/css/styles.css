@@ -797,3 +797,666 @@ body.lite-data-mode #lite-map-fallback {
   color: #60a5fa;
   font-weight: bold;
 }
+
+/* =========================================================
+   MUNICIPAL CORPORATION OF DELHI (MCD) OFFICIAL DESIGN SYSTEM
+   ========================================================= */
+
+/* Indian Tricolor Strip */
+.tricolor-strip {
+  height: 4px;
+  width: 100%;
+  background: linear-gradient(to right, #FF9933 0%, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%, #138808 100%);
+  display: block;
+}
+
+/* Top Govt Utility Bar */
+.govt-topbar {
+  background: #081c3b;
+  color: #cbd5e1;
+  padding: 4px 1.5rem;
+  font-size: 0.72rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.govt-topbar a {
+  color: #e2e8f0;
+  text-decoration: none;
+}
+
+.govt-topbar a:hover {
+  text-decoration: underline;
+  color: #fbbf24;
+}
+
+.topbar-accessibility {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.font-resize-btn {
+  background: #1e293b;
+  color: #f8fafc;
+  border: 1px solid #475569;
+  border-radius: 3px;
+  padding: 1px 6px;
+  font-size: 0.7rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.font-resize-btn:hover {
+  background: #334155;
+  color: #fbbf24;
+}
+
+/* MCD Official Branding Header */
+.mcd-branding-header {
+  background: #0f2b5c;
+  padding: 0.85rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 2px solid #b45309;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.mcd-emblem-group {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.mcd-emblem-group .emblem-icon {
+  font-size: 2.2rem;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+  background: radial-gradient(circle, #f59e0b 0%, #b45309 80%);
+  border-radius: 50%;
+  width: 52px;
+  height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #fef3c7;
+}
+
+.mcd-titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.mcd-title-hi {
+  font-family: 'Noto Sans Devanagari', sans-serif;
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+  line-height: 1.2;
+}
+
+.mcd-title-en {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #fef08a;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.mcd-subtitle {
+  font-size: 0.72rem;
+  color: #93c5fd;
+  margin-top: 2px;
+  font-weight: 500;
+}
+
+.mcd-badges {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.gov-badge {
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid #38bdf8;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.72rem;
+  color: #38bdf8;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 600;
+}
+
+.gov-badge.alert {
+  border-color: #f87171;
+  color: #fca5a5;
+  background: rgba(220, 38, 38, 0.15);
+}
+
+/* Live Scrolling Advisory Ticker */
+.mcd-ticker-container {
+  background: #1e3a8a;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #3b82f6;
+  overflow: hidden;
+  height: 36px;
+  font-size: 0.8rem;
+}
+
+.mcd-ticker-label {
+  background: #d97706;
+  color: #ffffff;
+  font-weight: bold;
+  padding: 0 14px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+  z-index: 10;
+}
+
+.mcd-ticker-content {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.mcd-ticker-text {
+  display: inline-block;
+  padding-left: 100%;
+  animation: mcdMarquee 38s linear infinite;
+  color: #f8fafc;
+}
+
+.mcd-ticker-text:hover {
+  animation-play-state: paused;
+}
+
+@keyframes mcdMarquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-100%); }
+}
+
+/* MCD Hero Section with Fast Application Tracker */
+.mcd-hero-section {
+  background: linear-gradient(135deg, #0b2545 0%, #133b70 50%, #0d284f 100%);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  align-items: center;
+  box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3);
+}
+
+@media (max-width: 900px) {
+  .mcd-hero-section {
+    grid-template-columns: 1fr;
+  }
+}
+
+.hero-welcome-box h2 {
+  font-size: 1.45rem;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.hero-welcome-box p {
+  font-size: 0.84rem;
+  color: #cbd5e1;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+/* Track Your Application Card */
+.tracking-card {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1.5px solid #38bdf8;
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+}
+
+.tracking-card h3 {
+  font-size: 1.05rem;
+  color: #fef08a;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.tracking-input-group {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.tracking-input-group input {
+  flex: 1;
+  background: #1e293b;
+  border: 1px solid #475569;
+  color: #ffffff;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.88rem;
+  font-family: monospace;
+}
+
+.tracking-input-group input:focus {
+  outline: none;
+  border-color: #38bdf8;
+  box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.25);
+}
+
+.tracking-btn {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 0.88rem;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.tracking-btn:hover {
+  background: linear-gradient(135deg, #1d4ed8, #1e40af);
+  transform: translateY(-1px);
+}
+
+/* Zone & Ward Quick Selector */
+.zone-quick-selector {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
+.zone-select-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #93c5fd;
+  margin-bottom: 6px;
+  display: block;
+}
+
+/* Citizen Services Grid */
+.mcd-services-container {
+  margin-bottom: 2rem;
+}
+
+.services-heading-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid #b45309;
+  padding-bottom: 0.5rem;
+}
+
+.services-heading-bar h2 {
+  font-size: 1.3rem;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mcd-services-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.mcd-service-tile {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.15rem;
+  transition: all 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+
+.mcd-service-tile::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: #3b82f6;
+  transition: all 0.25s ease;
+}
+
+.mcd-service-tile:hover {
+  transform: translateY(-3px);
+  border-color: #60a5fa;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+}
+
+.mcd-service-tile:hover::before {
+  height: 5px;
+  background: #f59e0b;
+}
+
+.service-tile-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 0.75rem;
+}
+
+.service-tile-icon {
+  font-size: 1.8rem;
+  background: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 8px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.service-tile-title {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #ffffff;
+  line-height: 1.3;
+}
+
+.service-tile-hi {
+  font-family: 'Noto Sans Devanagari', sans-serif;
+  font-size: 0.76rem;
+  color: #fef08a;
+  margin-top: 2px;
+}
+
+.service-tile-desc {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin-bottom: 0.85rem;
+}
+
+.service-tile-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.72rem;
+  padding-top: 0.5rem;
+  border-top: 1px dashed var(--border);
+}
+
+.service-tile-btn {
+  color: #60a5fa;
+  font-weight: 700;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.service-tile-btn:hover {
+  color: #93c5fd;
+  text-decoration: underline;
+}
+
+/* =========================================================
+   MULTI-AGENT ORCHESTRATION INTERACTIVE VIEW
+   ========================================================= */
+.agent-lab-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.agent-orchestration-pipeline {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.agent-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.15rem;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.agent-card.active-agent {
+  border-color: #38bdf8;
+  box-shadow: 0 0 15px rgba(56, 189, 248, 0.2);
+}
+
+.agent-card-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 0.65rem;
+}
+
+.agent-avatar {
+  font-size: 1.5rem;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+}
+
+.agent-title {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.agent-role {
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+
+.agent-status-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 0.65rem;
+  padding: 2px 7px;
+  border-radius: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  background: #064e3b;
+  color: #34d399;
+  border: 1px solid #059669;
+}
+
+.agent-description {
+  font-size: 0.76rem;
+  color: #cbd5e1;
+  line-height: 1.45;
+  margin-bottom: 0.75rem;
+}
+
+.agent-metric {
+  background: #0f172a;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 0.72rem;
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid rgba(255,255,255,0.05);
+}
+
+/* Simulation Controls */
+.sim-controls-panel {
+  background: #0f172a;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1.25rem;
+}
+
+.sim-btn-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.sim-btn {
+  background: #1e293b;
+  color: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s;
+}
+
+.sim-btn:hover {
+  background: #2563eb;
+  border-color: #3b82f6;
+}
+
+/* Agent Deliberation Console */
+.deliberation-console {
+  background: #020617;
+  border: 1px solid #1e293b;
+  border-radius: 8px;
+  padding: 1.25rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.82rem;
+  max-height: 380px;
+  overflow-y: auto;
+}
+
+.deliberation-step {
+  padding: 8px 10px;
+  border-left: 3px solid #3b82f6;
+  margin-bottom: 8px;
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 0 6px 6px 0;
+}
+
+.deliberation-step.alert {
+  border-left-color: #ef4444;
+}
+
+.deliberation-step.verified {
+  border-left-color: #10b981;
+}
+
+.step-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  color: #38bdf8;
+  margin-bottom: 4px;
+  font-size: 0.78rem;
+}
+
+.step-thought {
+  color: #e2e8f0;
+  line-height: 1.4;
+}
+
+.step-action {
+  color: #94a3b8;
+  font-size: 0.72rem;
+  margin-top: 4px;
+  font-style: italic;
+}
+
+/* MCD Official Footer */
+.mcd-footer {
+  background: #081c3b;
+  color: #94a3b8;
+  border-top: 3px solid #b45309;
+  padding: 2rem 1.5rem 1rem 1.5rem;
+  margin-top: 3rem;
+  font-size: 0.78rem;
+}
+
+.footer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.footer-col h4 {
+  color: #fef08a;
+  font-size: 0.88rem;
+  margin-bottom: 0.75rem;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 4px;
+}
+
+.footer-col ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.footer-col a {
+  color: #cbd5e1;
+  text-decoration: none;
+}
+
+.footer-col a:hover {
+  color: #38bdf8;
+  text-decoration: underline;
+}
+
+.footer-bottom {
+  text-align: center;
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding-top: 1rem;
+  color: #64748b;
+  font-size: 0.72rem;
+}
+

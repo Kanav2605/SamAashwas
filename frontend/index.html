@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-  <title>CivicSense AI (SamAashwas) - Indian Municipal Grievance Intelligence & Predictive Maintenance</title>
+  <title>Municipal Corporation of Delhi (दिल्ली नगर निगम) - CivicSense AI (SamAashwas) Smart Municipal Portal</title>
   
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#1e3a8a">
+  <meta name="theme-color" content="#0f2b5c">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700&family=Noto+Sans+Kannada:wght@400;600;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700;800&family=Noto+Sans+Kannada:wght@400;600;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
   
   <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -17,80 +17,527 @@
 </head>
 <body>
 
-  <!-- Top Header Navigation with Vernacular Controls -->
-  <header>
-    <div class="brand">
-      <div style="font-size: 1.8rem;">🏛️</div>
-      <div>
-        <h1>CivicSense AI</h1>
-        <div style="font-size: 0.72rem; color: #94a3b8;" data-i18n="brand_sub">SamAashwas Municipal Intelligence Platform</div>
+  <!-- Top Tricolor Ribbon (Indian Flag Saffron, White, Green) -->
+  <div class="tricolor-strip"></div>
+
+  <!-- Government of NCT of Delhi Top Utility Bar -->
+  <div class="govt-topbar">
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <span>🏛️ <strong>राष्ट्रीय राजधानी क्षेत्र दिल्ली सरकार</strong> | Government of NCT of Delhi</span>
+      <span style="opacity: 0.5;">|</span>
+      <span>सत्यमेव जयते (Satyameva Jayate)</span>
+    </div>
+    <div class="topbar-accessibility">
+      <span>Toll-Free Control Room: <strong>155305</strong> / <strong>1800-11-8700</strong></span>
+      <span style="opacity: 0.5;">|</span>
+      <span>Text Size:</span>
+      <button class="font-resize-btn" onclick="changeFontSize(-1)" title="Decrease Text Size">A-</button>
+      <button class="font-resize-btn" onclick="changeFontSize(0)" title="Default Text Size">A</button>
+      <button class="font-resize-btn" onclick="changeFontSize(1)" title="Increase Text Size">A+</button>
+      <span style="opacity: 0.5;">|</span>
+      <button class="font-resize-btn" onclick="toggleHighContrast()" title="Toggle High Contrast Mode">🌓 Contrast</button>
+    </div>
+  </div>
+
+  <!-- Main MCD Branding Header -->
+  <header style="padding: 0; display: block; border-bottom: none;">
+    <div class="mcd-branding-header">
+      <div class="mcd-emblem-group">
+        <div class="emblem-icon" title="Municipal Corporation of Delhi Seal">🏛️</div>
+        <div class="mcd-titles">
+          <div class="mcd-title-hi">दिल्ली नगर निगम</div>
+          <div class="mcd-title-en">Municipal Corporation of Delhi</div>
+          <div class="mcd-subtitle">CivicSense AI (SamAashwas) - Intelligent Multi-Agent Grievance Redressal & Predictive Platform</div>
+        </div>
       </div>
-      <span data-i18n="ulb_badge">ULB Live Command Center</span>
+
+      <div class="mcd-badges">
+        <!-- Vernacular Language Selector -->
+        <div class="lang-switcher">
+          <button class="lang-btn active" data-lang="en" onclick="setLanguage('en')">English</button>
+          <button class="lang-btn" data-lang="hi" onclick="setLanguage('hi')">हिन्दी</button>
+          <button class="lang-btn" data-lang="hg" onclick="setLanguage('hg')">Hinglish</button>
+          <button class="lang-btn" data-lang="kn" onclick="setLanguage('kn')">ಕನ್ನಡ</button>
+          <button class="lang-btn" data-lang="ta" onclick="setLanguage('ta')">தமிழ்</button>
+        </div>
+
+        <button class="toggle-btn" id="btn-sunlight-toggle" onclick="toggleSunlightMode()" title="Optimized for field officers in direct outdoor sunlight">
+          ☀️ Sunlight Mode
+        </button>
+
+        <button class="toggle-btn" id="btn-lite-toggle" onclick="toggleLiteMode()" title="Save data on slow mobile networks">
+          📶 2G Lite Data
+        </button>
+
+        <div class="gov-badge alert">
+          <span>🚨 24x7 Control Room Active</span>
+        </div>
+      </div>
     </div>
 
-    <div class="header-controls">
-      <!-- Vernacular Language Selector -->
-      <div class="lang-switcher">
-        <button class="lang-btn active" data-lang="en" onclick="setLanguage('en')">EN</button>
-        <button class="lang-btn" data-lang="hi" onclick="setLanguage('hi')">हिन्दी</button>
-        <button class="lang-btn" data-lang="hg" onclick="setLanguage('hg')">Hinglish</button>
-        <button class="lang-btn" data-lang="kn" onclick="setLanguage('kn')">ಕನ್ನಡ</button>
-        <button class="lang-btn" data-lang="ta" onclick="setLanguage('ta')">தமிழ்</button>
+    <!-- Live Scrolling Advisory Ticker -->
+    <div class="mcd-ticker-container">
+      <div class="mcd-ticker-label">
+        <span>📢 Public Advisory / सार्वजनिक सूचना</span>
       </div>
-
-      <!-- Outdoor Sunlight Readability Mode Toggle -->
-      <button class="toggle-btn" id="btn-sunlight-toggle" onclick="toggleSunlightMode()" title="Optimized for field officers in direct outdoor sunlight">
-        ☀️ Outdoor Sunlight Mode
-      </button>
-
-      <!-- 2G Lite Data Mode Toggle -->
-      <button class="toggle-btn" id="btn-lite-toggle" onclick="toggleLiteMode()" title="Save data on slow mobile networks">
-        📶 2G Lite Data
-      </button>
+      <div class="mcd-ticker-content">
+        <div class="mcd-ticker-text">
+          🚨 <strong>MCD PUBLIC ALERT:</strong> Pre-Monsoon 24x7 Control Rooms Activated across all 12 Administrative Zones (Karol Bagh, Rohini, Civil Lines, South, West, Central, City-SP, Keshav Puram, Najafgarh, Narela, Shahdara South & North) &bull;
+          🌧️ Pre-Monsoon Desilting Target 85% Achieved on Primary SWD Drains &bull;
+          🦟 Anti-Dengue & Malaria Vector Control Door-to-Door Fogging Drive in Progress &bull;
+          ⚖️ Friday Jan Sunwai (Public Grievance Hearing) Scheduled Every Friday 11:00 AM at Zonal Offices &bull;
+          🤖 Powered by SamAashwas Autonomous Civic Agents for Real-Time Deduplication and Transparent SLA Resolution &bull;
+          📞 WhatsApp Grievance Helpline Active on 155305.
+        </div>
+      </div>
     </div>
 
     <!-- Desktop Navigation Tabs -->
-    <nav class="nav-tabs">
-      <button class="tab-btn active" data-tab="command-center" onclick="switchTab('command-center')" data-i18n="tab_command_center">Officer Command Center</button>
+    <nav class="nav-tabs" style="background: #0b2545; border-bottom: 2px solid #f59e0b; padding: 0 1.5rem; display: flex; flex-wrap: wrap;">
+      <button class="tab-btn active" data-tab="mcd-home" onclick="switchTab('mcd-home')">🏛️ MCD Citizen Portal Home</button>
+      <button class="tab-btn" data-tab="agent-view" onclick="switchTab('agent-view')">🤖 AI Multi-Agent Orchestration</button>
+      <button class="tab-btn" data-tab="command-center" onclick="switchTab('command-center')" data-i18n="tab_command_center">Officer Command Center</button>
       <button class="tab-btn" data-tab="predictive-view" onclick="switchTab('predictive-view')" data-i18n="tab_predictive_view">Predictive Risk Index</button>
       <button class="tab-btn" data-tab="jan-sunwai-view" onclick="switchTab('jan-sunwai-view')" data-i18n="tab_jan_sunwai">Jan Sunwai & Ward Sabha</button>
-      <button class="tab-btn" data-tab="citizen-portal" onclick="switchTab('citizen-portal')" data-i18n="tab_citizen_portal">Citizen Web Portal</button>
-      <button class="tab-btn" data-tab="whatsapp-simulator" onclick="switchTab('whatsapp-simulator')" data-i18n="tab_whatsapp_bot">WhatsApp Bot Demo</button>
+      <button class="tab-btn" data-tab="citizen-portal" onclick="switchTab('citizen-portal')" data-i18n="tab_citizen_portal">Citizen Grievance Submission</button>
+      <button class="tab-btn" data-tab="whatsapp-simulator" onclick="switchTab('whatsapp-simulator')" data-i18n="tab_whatsapp_bot">WhatsApp Bot (155305)</button>
     </nav>
   </header>
 
   <main class="content">
-    <!-- Real-time KPI Stats Banner -->
-    <div class="kpi-grid">
-      <div class="kpi-card blue">
-        <div class="kpi-title" data-i18n="kpi_total_reports">Total Citizen Reports</div>
-        <div class="kpi-value" id="kpi-total-reports">--</div>
-        <div class="kpi-sub" data-i18n="kpi_total_sub">Across WhatsApp, App & Portal</div>
+
+    <!-- TAB 1: MCD CITIZEN PORTAL HOME -->
+    <div id="mcd-home" class="view-container active">
+      
+      <!-- Hero Banner with Fast Tracking & Zone Filter -->
+      <div class="mcd-hero-section">
+        <div class="hero-welcome-box">
+          <h2>Delhi Municipal Citizen Services & Grievance Gateway</h2>
+          <p>
+            Welcome to the official digital portal of the Municipal Corporation of Delhi (दिल्ली नगर निगम). 
+            Access essential citizen services, track real-time applications, and experience transparent 
+            grievance resolution powered by autonomous AI agents.
+          </p>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <button class="btn-primary" onclick="switchTab('citizen-portal')" style="background: #f59e0b; color: #000; font-weight: bold;">
+              📝 File New Grievance
+            </button>
+            <button class="btn-primary" onclick="switchTab('agent-view')" style="background: #2563eb;">
+              🤖 View AI Multi-Agent Status
+            </button>
+            <button class="btn-primary" onclick="switchTab('command-center')" style="background: #334155;">
+              🗺️ Open GIS Incident Map
+            </button>
+          </div>
+
+          <!-- MCD 12 Zones Quick Selector -->
+          <div class="zone-quick-selector">
+            <label class="zone-select-label">📍 Select MCD Zone (12 Administrative Zones of Delhi):</label>
+            <select id="mcd-zone-dropdown" class="form-control" onchange="onZoneSelectChange(this.value)">
+              <option value="ALL">All 12 MCD Zones (Whole City Territory)</option>
+              <option value="City-SP">1. City-SP Zone (Chandni Chowk - Sadar Paharganj)</option>
+              <option value="Karol Bagh">2. Karol Bagh Zone (Pusa - Rajendra Nagar)</option>
+              <option value="Civil Lines">3. Civil Lines Zone (Kashmiri Gate - Timarpur)</option>
+              <option value="Keshav Puram">4. Keshav Puram Zone (Pitampura - Wazirpur)</option>
+              <option value="Rohini">5. Rohini Zone (Rohini Sector 1-25 - Prashant Vihar)</option>
+              <option value="Narela">6. Narela Zone (Alipur - Narela Mandi)</option>
+              <option value="Najafgarh">7. Najafgarh Zone (Dwarka Sub-City - Matiala)</option>
+              <option value="West">8. West Zone (Rajouri Garden - Janakpuri)</option>
+              <option value="South">9. South Zone (Hauz Khas - Saket - Green Park)</option>
+              <option value="Central">10. Central Zone (Lajpat Nagar - Daryaganj - Defence Colony)</option>
+              <option value="Shahdara South">11. Shahdara South Zone (Laxmi Nagar - Mayur Vihar)</option>
+              <option value="Shahdara North">12. Shahdara North Zone (Seelampur - Yamuna Vihar)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Fast Grievance / Application Tracker -->
+        <div class="tracking-card">
+          <h3>🔍 Track Grievance / Application Status</h3>
+          <p style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 0.75rem;">
+            Enter your Complaint Tracking ID (e.g. <code>CMP-XXXX</code>) or Master Incident ID (e.g. <code>MST-XXXX</code>) 
+            to view real-time SLA countdown, assigned engineer, and the transparent 6-agent decision audit trail.
+          </p>
+          <div class="tracking-input-group">
+            <input type="text" id="track-id-input" placeholder="Enter ID e.g. CMP-A1B2C3 or SYN-0001" onkeydown="if(event.key === 'Enter') trackApplication()">
+            <button class="tracking-btn" onclick="trackApplication()">Track Status</button>
+          </div>
+          <div style="margin-top: 8px; font-size: 0.72rem; color: #94a3b8;">
+            💡 Quick Demo Trackers: 
+            <a href="javascript:void(0)" onclick="quickTrackDemo('SYN-0001')" style="color: #38bdf8; text-decoration: underline;">SYN-0001</a> &bull;
+            <a href="javascript:void(0)" onclick="quickTrackDemo('SYN-0002')" style="color: #38bdf8; text-decoration: underline;">SYN-0002</a>
+          </div>
+
+          <!-- Tracking Quick Result Container -->
+          <div id="quick-track-result" style="display: none; margin-top: 1rem; background: #0b192c; border: 1px solid #1e3a8a; border-radius: 6px; padding: 10px; font-size: 0.8rem;">
+            <!-- Filled dynamically -->
+          </div>
+        </div>
       </div>
-      <div class="kpi-card orange">
-        <div class="kpi-title" data-i18n="kpi_master_tickets">Active Master Incidents</div>
-        <div class="kpi-value" id="kpi-master-tickets">--</div>
-        <div class="kpi-sub" data-i18n="kpi_master_sub">Auto-routed to Ward Engineers</div>
+
+      <!-- Real-time KPI Stats Banner -->
+      <div class="kpi-grid">
+        <div class="kpi-card blue">
+          <div class="kpi-title" data-i18n="kpi_total_reports">Total Citizen Reports</div>
+          <div class="kpi-value" id="kpi-total-reports">--</div>
+          <div class="kpi-sub" data-i18n="kpi_total_sub">Across WhatsApp, App & Portal</div>
+        </div>
+        <div class="kpi-card orange">
+          <div class="kpi-title" data-i18n="kpi_master_tickets">Active Master Incidents</div>
+          <div class="kpi-value" id="kpi-master-tickets">--</div>
+          <div class="kpi-sub" data-i18n="kpi_master_sub">Auto-routed to Ward Engineers</div>
+        </div>
+        <div class="kpi-card green">
+          <div class="kpi-title" data-i18n="kpi_dedup_rate">Deduplication Rate</div>
+          <div class="kpi-value" id="kpi-dedup-rate">--%</div>
+          <div class="kpi-sub" data-i18n="kpi_dedup_sub">Redundant complaints clustered</div>
+        </div>
+        <div class="kpi-card red">
+          <div class="kpi-title" data-i18n="kpi_high_risk">High-Risk Vulnerable Wards</div>
+          <div class="kpi-value" id="kpi-high-risk-wards">--</div>
+          <div class="kpi-sub" data-i18n="kpi_high_risk_sub">Pre-monsoon action alerts</div>
+        </div>
+        <div class="kpi-card purple">
+          <div class="kpi-title" data-i18n="kpi_jan_sunwai">Jan Sunwai Docket</div>
+          <div class="kpi-value" id="kpi-jan-sunwai-count">--</div>
+          <div class="kpi-sub" data-i18n="kpi_jan_sunwai_sub">Escalated for Public Hearing</div>
+        </div>
       </div>
-      <div class="kpi-card green">
-        <div class="kpi-title" data-i18n="kpi_dedup_rate">Deduplication Rate</div>
-        <div class="kpi-value" id="kpi-dedup-rate">--%</div>
-        <div class="kpi-sub" data-i18n="kpi_dedup_sub">Redundant complaints clustered</div>
+
+      <!-- Citizen Services Quick-Access Grid (Inspired by mcdonline.nic.in) -->
+      <div class="mcd-services-container">
+        <div class="services-heading-bar">
+          <h2>🏛️ Citizen Online Services Quick Grid (नागरिक सेवाएं)</h2>
+          <span style="font-size: 0.78rem; color: #94a3b8;">Unified MCD Citizen Services Gateway</span>
+        </div>
+
+        <div class="mcd-services-grid">
+          <!-- 1. Birth & Death -->
+          <div class="mcd-service-tile" onclick="openServiceInfo('birth_death')">
+            <div class="service-tile-top">
+              <div class="service-tile-icon">📜</div>
+              <div>
+                <div class="service-tile-title">Birth & Death Registration</div>
+                <div class="service-tile-hi">जन्म एवं मृत्यु पंजीकरण (CRS Delhi)</div>
+              </div>
+            </div>
+            <div class="service-tile-desc">
+              Online issuance of birth and death certificates, institutional registration, corrections, and digital QR verification.
+            </div>
+            <div class="service-tile-footer">
+              <span class="badge" style="background: #064e3b; color: #34d399;">e-SLA Enabled</span>
+              <button class="service-tile-btn">Access Service &rarr;</button>
+            </div>
+          </div>
+
+          <!-- 2. Property Tax PTR -->
+          <div class="mcd-service-tile" onclick="openServiceInfo('property_tax')">
+            <div class="service-tile-top">
+              <div class="service-tile-icon">🏠</div>
+              <div>
+                <div class="service-tile-title">Property Tax (PTR) & Mutation</div>
+                <div class="service-tile-hi">संपत्ति कर एवं नामांतरण</div>
+              </div>
+            </div>
+            <div class="service-tile-desc">
+              Geo-tagged UPIC property tax assessment, online tax payment, amnesty rebate schemes, and property mutation tracking.
+            </div>
+            <div class="service-tile-footer">
+              <span class="badge" style="background: #1e3a8a; color: #93c5fd;">Geo-Tagging Live</span>
+              <button class="service-tile-btn">Pay Tax Online &rarr;</button>
+            </div>
+          </div>
+
+          <!-- 3. Trade & Factory License -->
+          <div class="mcd-service-tile" onclick="openServiceInfo('trade_license')">
+            <div class="service-tile-top">
+              <div class="service-tile-icon">🏭</div>
+              <div>
+                <div class="service-tile-title">Trade & Factory License</div>
+                <div class="service-tile-hi">व्यापार एवं कारखाना लाइसेंस</div>
+              </div>
+            </div>
+            <div class="service-tile-desc">
+              Instant renewal of General Trade, Health Trade, Veterinary, and Factory operating permits under Ease of Doing Business.
+            </div>
+            <div class="service-tile-footer">
+              <span class="badge" style="background: #431407; color: #fdba74;">Single Window</span>
+              <button class="service-tile-btn">Apply / Renew &rarr;</button>
+            </div>
+          </div>
+
+          <!-- 4. Citizen Grievance / Jan Sunwai -->
+          <div class="mcd-service-tile" onclick="switchTab('citizen-portal')">
+            <div class="service-tile-top">
+              <div class="service-tile-icon" style="background: rgba(220, 38, 38, 0.15); border-color: rgba(220, 38, 38, 0.3);">⚖️</div>
+              <div>
+                <div class="service-tile-title">Citizen Grievance & Jan Sunwai</div>
+                <div class="service-tile-hi">जन शिकायत एवं जन सुनवाई निवारण</div>
+              </div>
+            </div>
+            <div class="service-tile-desc">
+              AI-powered multilingual grievance registration in Hindi, Hinglish, English with photo verification and Friday public hearing escalation.
+            </div>
+            <div class="service-tile-footer">
+              <span class="badge" style="background: #7f1d1d; color: #fca5a5;">SamAashwas AI</span>
+              <button class="service-tile-btn" style="color: #f87171;">File Grievance &rarr;</button>
+            </div>
+          </div>
+
+          <!-- 5. Sanitation & Solid Waste -->
+          <div class="mcd-service-tile" onclick="switchTab('command-center')">
+            <div class="service-tile-top">
+              <div class="service-tile-icon">🚛</div>
+              <div>
+                <div class="service-tile-title">Sanitation, SBM & Solid Waste</div>
+                <div class="service-tile-hi">स्वच्छ भारत मिशन एवं सफाई व्यवस्था</div>
+              </div>
+            </div>
+            <div class="service-tile-desc">
+              Door-to-door auto-tipper garbage collection tracking, community Dhalao monitoring, and construction & demolition (C&D) waste removal.
+            </div>
+            <div class="service-tile-footer">
+              <span class="badge" style="background: #064e3b; color: #34d399;">SBM Urban 2.0</span>
+              <button class="service-tile-btn">Track Route &rarr;</button>
+            </div>
+          </div>
+
+          <!-- 6. Roads & Streetlights -->
+          <div class="mcd-service-tile" onclick="switchTab('command-center')">
+            <div class="service-tile-top">
+              <div class="service-tile-icon">💡</div>
+              <div>
+                <div class="service-tile-title">Roads, Potholes & Streetlights</div>
+                <div class="service-tile-hi">सड़क मरम्मत एवं स्ट्रीट लाइट रखरखाव</div>
+              </div>
+            </div>
+            <div class="service-tile-desc">
+              Municipal road resurfacing, dark-spot streetlight rectification, and real-time Junior Engineer work assignment.
+            </div>
+            <div class="service-tile-footer">
+              <span class="badge" style="background: #312e81; color: #c7d2fe;">Smart LED Grid</span>
+              <button class="service-tile-btn">View Status &rarr;</button>
+            </div>
+          </div>
+
+          <!-- 7. Building Plan Sanction (OBPS) -->
+          <div class="mcd-service-tile" onclick="openServiceInfo('building_plan')">
+            <div class="service-tile-top">
+              <div class="service-tile-icon">🏗️</div>
+              <div>
+                <div class="service-tile-title">Online Building Plan (OBPS)</div>
+                <div class="service-tile-hi">ऑनलाइन भवन निर्माण स्वीकृति</div>
+              </div>
+            </div>
+            <div class="service-tile-desc">
+              Automated building layout approval, structural stability certification, completion certificate, and architect licensing.
+            </div>
+            <div class="service-tile-footer">
+              <span class="badge" style="background: #1e3a8a; color: #93c5fd;">Automated DCR</span>
+              <button class="service-tile-btn">OBPS Portal &rarr;</button>
+            </div>
+          </div>
+
+          <!-- 8. Community Hall & Park Booking -->
+          <div class="mcd-service-tile" onclick="openServiceInfo('community_hall')">
+            <div class="service-tile-top">
+              <div class="service-tile-icon">🌳</div>
+              <div>
+                <div class="service-tile-title">Community Hall & Park Booking</div>
+                <div class="service-tile-hi">बारात घर एवं पार्क ऑनलाइन बुकिंग</div>
+              </div>
+            </div>
+            <div class="service-tile-desc">
+              Reserve MCD community centers, Barat Ghars, and public municipal parks across Delhi with transparent digital tariff payment.
+            </div>
+            <div class="service-tile-footer">
+              <span class="badge" style="background: #064e3b; color: #34d399;">Public Amenities</span>
+              <button class="service-tile-btn">Book Venue &rarr;</button>
+            </div>
+          </div>
+        </div>
       </div>
-      <div class="kpi-card red">
-        <div class="kpi-title" data-i18n="kpi_high_risk">High-Risk Vulnerable Wards</div>
-        <div class="kpi-value" id="kpi-high-risk-wards">--</div>
-        <div class="kpi-sub" data-i18n="kpi_high_risk_sub">Pre-monsoon action alerts</div>
-      </div>
-      <div class="kpi-card purple">
-        <div class="kpi-title" data-i18n="kpi_jan_sunwai">Jan Sunwai Docket</div>
-        <div class="kpi-value" id="kpi-jan-sunwai-count">--</div>
-        <div class="kpi-sub" data-i18n="kpi_jan_sunwai_sub">Escalated for Public Hearing</div>
-      </div>
+
     </div>
 
-    <!-- VIEW 1: Officer Command Center & GIS Map -->
-    <div id="command-center" class="view-container active">
+    <!-- TAB 2: AI MULTI-AGENT ORCHESTRATION LAB -->
+    <div id="agent-view" class="view-container">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 1rem;">
+        <div>
+          <h2 style="font-size: 1.35rem; color: #ffffff;">🤖 Autonomous Civic Multi-Agent Orchestration Architecture</h2>
+          <p style="font-size: 0.82rem; color: var(--text-muted);">
+            Transparent coordination of 6 specialized autonomous agents resolving citizen grievances under statutory Citizen Charter SLAs.
+          </p>
+        </div>
+        <button class="btn-primary" onclick="loadAgentStatus()">🔄 Refresh Agent Engine</button>
+      </div>
+
+      <!-- 6 Specialized Agent Cards -->
+      <div class="agent-orchestration-pipeline" id="agents-pipeline-cards">
+        
+        <!-- Agent 1 -->
+        <div class="agent-card active-agent">
+          <div class="agent-card-header">
+            <div class="agent-avatar">🎙️</div>
+            <div>
+              <div class="agent-title">Citizen Reception Agent</div>
+              <div class="agent-role">Multilingual & Vernacular Intake</div>
+            </div>
+          </div>
+          <span class="agent-status-badge">Active</span>
+          <div class="agent-description">
+            Parses multilingual & code-mixed dialects (Hinglish, Hindi, Kannada, Tamil, English). Extracts landmarks, issue category, urgency, and binds national flagship missions.
+          </div>
+          <div class="agent-metric">
+            <span>Supported Dialects:</span>
+            <strong style="color: #60a5fa;">5 Vernacular / Hinglish</strong>
+          </div>
+        </div>
+
+        <!-- Agent 2 -->
+        <div class="agent-card active-agent">
+          <div class="agent-card-header">
+            <div class="agent-avatar">👁️</div>
+            <div>
+              <div class="agent-title">Visual Verification & Fraud Agent</div>
+              <div class="agent-role">Multimodal Vision & Anti-Spam</div>
+            </div>
+          </div>
+          <span class="agent-status-badge">Active</span>
+          <div class="agent-description">
+            Validates photographic evidence against stated complaint. Shields public resources by detecting spam selfies, memes, screenshots, and categorical mismatches.
+          </div>
+          <div class="agent-metric">
+            <span>Spam Defense Accuracy:</span>
+            <strong style="color: #34d399;">94.2% Verified</strong>
+          </div>
+        </div>
+
+        <!-- Agent 3 -->
+        <div class="agent-card active-agent">
+          <div class="agent-card-header">
+            <div class="agent-avatar">📍</div>
+            <div>
+              <div class="agent-title">Geo-Deduplication & Clustering Agent</div>
+              <div class="agent-role">Spatio-Temporal Aggregation</div>
+            </div>
+          </div>
+          <span class="agent-status-badge">Active</span>
+          <div class="agent-description">
+            Enforces a 300m GPS perimeter gate with semantic text cosine similarity. Consolidates multiple neighborhood calls into authoritative Master Incidents.
+          </div>
+          <div class="agent-metric">
+            <span>Spatial Gate Perimeter:</span>
+            <strong style="color: #f59e0b;">300 Meters</strong>
+          </div>
+        </div>
+
+        <!-- Agent 4 -->
+        <div class="agent-card active-agent">
+          <div class="agent-card-header">
+            <div class="agent-avatar">🏛️</div>
+            <div>
+              <div class="agent-title">Ward & SLA Routing Agent</div>
+              <div class="agent-role">Jurisdiction & Officer Assignment</div>
+            </div>
+          </div>
+          <span class="agent-status-badge">Active</span>
+          <div class="agent-description">
+            Maps GPS coordinates into the 12 MCD Administrative Zones and municipal wards. Binds designated Junior Engineers, Corporators (Parshads), and computes statutory SLAs.
+          </div>
+          <div class="agent-metric">
+            <span>Coverage Jurisdiction:</span>
+            <strong style="color: #c084fc;">12 MCD Zones</strong>
+          </div>
+        </div>
+
+        <!-- Agent 5 -->
+        <div class="agent-card active-agent">
+          <div class="agent-card-header">
+            <div class="agent-avatar">🌧️</div>
+            <div>
+              <div class="agent-title">Predictive Maintenance & Warning Agent</div>
+              <div class="agent-role">Monsoon Risk & Asset Resilience</div>
+            </div>
+          </div>
+          <span class="agent-status-badge">Active</span>
+          <div class="agent-description">
+            Integrates live Open-Meteo precipitation forecasts, low-lying runoff topography, and SWD desilting readiness to forecast municipal infrastructure failures before they strike.
+          </div>
+          <div class="agent-metric">
+            <span>Forecast Horizon:</span>
+            <strong style="color: #38bdf8;">48-Hour Radar</strong>
+          </div>
+        </div>
+
+        <!-- Agent 6 -->
+        <div class="agent-card active-agent">
+          <div class="agent-card-header">
+            <div class="agent-avatar">⚖️</div>
+            <div>
+              <div class="agent-title">Civic Ombudsman & Jan Sunwai Agent</div>
+              <div class="agent-role">Public Accountability & Escalation</div>
+            </div>
+          </div>
+          <span class="agent-status-badge">Active</span>
+          <div class="agent-description">
+            Protects citizen rights by monitoring SLA breaches, high cluster density (3+ reports), and dangerous hazards. Automatically dockets cases to Friday Jan Sunwai before the Commissioner.
+          </div>
+          <div class="agent-metric">
+            <span>Hearing Docket:</span>
+            <strong style="color: #f87171;">Every Friday 11 AM</strong>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Simulation Controller -->
+      <div class="sim-controls-panel">
+        <h3 style="font-size: 1.05rem; color: #fef08a; margin-bottom: 0.5rem;">
+          ⚡ Interactive Multi-Agent Deliberation Simulator
+        </h3>
+        <p style="font-size: 0.8rem; color: var(--text-muted);">
+          Trigger simulated municipal events to observe real-time autonomous reasoning and collaboration across all 6 agents.
+        </p>
+
+        <div class="sim-btn-group">
+          <button class="sim-btn" onclick="simulateAgentScenario('waterlogging_monsoon')">
+            🌊 Minto Bridge Waterlogging (Central Delhi)
+          </button>
+          <button class="sim-btn" onclick="simulateAgentScenario('sparking_transformer')">
+            ⚡ Transformer Fire Hazard (Karol Bagh)
+          </button>
+          <button class="sim-btn" onclick="simulateAgentScenario('pothole_cluster')">
+            🕳️ Multi-Citizen Pothole Cluster (Rohini Sector 15)
+          </button>
+          <button class="sim-btn" onclick="simulateAgentScenario('sewage_leak')">
+            💧 Severe Sewer Rupture (Laxmi Nagar)
+          </button>
+          <button class="sim-btn" onclick="simulateAgentScenario('spam_selfie_meme')" style="border-color: #f87171;">
+            🚫 Fraud / Spam Selfie Image Test
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Deliberation Console -->
+      <div>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+          <h3 style="font-size: 0.95rem; font-family: monospace; color: #38bdf8;">
+            &gt; MULTI_AGENT_DELIBERATION_TRACE.log
+          </h3>
+          <span id="sim-status-indicator" style="font-size: 0.72rem; color: #34d399;">System Idle & Ready</span>
+        </div>
+        <div class="deliberation-console" id="deliberation-console">
+          <div style="color: #64748b; font-style: italic;">
+            Select an interactive scenario above or submit a citizen grievance to watch autonomous agent deliberations in real-time...
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TAB 3: OFFICER COMMAND CENTER & GIS MAP -->
+    <div id="command-center" class="view-container">
       <div class="dashboard-split">
         <!-- Master Ticket Queue -->
         <div class="ticket-panel">
@@ -99,13 +546,33 @@
               <h3 style="font-size: 0.95rem; font-weight: 600;" data-i18n="queue_title">Incident Master Queue</h3>
               <span style="font-size: 0.72rem; color: var(--text-muted);" data-i18n="queue_subtitle">Spatio-Temporal Aggregated Incidents</span>
             </div>
-            <select id="status-filter" class="form-control" style="padding: 4px 8px; font-size: 0.8rem; width: auto;" onchange="loadMasterTickets()">
-              <option value="" data-i18n="filter_all">All Statuses</option>
-              <option value="OPEN" data-i18n="filter_open">Open</option>
-              <option value="IN_PROGRESS" data-i18n="filter_in_progress">In Progress</option>
-              <option value="RESOLVED" data-i18n="filter_resolved">Resolved</option>
-              <option value="JAN_SUNWAI" data-i18n="filter_jan_sunwai">Jan Sunwai Docket Only</option>
-            </select>
+            
+            <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+              <!-- 12 MCD Zones Filter -->
+              <select id="zone-filter-select" class="form-control" style="padding: 4px 8px; font-size: 0.75rem; width: auto;" onchange="loadMasterTickets()">
+                <option value="">All Zones</option>
+                <option value="Karol Bagh">Karol Bagh</option>
+                <option value="Rohini">Rohini</option>
+                <option value="Civil Lines">Civil Lines</option>
+                <option value="City-SP">City-SP</option>
+                <option value="Keshav Puram">Keshav Puram</option>
+                <option value="Narela">Narela</option>
+                <option value="Najafgarh">Najafgarh</option>
+                <option value="West">West</option>
+                <option value="South">South</option>
+                <option value="Central">Central</option>
+                <option value="Shahdara South">Shahdara South</option>
+                <option value="Shahdara North">Shahdara North</option>
+              </select>
+
+              <select id="status-filter" class="form-control" style="padding: 4px 8px; font-size: 0.75rem; width: auto;" onchange="loadMasterTickets()">
+                <option value="" data-i18n="filter_all">All Statuses</option>
+                <option value="OPEN" data-i18n="filter_open">Open</option>
+                <option value="IN_PROGRESS" data-i18n="filter_in_progress">In Progress</option>
+                <option value="RESOLVED" data-i18n="filter_resolved">Resolved</option>
+                <option value="JAN_SUNWAI" data-i18n="filter_jan_sunwai">Jan Sunwai Docket Only</option>
+              </select>
+            </div>
           </div>
           <div class="ticket-list" id="ticket-list">
             <div style="padding: 1rem; text-align: center; color: var(--text-muted);">Loading incidents...</div>
@@ -129,7 +596,7 @@
 
           <div style="position: absolute; bottom: 12px; left: 12px; z-index: 500; background: rgba(15,23,42,0.92); padding: 8px 12px; border-radius: 6px; font-size: 0.72rem; border: 1px solid var(--border);">
             <div style="font-weight: bold; margin-bottom: 4px;" data-i18n="map_legend_title">Map Legend</div>
-            <div data-i18n="map_legend_critical">🔴 Critical Urgency (5+ Citizen Reports)</div>
+            <div data-i18n="map_legend_critical">🔴 Critical Urgency (5+ Citizen Reports / Hazard)</div>
             <div data-i18n="map_legend_high">🟠 High Urgency (2-4 Citizen Reports)</div>
             <div data-i18n="map_legend_med">🟡 Moderate Urgency (1 Citizen Report)</div>
             <div data-i18n="map_legend_gate">🔵 300m Spatial Clustering Gate Perimeter</div>
@@ -138,7 +605,7 @@
       </div>
     </div>
 
-    <!-- VIEW 2: Predictive Maintenance & Monsoon Risk -->
+    <!-- TAB 4: PREDICTIVE RISK INDEX -->
     <div id="predictive-view" class="view-container">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
         <div>
@@ -161,7 +628,7 @@
             <tr style="border-bottom: 1px solid var(--border); color: var(--text-muted);">
               <th style="padding: 8px;">Asset ID</th>
               <th style="padding: 8px;">Asset Type</th>
-              <th style="padding: 8px;">Ward</th>
+              <th style="padding: 8px;">Ward / Zone</th>
               <th style="padding: 8px;">Structural Health</th>
               <th style="padding: 8px;">Failure Probability</th>
               <th style="padding: 8px;">Recommended Proactive Action</th>
@@ -174,7 +641,7 @@
       </div>
     </div>
 
-    <!-- VIEW 3: Jan Sunwai & Democratic Ward Sabha Tracking -->
+    <!-- TAB 5: JAN SUNWAI & WARD SABHA -->
     <div id="jan-sunwai-view" class="view-container">
       <div>
         <h2 style="font-size: 1.25rem;" data-i18n="jan_sunwai_title">Jan Sunwai & Democratic Ward Sabha Dashboard</h2>
@@ -213,7 +680,7 @@
       </div>
     </div>
 
-    <!-- VIEW 4: Citizen Web Portal -->
+    <!-- TAB 6: CITIZEN GRIEVANCE PORTAL -->
     <div id="citizen-portal" class="view-container">
       <div style="max-width: 680px; margin: 0 auto; width: 100%; background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1.75rem;">
         <h2 style="margin-bottom: 0.5rem; font-size: 1.3rem;" data-i18n="portal_title">Citizen Grievance Submission</h2>
@@ -236,7 +703,7 @@
             </select>
           </div>
 
-          <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 12px; margin-top: 8px;">
             <button type="button" id="voice-record-btn" class="btn-primary" style="background: #2563eb;" onclick="toggleVoiceRecording()">
               🎙️ <span id="voice-btn-label">Start Speaking</span>
             </button>
@@ -244,7 +711,7 @@
           </div>
 
           <!-- Quick Vernacular Sample Buttons -->
-          <div>
+          <div style="margin-top: 8px;">
             <div style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px;" data-i18n="voice_quick_samples">Quick Vernacular Sample Voice Inputs:</div>
             <div class="sample-chips">
               <span class="sample-chip" onclick="fillSampleGrievance('hi')">🇮🇳 Hindi: सड़क पर बड़ा गड्ढा है</span>
@@ -265,17 +732,23 @@
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
             <div class="form-group">
               <label data-i18n="label_lat">Latitude</label>
-              <input type="number" step="0.000001" id="form-lat" class="form-control" value="12.9352" required>
+              <input type="number" step="0.000001" id="form-lat" class="form-control" value="28.6514" required>
             </div>
             <div class="form-group">
               <label data-i18n="label_lon">Longitude</label>
-              <input type="number" step="0.000001" id="form-lon" class="form-control" value="77.6245" required>
+              <input type="number" step="0.000001" id="form-lon" class="form-control" value="77.1907" required>
             </div>
           </div>
 
-          <div style="margin-bottom: 1rem;">
+          <div style="margin-bottom: 1rem; display: flex; gap: 8px; flex-wrap: wrap;">
             <button type="button" class="btn-primary" style="background: #334155; font-size: 0.8rem;" onclick="detectLocation()" data-i18n="btn_gps">
-              📍 Set GPS Location (Simulate Ward Pin)
+              📍 Set GPS Location (Simulate Karol Bagh, Delhi)
+            </button>
+            <button type="button" class="btn-primary" style="background: #1e293b; font-size: 0.8rem;" onclick="setLocationCoords(28.7166, 77.1189)">
+              📍 Pin Rohini
+            </button>
+            <button type="button" class="btn-primary" style="background: #1e293b; font-size: 0.8rem;" onclick="setLocationCoords(28.6814, 77.2228)">
+              📍 Pin Civil Lines
             </button>
           </div>
 
@@ -298,12 +771,12 @@
             </div>
             <div class="form-group">
               <label data-i18n="label_phone">Phone Number</label>
-              <input type="text" id="citizen-phone" class="form-control" value="9845012345" required>
+              <input type="text" id="citizen-phone" class="form-control" value="9811099888" required>
             </div>
           </div>
 
           <button type="submit" class="btn-primary" style="width: 100%; margin-top: 1rem; padding: 12px; font-size: 0.95rem;" data-i18n="btn_submit_portal">
-            Submit Grievance to ULB
+            Submit Grievance to Municipal Corporation of Delhi
           </button>
         </form>
 
@@ -313,12 +786,12 @@
       </div>
     </div>
 
-    <!-- VIEW 5: WhatsApp Bot Simulator -->
+    <!-- TAB 7: WHATSAPP BOT SIMULATOR -->
     <div id="whatsapp-simulator" class="view-container">
       <div style="text-align: center; max-width: 600px; margin: 0 auto;">
-        <h2 style="font-size: 1.25rem;" data-i18n="wa_title">WhatsApp Municipal Bot Simulator</h2>
+        <h2 style="font-size: 1.25rem;" data-i18n="wa_title">MCD Official WhatsApp Bot Simulator (155305)</h2>
         <p style="font-size: 0.82rem; color: var(--text-muted);" data-i18n="wa_sub">
-          Experience how Indian citizens interact via WhatsApp in code-mixed language and receive automated ticket deduplication responses.
+          Experience how Delhi citizens interact via WhatsApp in code-mixed language and receive automated ticket deduplication responses.
         </p>
       </div>
 
@@ -327,24 +800,24 @@
           <div class="wa-header">
             <div class="wa-avatar">🏛️</div>
             <div>
-              <div style="font-size: 0.88rem; font-weight: bold;">CivicSense Municipal Bot</div>
-              <div style="font-size: 0.68rem; color: #8696a0;">Official WhatsApp Helpline (Verified)</div>
+              <div style="font-size: 0.88rem; font-weight: bold;">MCD SamAashwas Bot</div>
+              <div style="font-size: 0.68rem; color: #8696a0;">Official MCD Grievance Helpline &bull; 155305</div>
             </div>
           </div>
 
           <div class="wa-chat-body" id="wa-chat-body">
             <div class="wa-msg in" data-i18n="wa_welcome">
-              Namaste! 🙏 Welcome to CivicSense Municipal Grievance Helpline.
+              Namaste! 🙏 Welcome to Municipal Corporation of Delhi (MCD) Helpline.
               Aap apni samasya (Hinglish/Hindi/Kannada/Tamil/English) yahan type karein ya photo/voice note bhejein.
             </div>
           </div>
 
           <!-- Quick Action Buttons for WhatsApp Citizens -->
           <div class="wa-quick-chips">
-            <button class="wa-chip" onclick="sendQuickWhatsApp('Sadak par bada gaddha hai, Ward 3')" data-i18n="quick_road">🚧 Sadak Gaddha</button>
-            <button class="wa-chip" onclick="sendQuickWhatsApp('Streetlight kharab hai 4 din se, Ward 1')" data-i18n="quick_light">💡 Streetlight Kharab</button>
-            <button class="wa-chip" onclick="sendQuickWhatsApp('Kachra gadi nahi aayi kachra pada hai')" data-i18n="quick_garbage">🧹 Kachra Dump</button>
-            <button class="wa-chip" onclick="sendQuickWhatsApp('Sewer overflow ho raha hai ganda paani')" data-i18n="quick_water">💧 Paani / Sewer Leak</button>
+            <button class="wa-chip" onclick="sendQuickWhatsApp('Sadak par bada gaddha hai, Karol Bagh')" data-i18n="quick_road">🚧 Sadak Gaddha</button>
+            <button class="wa-chip" onclick="sendQuickWhatsApp('Streetlight kharab hai 4 din se, Rohini')" data-i18n="quick_light">💡 Streetlight Kharab</button>
+            <button class="wa-chip" onclick="sendQuickWhatsApp('Kachra gadi nahi aayi kachra pada hai Civil Lines')" data-i18n="quick_garbage">🧹 Kachra Dump</button>
+            <button class="wa-chip" onclick="sendQuickWhatsApp('Sewer overflow ho raha hai ganda paani Laxmi Nagar')" data-i18n="quick_water">💧 Paani / Sewer Leak</button>
           </div>
 
           <div class="wa-input-bar">
@@ -359,21 +832,25 @@
 
   <!-- Mobile Bottom Navigation Bar -->
   <div class="mobile-bottom-nav">
-    <button class="mobile-nav-item active" data-tab="command-center" onclick="switchTab('command-center')">
+    <button class="mobile-nav-item active" data-tab="mcd-home" onclick="switchTab('mcd-home')">
       <span>🏛️</span>
+      <span>Home</span>
+    </button>
+    <button class="mobile-nav-item" data-tab="agent-view" onclick="switchTab('agent-view')">
+      <span>🤖</span>
+      <span>Agents</span>
+    </button>
+    <button class="mobile-nav-item" data-tab="command-center" onclick="switchTab('command-center')">
+      <span>📊</span>
       <span data-i18n="tab_command_center">Command</span>
     </button>
     <button class="mobile-nav-item" data-tab="predictive-view" onclick="switchTab('predictive-view')">
       <span>🌧️</span>
       <span data-i18n="tab_predictive_view">Risk</span>
     </button>
-    <button class="mobile-nav-item" data-tab="jan-sunwai-view" onclick="switchTab('jan-sunwai-view')">
-      <span>⚖️</span>
-      <span data-i18n="tab_jan_sunwai">Jan Sunwai</span>
-    </button>
     <button class="mobile-nav-item" data-tab="citizen-portal" onclick="switchTab('citizen-portal')">
       <span>📝</span>
-      <span data-i18n="tab_citizen_portal">Citizen</span>
+      <span data-i18n="tab_citizen_portal">Grievance</span>
     </button>
     <button class="mobile-nav-item" data-tab="whatsapp-simulator" onclick="switchTab('whatsapp-simulator')">
       <span>💬</span>
@@ -398,7 +875,7 @@
 
       <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem; background: #0f172a; padding: 1rem; border-radius: 6px; font-size: 0.82rem;">
         <div><strong>Department:</strong> <span id="modal-dept"></span></div>
-        <div><strong>Ward:</strong> <span id="modal-ward"></span></div>
+        <div><strong>MCD Zone & Ward:</strong> <span id="modal-ward"></span></div>
         <div><strong>Urgency:</strong> <span id="modal-urgency"></span></div>
         <div><strong>Status:</strong> <span id="modal-status"></span></div>
         <div><strong>Assigned Officer:</strong> <span id="modal-engineer"></span></div>
@@ -422,6 +899,82 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal: Application Tracking Certificate -->
+  <div class="modal-overlay" id="tracking-modal" onclick="closeTrackingModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 620px;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="font-size: 1.8rem;">🏛️</div>
+          <div>
+            <h3 style="margin: 0; font-size: 1.15rem; color: #ffffff;">MCD Grievance Tracking Dossier</h3>
+            <span style="font-size: 0.72rem; color: #fef08a;" id="track-modal-id">Tracking ID</span>
+          </div>
+        </div>
+        <button onclick="closeTrackingModal()" style="background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;">&times;</button>
+      </div>
+
+      <div id="track-modal-body">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Official MCD Government Footer -->
+  <footer class="mcd-footer">
+    <div class="footer-grid">
+      <div class="footer-col">
+        <h4>Municipal Corporation of Delhi</h4>
+        <p style="line-height: 1.5; color: #cbd5e1;">
+          Dedicated to responsive, transparent, and digitally empowered urban governance for 20+ million residents across Delhi's 12 administrative zones.
+        </p>
+        <div style="margin-top: 8px; font-weight: bold; color: #fef08a;">
+          Toll-Free Helpline: 155305 / 1800-11-8700
+        </div>
+      </div>
+
+      <div class="footer-col">
+        <h4>Quick Civic Links</h4>
+        <ul>
+          <li><a href="javascript:void(0)" onclick="openServiceInfo('birth_death')">Birth & Death Registration</a></li>
+          <li><a href="javascript:void(0)" onclick="openServiceInfo('property_tax')">Property Tax (PTR) Assessment</a></li>
+          <li><a href="javascript:void(0)" onclick="openServiceInfo('trade_license')">Factory & Trade Licensing</a></li>
+          <li><a href="javascript:void(0)" onclick="switchTab('citizen-portal')">SamAashwas Grievance Redressal</a></li>
+          <li><a href="javascript:void(0)" onclick="openServiceInfo('building_plan')">Online Building Plan Sanction (OBPS)</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>MCD Administrative Zones</h4>
+        <ul>
+          <li><a href="javascript:void(0)" onclick="onZoneSelectChange('City-SP')">City-SP &bull; Karol Bagh &bull; Civil Lines</a></li>
+          <li><a href="javascript:void(0)" onclick="onZoneSelectChange('Rohini')">Rohini &bull; Keshav Puram &bull; Narela</a></li>
+          <li><a href="javascript:void(0)" onclick="onZoneSelectChange('Najafgarh')">Najafgarh &bull; West &bull; South Zone</a></li>
+          <li><a href="javascript:void(0)" onclick="onZoneSelectChange('Central')">Central &bull; Shahdara South &bull; North</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col">
+        <h4>Public Accountability</h4>
+        <ul>
+          <li><a href="javascript:void(0)" onclick="switchTab('jan-sunwai-view')">Friday Jan Sunwai Public Docket</a></li>
+          <li><a href="javascript:void(0)">Right to Information (RTI Act 2005)</a></li>
+          <li><a href="javascript:void(0)">Citizen Charter Statutory SLAs</a></li>
+          <li><a href="javascript:void(0)">Vigilance & Anti-Corruption Cell</a></li>
+          <li><a href="javascript:void(0)" onclick="switchTab('agent-view')">Autonomous AI Multi-Agent Audit Log</a></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <div>
+        Official Portal of the <strong>Municipal Corporation of Delhi (दिल्ली नगर निगम)</strong>, Government of NCT of Delhi.
+      </div>
+      <div style="margin-top: 4px;">
+        Designed & Powered by <strong>CivicSense AI - SamAashwas</strong> Municipal Intelligence System. All Rights Reserved 2026.
+      </div>
+    </div>
+  </footer>
 
   <!-- Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>

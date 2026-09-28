@@ -41,6 +41,7 @@ class ComplaintCreateRequest(BaseModel):
     image_url: Optional[str] = Field(None, description="Image URL or base64 data")
     image_category_hint: Optional[str] = Field(None, description="Vision verification hint")
     audio_transcript: Optional[str] = Field(None, description="Voice note speech-to-text transcript")
+    mcd_zone: Optional[str] = Field(None, description="MCD Administrative Zone")
 
 class VoiceNoteComplaintRequest(BaseModel):
     spoken_language: str = Field("hi-IN", description="Language code: hi-IN, kn-IN, ta-IN, en-IN, or hinglish")
@@ -49,6 +50,7 @@ class VoiceNoteComplaintRequest(BaseModel):
     lon: float = Field(..., description="Longitude coordinate")
     citizen_name: Optional[str] = Field("Citizen", description="Citizen name")
     citizen_phone: Optional[str] = Field("9876543210", description="Citizen phone")
+    mcd_zone: Optional[str] = Field(None, description="MCD Zone")
 
 class ExtractedNLPData(BaseModel):
     department: str
@@ -85,6 +87,8 @@ class ComplaintResponse(BaseModel):
     corporator_name: Optional[str] = None
     mla_name: Optional[str] = None
     audio_transcript: Optional[str] = None
+    mcd_zone: Optional[str] = None
+    agent_trace: Optional[List[Dict[str, Any]]] = None
 
 class MasterTicketResponse(BaseModel):
     master_ticket_id: str
@@ -111,6 +115,8 @@ class MasterTicketResponse(BaseModel):
     mla: Optional[Dict[str, str]] = None
     ward_sabha_schedule: Optional[str] = None
     desilting_readiness_pct: Optional[int] = None
+    mcd_zone: Optional[str] = None
+    agent_trace: Optional[List[Dict[str, Any]]] = None
 
 class MasterTicketUpdateRequest(BaseModel):
     status: Optional[TicketStatusEnum] = None
@@ -175,3 +181,57 @@ class WhatsAppMessageResponse(BaseModel):
     status: str
     national_mission: Optional[str] = None
     jan_sunwai_status: Optional[str] = None
+
+class AgentStepResultSchema(BaseModel):
+    agent_name: str
+    status: str
+    confidence: float
+    thought_log: str
+    action_taken: str
+    outputs: Dict[str, Any]
+    timestamp: str
+
+class OrchestrationResponse(BaseModel):
+    orchestration_status: str
+    narrative_summary: str
+    complaint_id: Optional[str] = None
+    master_ticket_id: Optional[str] = None
+    department: Optional[str] = None
+    issue_type: Optional[str] = None
+    urgency: Optional[str] = None
+    location_landmark: Optional[str] = None
+    mcd_zone: Optional[str] = None
+    ward_name: Optional[str] = None
+    assigned_engineer: Optional[str] = None
+    sla_hours: Optional[int] = None
+    is_duplicate: bool = False
+    jan_sunwai_status: Optional[str] = None
+    agent_trace: List[Dict[str, Any]]
+
+class AgentStatusInfo(BaseModel):
+    id: str
+    name: str
+    role: str
+    description: str
+    status: str
+    framework: str
+
+class TrackingLookupResponse(BaseModel):
+    tracking_id: str
+    type: str # "complaint" or "master_ticket"
+    title: str
+    department: str
+    urgency: str
+    status: str
+    ward_name: str
+    mcd_zone: Optional[str] = None
+    sla_hours_remaining: int
+    is_sla_breached: bool = False
+    assigned_engineer: str
+    jan_sunwai_status: str
+    created_at: str
+    report_count: int = 1
+    national_mission: Optional[str] = None
+    corporator: Optional[Dict[str, str]] = None
+    agent_trace: Optional[List[Dict[str, Any]]] = None
+
