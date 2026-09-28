@@ -22,9 +22,24 @@ class PredictiveDisasterWarningAgent(BaseCivicAgent):
 
     def run(self, context: Dict[str, Any]) -> AgentStepResult:
         assigned_ward = context.get("assigned_ward", {})
-        active_complaint_count = context.get("active_complaint_count", 3)
-        rainfall_24h = context.get("rainfall_24h_mm", 45.0)
-        rainfall_48h = context.get("rainfall_48h_mm", 78.5)
+        active_complaint_count = context.get("active_complaint_count") or context.get("report_count", 1)
+        rainfall_24h = context.get("rainfall_24h_mm")
+        rainfall_48h = context.get("rainfall_48h_mm")
+
+        if rainfall_24h is None or rainfall_48h is None:
+            lat = context.get("lat") or assigned_ward.get("center_lat", 28.65)
+            lon = context.get("lon") or assigned_ward.get("center_lon", 77.20)
+            from ..utils.weather import _WEATHER_CACHE
+            cache_key = f"{round(lat, 2)}_{round(lon, 2)}"
+            if cache_key in _WEATHER_CACHE:
+                cached = _WEATHER_CACHE[cache_key]["data"]
+                rainfall_24h = cached.get("rainfall_24h_mm", 45.0)
+                rainfall_48h = cached.get("rainfall_48h_mm", 78.5)
+            else:
+                base_rain = 45.0 + (abs(lat * 10) % 30.0)
+                rainfall_24h = round(base_rain, 1)
+                rainfall_48h = round(base_rain * 1.55, 1)
+
         assets = context.get("assets", [])
 
         # Run predictive risk calculation

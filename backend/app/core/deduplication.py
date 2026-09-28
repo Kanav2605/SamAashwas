@@ -22,7 +22,9 @@ SYNONYMS = {
     'sewer': 'gutter', 'sewage': 'gutter', 'drain': 'gutter', 'drainage': 'gutter', 'nali': 'gutter',
     'road': 'sadak', 'street': 'sadak', 'rasta': 'sadak',
     'kachra': 'garbage', 'kuda': 'garbage', 'waste': 'garbage', 'trash': 'garbage',
-    'paani': 'water', 'pipe': 'pipeline', 'overflowing': 'overflow', 'potholes': 'pothole', 'gaddha': 'pothole', 'gaddhe': 'pothole'
+    'paani': 'water', 'pipe': 'pipeline', 'overflowing': 'overflow', 
+    'potholes': 'pothole', 'gaddha': 'pothole', 'gaddhe': 'pothole', 'crater': 'pothole', 'khadda': 'pothole',
+    'skidding': 'slipping', 'bikes': 'bike', 'motorcycle': 'bike', 'scooter': 'bike'
 }
 
 def _normalize_tokens(text: str) -> List[str]:
@@ -115,14 +117,22 @@ class SemanticDeduplicator:
                         sim = report_sim
 
                 # If same issue type or landmark match, boost confidence within the 300m radius
-                if new_complaint.issue_type and master.issue_type and new_complaint.issue_type.lower() == master.issue_type.lower():
-                    sim = min(1.0, sim + 0.10)
+                issue1 = getattr(new_complaint, "issue_type", None)
+                issue2 = getattr(master, "issue_type", None)
+                if issue1 and issue2 and issue1.lower() == issue2.lower():
+                    sim = min(1.0, sim + 0.12)
+
+                landmark = getattr(new_complaint, "location_landmark", None)
                 if (
-                    new_complaint.location_landmark 
-                    and new_complaint.location_landmark.lower() != "local vicinity"
-                    and new_complaint.location_landmark.lower() in master.title.lower()
+                    landmark 
+                    and landmark.lower() != "local vicinity"
+                    and landmark.lower() in master.title.lower()
                 ):
                     sim = min(1.0, sim + 0.10)
+
+                # Geographic proximity boost: close complaints within 100m in same department
+                if dist_meters <= 100.0:
+                    sim = min(1.0, sim + 0.12)
 
                 # If exceeds similarity threshold and closer or better match
                 if sim >= self.similarity_threshold:

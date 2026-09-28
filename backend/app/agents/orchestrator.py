@@ -94,32 +94,34 @@ class MultiAgentOrchestrator:
 
         # Step 1: Citizen Reception Agent
         step1 = self.reception_agent.run(context)
-        trace.append(step1.dict())
+        trace.append(step1.to_dict())
 
         # Step 2: Visual Verification & Fraud Agent
         step2 = self.vision_agent.run(context)
-        trace.append(step2.dict())
+        trace.append(step2.to_dict())
 
         # Step 3: Ward & SLA Routing Agent
         step3 = self.ward_routing_agent.run(context)
-        trace.append(step3.dict())
+        trace.append(step3.to_dict())
 
         # Step 4: Geo-Deduplication & Clustering Agent
         step4 = self.dedup_agent.run(context)
-        trace.append(step4.dict())
+        trace.append(step4.to_dict())
 
         # Prepare context for Predictive & Ombudsman
-        context["report_count"] = 1
-        if context.get("matching_master"):
-            context["report_count"] = context["matching_master"].report_count + 1
+        if not context.get("report_count"):
+            if context.get("matching_master"):
+                context["report_count"] = context["matching_master"].report_count + 1
+            else:
+                context["report_count"] = 1
 
         # Step 5: Predictive Maintenance & Disaster Warning Agent
         step5 = self.predictive_agent.run(context)
-        trace.append(step5.dict())
+        trace.append(step5.to_dict())
 
         # Step 6: Civic Ombudsman & Jan Sunwai Escalation Agent
         step6 = self.ombudsman_agent.run(context)
-        trace.append(step6.dict())
+        trace.append(step6.to_dict())
 
         narrative = (
             f"Grievance near '{context.get('location_landmark')}' ingested by {self.reception_agent.name} as '{context.get('department')}' ({context.get('urgency')}). "
@@ -129,6 +131,9 @@ class MultiAgentOrchestrator:
             f"Vulnerability risk score: {context.get('risk_score', 'N/A')}/100 ({context.get('risk_level', 'NORMAL')}). "
             f"Ombudsman status: {context.get('jan_sunwai_status')} for Friday Jan Sunwai hearing."
         )
+
+        vis_res = context.get("vision_result")
+        vis_dump = vis_res.model_dump() if hasattr(vis_res, "model_dump") else (vis_res.dict() if vis_res else None)
 
         return {
             "orchestration_status": "COMPLETED",
@@ -145,7 +150,7 @@ class MultiAgentOrchestrator:
             "is_duplicate": context.get("is_duplicate", False),
             "matching_master_id": context.get("matching_master").master_ticket_id if context.get("matching_master") else None,
             "jan_sunwai_status": context.get("jan_sunwai_status"),
-            "vision_result": context.get("vision_result").dict() if context.get("vision_result") else None
+            "vision_result": vis_dump
         }
 
 # Global singleton

@@ -5,6 +5,8 @@ const I18N_TRANSLATIONS = {
   en: {
     brand_sub: "SamAashwas Municipal Intelligence Platform",
     ulb_badge: "ULB Live Command Center",
+    tab_mcd_home: "🏛️ MCD Citizen Portal Home",
+    tab_agent_view: "🤖 AI Multi-Agent Orchestration",
     tab_command_center: "Officer Command Center",
     tab_predictive_view: "Predictive Risk Index",
     tab_jan_sunwai: "Jan Sunwai & Ward Sabha",
@@ -88,6 +90,8 @@ const I18N_TRANSLATIONS = {
   hi: {
     brand_sub: "समाश Centro - नगर निगम खुफिया एवं शिकायत निवारण मंच",
     ulb_badge: "यूएलबी लाइव कमांड सेंटर",
+    tab_mcd_home: "🏛️ दिल्ली नगर निगम नागरिक पोर्टल",
+    tab_agent_view: "🤖 एआई मल्टी-एजेंट ऑर्केस्ट्रेशन",
     tab_command_center: "अधिकारी नियंत्रण कक्ष",
     tab_predictive_view: "पूर्वानुमान जोखिम सूचकांक",
     tab_jan_sunwai: "जन सुनवाई व वार्ड सभा",
@@ -171,6 +175,8 @@ const I18N_TRANSLATIONS = {
   hg: {
     brand_sub: "SamAashwas Municipal Intelligence Platform",
     ulb_badge: "ULB Live Command Center",
+    tab_mcd_home: "🏛️ MCD Citizen Portal Home",
+    tab_agent_view: "🤖 AI Multi-Agent Orchestration",
     tab_command_center: "Officer Command Center",
     tab_predictive_view: "Predictive Risk Index",
     tab_jan_sunwai: "Jan Sunwai & Ward Sabha",
@@ -254,6 +260,8 @@ const I18N_TRANSLATIONS = {
   kn: {
     brand_sub: "ಸಮಾಶ್ವಾಸ ಪೌರ ಸೌಲಭ್ಯ ಮತ್ತು ಜನತಂತ್ರ ವೇದಿಕೆ",
     ulb_badge: "ನಗರ ಪಾಲಿಕೆ ಕಮಾಂಡ್ ಸೆಂಟರ್",
+    tab_mcd_home: "🏛️ ಎಂಸಿಡಿ ನಾಗರಿಕ ಪೋರ್ಟಲ್ ಮುಖಪುಟ",
+    tab_agent_view: "🤖 ಎಐ ಮಲ್ಟಿ-ಏಜೆಂಟ್ ಆರ್ಕೆಸ್ಟ್ರೇಶನ್",
     tab_command_center: "ಅಧಿಕಾರಿಯ ನಿಯಂತ್ರಣ ಕೇಂದ್ರ",
     tab_predictive_view: "ಮುನ್ಸೂಚಕ ಅಪಾಯ ಸೂಚ್ಯಂಕ",
     tab_jan_sunwai: "ಜನಸ್ಪಂದನ ಮತ್ತು ವಾರ್ಡ್ ಸಭೆ",
@@ -337,6 +345,8 @@ const I18N_TRANSLATIONS = {
   ta: {
     brand_sub: "சமாஷ்வாஸ் நகராட்சி நுண்ணறிவு மற்றும் குறைதீர்ப்பு தளம்",
     ulb_badge: "நகராட்சி நேரடி கட்டுப்பாட்டு மையம்",
+    tab_mcd_home: "🏛️ எம்சிடி குடிமக்கள் போர்டல் முகப்பு",
+    tab_agent_view: "🤖 AI பல-முகவர் ஒருங்கிணைப்பு",
     tab_command_center: "அதிகாரி கட்டளை மையம்",
     tab_predictive_view: "முன்னறிவிப்பு இடர் குறியீடு",
     tab_jan_sunwai: "மக்கள் குறைதீர்ப்பு & வார்டு சபை",

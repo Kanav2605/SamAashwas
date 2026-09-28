@@ -25,13 +25,23 @@ class GeoDeduplicationAgent(BaseCivicAgent):
         complaint = context.get("complaint_record")
         active_masters = context.get("active_masters", [])
 
-        if not complaint or not active_masters:
+        if not complaint:
+            from types import SimpleNamespace
+            complaint = SimpleNamespace(
+                department=context.get("department", "General"),
+                lat=context.get("lat", 0.0),
+                lon=context.get("lon", 0.0),
+                raw_text=context.get("raw_text", "")
+            )
+
+        if not active_masters:
             thought = (
                 "No active master tickets found in local vicinity. "
                 "Marking as initial incident anchor."
             )
             context["is_duplicate"] = False
             context["matching_master"] = None
+            context["report_count"] = 1
             return AgentStepResult(
                 agent_name=self.name,
                 status="NEW_MASTER",
@@ -47,15 +57,17 @@ class GeoDeduplicationAgent(BaseCivicAgent):
         )
 
         if matching_master:
+            new_report_count = matching_master.report_count + 1
             thought = (
                 f"DUPLICATE DETECTED & CLUSTERED: Complaint is located {dist_m:.1f} meters from active Master Ticket "
                 f"'{matching_master.master_ticket_id}' with text semantic similarity of {similarity*100:.1f}%. "
-                f"Clustering into existing master ticket. Community weight increased to {matching_master.report_count + 1} citizen endorsements."
+                f"Clustering into existing master ticket. Community weight increased to {new_report_count} citizen endorsements."
             )
             context["is_duplicate"] = True
             context["matching_master"] = matching_master
             context["dedup_distance_m"] = dist_m
             context["dedup_similarity"] = similarity
+            context["report_count"] = new_report_count
 
             return AgentStepResult(
                 agent_name=self.name,

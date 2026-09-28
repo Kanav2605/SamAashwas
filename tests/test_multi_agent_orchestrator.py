@@ -164,3 +164,101 @@ def test_ombudsman_manual_escalate_api():
     })
     assert esc_res.status_code == 200
     assert esc_res.json()["jan_sunwai_status"] == "ESCALATED"
+
+def test_geo_dedup_agent_unit_with_proxy_complaint():
+    agent = GeoDeduplicationAgent()
+    from backend.app.models.domain import MasterTicketRecord
+    master = MasterTicketRecord(
+        master_ticket_id="MST-KB-0099",
+        department="Water Supply & Sewage",
+        title="Sewer overflow near Pusa Road",
+        issue_type="Sewer Line Overflow",
+        ward_id="MCD-KB-83",
+        ward_name="Karol Bagh - Rajendra Nagar",
+        lat=28.6514,
+        lon=77.1907,
+        report_count=1
+    )
+    context = {
+        "department": "Water Supply & Sewage",
+        "raw_text": "Gutter overflow and dirty water near Pusa road Karol Bagh",
+        "lat": 28.6515,
+        "lon": 77.1908,
+        "active_masters": [master]
+    }
+    result = agent.run(context)
+    assert result.status == "MERGED"
+    assert result.outputs["is_duplicate"] is True
+    assert result.outputs["master_ticket_id"] == "MST-KB-0099"
+    assert context["report_count"] == 2
+
+def test_duplicate_clustering_and_community_density_ombudsman_escalation():
+    # 1. First complaint -> Creates new master ticket
+    res1 = client.post("/api/v1/complaints/submit", json={
+        "raw_text": "Dangerous deep pothole on Karol Bagh Pusa Road, two wheelers skidding",
+        "lat": 28.6514,
+        "lon": 77.1907,
+        "citizen_name": "Citizen One",
+        "citizen_phone": "9811000001",
+        "channel": "web_portal"
+    })
+    assert res1.status_code == 200
+    data1 = res1.json()
+    master_id = data1["master_ticket_id"]
+    assert data1["is_duplicate"] is False
+
+    # 2. Second complaint -> Within 20m, clustered into existing master ticket
+    res2 = client.post("/api/v1/complaints/submit", json={
+        "raw_text": "Bada gaddha road pe Pusa road Karol Bagh bikes slipping",
+        "lat": 28.6515,
+        "lon": 77.1908,
+        "citizen_name": "Citizen Two",
+        "citizen_phone": "9811000002",
+        "channel": "whatsapp"
+    })
+    assert res2.status_code == 200
+    data2 = res2.json()
+    assert data2["is_duplicate"] is True
+    assert data2["master_ticket_id"] == master_id
+
+    # Verify Agent 4 (Geo-Dedup) trace correctly recorded MERGED
+    dedup_step = [s for s in data2["agent_trace"] if s["agent_name"] == "Geo-Deduplication & Clustering Agent"][0]
+    assert dedup_step["status"] == "MERGED"
+    assert dedup_step["outputs"]["is_duplicate"] is True
+
+    # 3. Third complaint -> Reaches community grievance density of 3 reports
+    res3 = client.post("/api/v1/complaints/submit", json={
+        "raw_text": "Huge crater pothole please repair Pusa Road Karol bagh",
+        "lat": 28.6514,
+        "lon": 77.1907,
+        "citizen_name": "Citizen Three",
+        "citizen_phone": "9811000003",
+        "channel": "mobile_app"
+    })
+    assert res3.status_code == 200
+    data3 = res3.json()
+    assert data3["is_duplicate"] is True
+    assert data3["master_ticket_id"] == master_id
+
+    # Verify Agent 6 (Ombudsman) auto-docketed to Friday Jan Sunwai
+    ombudsman_step = [s for s in data3["agent_trace"] if s["agent_name"] == "Civic Ombudsman & Jan Sunwai Escalation Agent"][0]
+    assert ombudsman_step["status"] == "ESCALATED"
+    assert ombudsman_step["outputs"]["jan_sunwai_status"] == "ESCALATED"
+
+    # Master ticket in database should now be ESCALATED
+    master = db.get_master_ticket_by_id(master_id)
+    assert master.jan_sunwai_status == "ESCALATED"
+    assert master.report_count >= 3
+
+def test_simulate_pothole_cluster_demonstrates_dedup_and_escalation():
+    res = client.post("/api/v1/agents/simulate", json={"scenario": "pothole_cluster"})
+    assert res.status_code == 200
+    data = res.json()
+    assert data["orchestration_status"] == "COMPLETED"
+    
+    dedup_step = [s for s in data["agent_trace"] if s["agent_name"] == "Geo-Deduplication & Clustering Agent"][0]
+    assert dedup_step["status"] == "MERGED"
+    assert dedup_step["outputs"]["is_duplicate"] is True
+
+    ombudsman_step = [s for s in data["agent_trace"] if s["agent_name"] == "Civic Ombudsman & Jan Sunwai Escalation Agent"][0]
+    assert ombudsman_step["status"] == "ESCALATED"

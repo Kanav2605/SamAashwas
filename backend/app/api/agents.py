@@ -109,6 +109,29 @@ async def simulate_scenario(payload: SimulateScenarioRequest):
     scen = scenarios.get(payload.scenario, scenarios["waterlogging_monsoon"])
     req = ComplaintCreateRequest(**scen)
     active_masters = [m for m in db.master_tickets.values() if m.status != "RESOLVED"]
+
+    if payload.scenario == "pothole_cluster":
+        has_cluster_master = any("Rohini" in (getattr(m, "ward_name", "") or "") and getattr(m, "department", "") == "Roads & Traffic Infrastructure" for m in active_masters)
+        if not has_cluster_master:
+            from ..models.domain import MasterTicketRecord
+            mock_master = MasterTicketRecord(
+                master_ticket_id="MST-ROH-0881",
+                department="Roads & Traffic Infrastructure",
+                title="Pothole / Road Cave-in near Rohini Sector 15",
+                issue_type="Pothole / Road Cave-in",
+                ward_id="MCD-ROH-54",
+                ward_name="Rohini Sector 15 - Prashant Vihar",
+                mcd_zone="Rohini",
+                lat=28.7181,
+                lon=77.1191,
+                urgency="High",
+                status="OPEN",
+                report_count=2,
+                national_mission="State PWD & Municipal Road Safety Program",
+                assigned_engineer="Rohini Assistant Engineer (Roads Division)"
+            )
+            active_masters = [mock_master] + active_masters
+
     res = agent_orchestrator.orchestrate_complaint(
         raw_text=req.raw_text,
         lat=req.lat,

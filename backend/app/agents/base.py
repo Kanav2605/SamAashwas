@@ -12,6 +12,11 @@ class AgentStepResult(BaseModel):
     outputs: Dict[str, Any] = Field(default_factory=dict)
     timestamp: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
+    def to_dict(self) -> Dict[str, Any]:
+        if hasattr(self, "model_dump"):
+            return self.model_dump()
+        return self.dict()
+
 class BaseCivicAgent(ABC):
     def __init__(self, name: str, role: str, description: str):
         self.name = name

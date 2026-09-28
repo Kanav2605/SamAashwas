@@ -110,7 +110,8 @@ class MasterTicketRecord:
         ward_sabha_schedule: Optional[str] = None,
         desilting_readiness_pct: Optional[int] = None,
         mcd_zone: Optional[str] = None,
-        agent_trace: Optional[List[Dict[str, Any]]] = None
+        agent_trace: Optional[List[Dict[str, Any]]] = None,
+        report_count: Optional[int] = None
     ):
         self.master_ticket_id = master_ticket_id or f"MST-{uuid.uuid4().hex[:8].upper()}"
         self.department = department
@@ -126,6 +127,7 @@ class MasterTicketRecord:
         self.first_reported_at = first_reported_at or datetime.now(timezone.utc).isoformat()
         self.last_reported_at = self.first_reported_at
         self.citizen_reports: List[Dict[str, Any]] = []
+        self._initial_report_count = report_count or 0
         self.national_mission = national_mission or "Swachh Bharat / AMRUT Urban Mission"
         self.citizen_charter_sla_hours = citizen_charter_sla_hours or (24 if urgency in ["High", "Critical"] else 48)
         self.sla_hours_remaining = self.citizen_charter_sla_hours
@@ -141,7 +143,7 @@ class MasterTicketRecord:
 
     @property
     def report_count(self) -> int:
-        return len(self.citizen_reports)
+        return max(len(self.citizen_reports), self._initial_report_count)
 
     @property
     def current_sla_hours_remaining(self) -> int:
@@ -179,6 +181,8 @@ class MasterTicketRecord:
             "lat": complaint.lat,
             "lon": complaint.lon
         })
+        if self._initial_report_count > 0:
+            self._initial_report_count += 1
         self.last_reported_at = complaint.created_at
 
         # Check if the incoming complaint has higher urgency than the master ticket

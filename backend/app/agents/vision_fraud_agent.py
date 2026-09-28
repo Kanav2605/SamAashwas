@@ -48,7 +48,7 @@ class VisualVerificationFraudAgent(BaseCivicAgent):
         context["vision_result"] = vision_res
 
         if vision_res:
-            outputs = vision_res.dict()
+            outputs = vision_res.model_dump() if hasattr(vision_res, "model_dump") else vision_res.dict()
             if vision_res.mismatch_detected:
                 thought = (
                     f"POTENTIAL ANOMALY / SPAM DETECTED: {vision_res.explanation} "

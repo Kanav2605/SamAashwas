@@ -48,8 +48,59 @@ class MunicipalDatabase:
                 logger.error(f"Error loading municipal assets: {e}")
         
         if not self.wards:
-            # Fallback default wards if file not found
+            # Fallback default wards if file not found (Including Delhi MCD Wards)
             self.wards = [
+                {
+                    "ward_id": "MCD-KB-83",
+                    "ward_name": "Karol Bagh - Rajendra Nagar",
+                    "city": "Delhi",
+                    "mcd_zone": "Karol Bagh",
+                    "center_lat": 28.6514,
+                    "center_lon": 77.1907,
+                    "population": 98000,
+                    "elevation_m": 222,
+                    "low_lying_zone": false,
+                    "drainage_coverage_pct": 82,
+                    "corporator": {"name": "Smt. Usha Sharma", "designation": "Parshad", "phone": "+91-98110-12002"},
+                    "mla": {"name": "Shri Durgesh Pathak", "constituency": "Rajinder Nagar"},
+                    "ward_sabha_schedule": "Every 2nd Saturday, 10:30 AM",
+                    "pre_monsoon_desilting_pct": 82,
+                    "primary_mission": "AMRUT 2.0 & Urban Water Drainage"
+                },
+                {
+                    "ward_id": "MCD-CL-15",
+                    "ward_name": "Civil Lines - Kashmiri Gate",
+                    "city": "Delhi",
+                    "mcd_zone": "Civil Lines",
+                    "center_lat": 28.6814,
+                    "center_lon": 77.2228,
+                    "population": 88000,
+                    "elevation_m": 210,
+                    "low_lying_zone": true,
+                    "drainage_coverage_pct": 68,
+                    "corporator": {"name": "Shri Vikas Goyal", "designation": "Parshad", "phone": "+91-98110-12003"},
+                    "mla": {"name": "Shri Dilip Pandey", "constituency": "Timarpur"},
+                    "ward_sabha_schedule": "Every 1st Saturday, 10:30 AM",
+                    "pre_monsoon_desilting_pct": 64,
+                    "primary_mission": "Yamuna Catchment Flood Mitigation"
+                },
+                {
+                    "ward_id": "MCD-ROH-54",
+                    "ward_name": "Rohini Sector 15 - Prashant Vihar",
+                    "city": "Delhi",
+                    "mcd_zone": "Rohini",
+                    "center_lat": 28.7166,
+                    "center_lon": 77.1189,
+                    "population": 125000,
+                    "elevation_m": 220,
+                    "low_lying_zone": false,
+                    "drainage_coverage_pct": 90,
+                    "corporator": {"name": "Shri Pravesh Sharma", "designation": "Parshad", "phone": "+91-98110-12005"},
+                    "mla": {"name": "Shri Vijender Gupta", "constituency": "Rohini"},
+                    "ward_sabha_schedule": "Every 2nd Sunday, 10:00 AM",
+                    "pre_monsoon_desilting_pct": 91,
+                    "primary_mission": "Swachh Bharat Mission (SBM-Urban 2.0)"
+                },
                 {
                     "ward_id": "WARD-01",
                     "ward_name": "Indiranagar Central",
@@ -64,21 +115,6 @@ class MunicipalDatabase:
                     "ward_sabha_schedule": "Every 1st Saturday, 10:30 AM",
                     "pre_monsoon_desilting_pct": 86,
                     "primary_mission": "Smart Cities & Urban Drainage"
-                },
-                {
-                    "ward_id": "WARD-02",
-                    "ward_name": "Koramangala 4th Block",
-                    "city": "Bengaluru",
-                    "center_lat": 12.9352,
-                    "center_lon": 77.6245,
-                    "population": 82000,
-                    "low_lying_zone": true,
-                    "drainage_coverage_pct": 68,
-                    "corporator": {"name": "Shri M. Chandrappa", "designation": "Parshad", "phone": "+91-98450-22334"},
-                    "mla": {"name": "Shri Ramalinga Reddy", "constituency": "BTM Layout"},
-                    "ward_sabha_schedule": "Every 2nd Saturday, 11:00 AM",
-                    "pre_monsoon_desilting_pct": 62,
-                    "primary_mission": "AMRUT 2.0 & Jal Jeevan Mission"
                 }
             ]
 
@@ -116,24 +152,7 @@ class MunicipalDatabase:
         active_masters = [m for m in self.master_tickets.values() if m.status != "RESOLVED"]
         channel_str = req.channel.value if hasattr(req.channel, "value") else str(req.channel)
 
-        # Execute 6-Agent Civic Orchestration Pipeline
-        orchestration = agent_orchestrator.orchestrate_complaint(
-            raw_text=req.raw_text,
-            lat=req.lat,
-            lon=req.lon,
-            channel=channel_str,
-            citizen_name=req.citizen_name or "Citizen",
-            citizen_phone=req.citizen_phone or "9876543210",
-            image_url=req.image_url,
-            image_category_hint=req.image_category_hint,
-            audio_transcript=req.audio_transcript,
-            wards=self.wards,
-            active_masters=active_masters,
-            assets=self.assets
-        )
-        agent_trace = orchestration.get("agent_trace", [])
-
-        # Create Complaint Record
+        # Create Initial Complaint Record
         complaint = ComplaintRecord(
             raw_text=req.raw_text,
             department=nlp_result.department,
@@ -147,33 +166,54 @@ class MunicipalDatabase:
             channel=channel_str,
             citizen_name=req.citizen_name or "Citizen",
             citizen_phone=req.citizen_phone or "9876543210",
-            image_verification=vision_result.dict() if vision_result else None,
+            image_verification=vision_result.model_dump() if hasattr(vision_result, "model_dump") else (vision_result.dict() if vision_result else None),
             national_mission=mission_name,
             citizen_charter_sla_hours=nlp_result.citizen_charter_sla_hours,
             jan_sunwai_eligible=(nlp_result.urgency.value in ["High", "Critical"]),
             corporator_name=corporator_info.get("name", "Ward Councillor"),
             mla_name=mla_info.get("name", "Constituency MLA"),
             audio_transcript=req.audio_transcript,
-            mcd_zone=mcd_zone,
-            agent_trace=agent_trace
+            mcd_zone=mcd_zone
         )
 
-        # Step 4: Spatio-Temporal Deduplication Check
-        matching_master, dist, sim = deduplicator.find_matching_master_ticket(
-            complaint,
-            active_masters
+        # Execute 6-Agent Civic Orchestration Pipeline with bound complaint record
+        orchestration = agent_orchestrator.orchestrate_complaint(
+            raw_text=req.raw_text,
+            lat=req.lat,
+            lon=req.lon,
+            channel=channel_str,
+            citizen_name=req.citizen_name or "Citizen",
+            citizen_phone=req.citizen_phone or "9876543210",
+            image_url=req.image_url,
+            image_category_hint=req.image_category_hint,
+            audio_transcript=req.audio_transcript,
+            wards=self.wards,
+            active_masters=active_masters,
+            assets=self.assets,
+            complaint_record_ref=complaint
         )
+        agent_trace = orchestration.get("agent_trace", [])
+        complaint.agent_trace = agent_trace
 
-        if matching_master:
-            # Duplicate detected! Cluster into existing Master Ticket
-            complaint.master_ticket_id = matching_master.master_ticket_id
-            complaint.is_duplicate = True
-            matching_master.add_report(complaint)
-            matching_master.agent_trace = agent_trace
-            logger.info(f"Duplicate merged into {matching_master.master_ticket_id} (Dist: {dist:.1f}m, Sim: {sim:.2f})")
+        # Spatio-Temporal Deduplication Check from Orchestrator
+        if orchestration.get("is_duplicate") and orchestration.get("matching_master_id"):
+            matching_master = self.master_tickets.get(orchestration["matching_master_id"])
+            if matching_master:
+                complaint.master_ticket_id = matching_master.master_ticket_id
+                complaint.is_duplicate = True
+                matching_master.add_report(complaint)
+                matching_master.agent_trace = agent_trace
+                if orchestration.get("jan_sunwai_status") == "ESCALATED":
+                    matching_master.jan_sunwai_status = "ESCALATED"
+                logger.info(f"Duplicate merged into {matching_master.master_ticket_id}")
+            else:
+                complaint.is_duplicate = False
         else:
+            complaint.is_duplicate = False
+
+        if not complaint.master_ticket_id:
             # Unique incident! Generate new Master Ticket
-            initial_jan_sunwai = "ESCALATED" if complaint.urgency in ["High", "Critical"] else "NONE"
+            initial_jan_sunwai = orchestration.get("jan_sunwai_status") or ("ESCALATED" if complaint.urgency in ["High", "Critical"] else "NONE")
             new_master = MasterTicketRecord(
                 department=complaint.department,
                 title=f"{complaint.issue_type} near {complaint.location_landmark}",
