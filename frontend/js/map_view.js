@@ -1,4 +1,4 @@
-// Leaflet GIS Map Visualization for CivicSense AI (SamAashwas)
+// Leaflet GIS Map Visualization for CivicSense AI (SamAashwas) - Sticker Book Bus Stop Edition
 let map;
 let markersLayer = null;
 let radiusLayer = null;
@@ -13,7 +13,7 @@ function initMap() {
     zoomControl: true
   });
 
-  // Dark-themed OpenStreetMap tiles
+  // Flat & clean Carto Voyager tiles (fits the cream paper theme perfectly)
   L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
     attribution: '&copy; <a href="https://carto.com/">CARTO</a> | &copy; OpenStreetMap contributors',
     maxZoom: 19
@@ -44,42 +44,44 @@ function renderMapIncidents(masterTickets) {
 
     bounds.push([lat, lon]);
 
-    // Color code based on urgency & report volume
-    let markerColor = '#f59e0b'; // Medium
+    // Flat color tokens based on urgency & report volume (NO GRADIENTS)
+    let markerColor = '#FFC93C'; // mustard (Medium)
     if (ticket.urgency === 'Critical' || ticket.report_count >= 5) {
-      markerColor = '#ef4444';
+      markerColor = '#FF5A4E'; // tomato
     } else if (ticket.urgency === 'High' || ticket.report_count >= 2) {
-      markerColor = '#f97316';
+      markerColor = '#FFB88A'; // peach
     } else if (ticket.status === 'RESOLVED') {
-      markerColor = '#10b981';
+      markerColor = '#7BDCB5'; // mint
     }
 
     // 1. Draw 300m Spatial Clustering Gate Perimeter
     const circle = L.circle([lat, lon], {
       radius: 300,
-      color: markerColor,
-      weight: 1.5,
-      dashArray: '4, 4',
+      color: '#231F20',
+      weight: 2,
+      dashArray: '5, 5',
       fillColor: markerColor,
-      fillOpacity: 0.12
+      fillOpacity: 0.18
     });
     radiusLayer.addLayer(circle);
 
-    // 2. Custom circular marker icon with report count
+    // 2. Custom circular sticker pin with report count & thick ink border
     const iconHtml = `
       <div style="
         background: ${markerColor};
-        color: white;
+        color: #231F20;
         border-radius: 50%;
-        width: 28px;
-        height: 28px;
+        width: 30px;
+        height: 30px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 11px;
-        font-weight: bold;
-        box-shadow: 0 0 10px rgba(0,0,0,0.5);
-        border: 2px solid white;
+        font-size: 12px;
+        font-weight: 900;
+        font-family: 'Fredoka', cursive, sans-serif;
+        box-shadow: 2px 2px 0 #231F20;
+        border: 2.5px solid #231F20;
+        transform: rotate(-3deg);
       ">
         ${ticket.report_count}
       </div>
@@ -88,32 +90,32 @@ function renderMapIncidents(masterTickets) {
     const customIcon = L.divIcon({
       html: iconHtml,
       className: 'custom-map-pin',
-      iconSize: [28, 28],
-      iconAnchor: [14, 14]
+      iconSize: [30, 30],
+      iconAnchor: [15, 15]
     });
 
     const marker = L.marker([lat, lon], { icon: customIcon });
 
     const janTag = ticket.jan_sunwai_status === 'ESCALATED'
-      ? '<span style="background: #dc2626; color: white; padding: 2px 5px; border-radius: 3px; font-weight: bold; font-size: 10px;">⚖️ Jan Sunwai</span>'
+      ? '<span style="background: #B8A6FF; color: #231F20; border: 1.5px solid #231F20; padding: 2px 6px; border-radius: 9999px; font-weight: 800; font-size: 10px; box-shadow: 1px 1px 0 #231F20;">⚖️ Jan Sunwai</span>'
       : '';
     const missionTag = ticket.national_mission
-      ? `<div style="font-size: 11px; color: #475569; margin: 3px 0;">🇮🇳 ${ticket.national_mission.split('/')[0]}</div>`
+      ? `<div style="font-size: 11px; color: #57534e; font-weight: 700; margin: 3px 0;">🇮🇳 ${ticket.national_mission.split('/')[0]}</div>`
       : '';
 
     const popupContent = `
-      <div style="font-family: sans-serif; font-size: 12px; color: #1e293b; min-width: 220px;">
-        <strong style="color: #1e3a8a;">${ticket.master_ticket_id}</strong><br/>
-        <strong>${ticket.title}</strong><br/>
+      <div style="font-family: 'Nunito', sans-serif; font-size: 12px; color: #231F20; min-width: 220px; padding: 2px;">
+        <strong style="color: #FF5A4E; font-family: 'Fredoka', cursive; font-size: 13px;">${ticket.master_ticket_id}</strong><br/>
+        <strong style="font-size: 13px;">${ticket.title}</strong><br/>
         ${missionTag}
-        <div style="margin: 4px 0; display: flex; gap: 4px; flex-wrap: wrap;">
-          <span style="background: #e2e8f0; padding: 2px 5px; border-radius: 3px;">${ticket.ward_name}</span>
-          <span style="background: ${markerColor}; color: white; padding: 2px 5px; border-radius: 3px; font-weight: bold;">${ticket.urgency}</span>
+        <div style="margin: 6px 0; display: flex; gap: 4px; flex-wrap: wrap;">
+          <span style="background: #FFEFD0; border: 1.5px solid #231F20; padding: 2px 6px; border-radius: 9999px; font-weight: 700;">${ticket.ward_name}</span>
+          <span style="background: ${markerColor}; color: #231F20; border: 1.5px solid #231F20; padding: 2px 6px; border-radius: 9999px; font-weight: 800;">${ticket.urgency}</span>
           ${janTag}
         </div>
-        <div>👥 <strong>${ticket.report_count}</strong> Citizen Endorsements</div>
+        <div style="margin-top: 4px;">👥 <strong>${ticket.report_count}</strong> Citizen Endorsements</div>
         <div>⏱️ SLA: <strong>${ticket.sla_hours_remaining}h</strong> remaining</div>
-        <button onclick="openTicketModal('${ticket.master_ticket_id}')" style="margin-top: 6px; background: #2563eb; color: white; border: none; padding: 5px 8px; border-radius: 4px; cursor: pointer; width: 100%; font-weight: 600;">Inspect Master Incident</button>
+        <button onclick="openTicketModal('${ticket.master_ticket_id}')" style="margin-top: 8px; background: #FF5A4E; color: #FFFDF7; border: 2.5px solid #231F20; border-radius: 12px; padding: 6px 10px; cursor: pointer; width: 100%; font-family: 'Fredoka', cursive; font-weight: 800; font-size: 12px; box-shadow: 2px 2px 0 #231F20;">Inspect Master Incident &rarr;</button>
       </div>
     `;
 

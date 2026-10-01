@@ -6,16 +6,16 @@
   <title>SamAashwas (समाश्वास) - National Municipal Grievance Intelligence & Urban Care Platform | CivicSense AI</title>
   
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0d1b32">
+  <meta name="theme-color" content="#FF5A4E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;600;700;800&family=Noto+Sans+Kannada:wght@400;600;700&family=Noto+Sans+Tamil:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@600;700;800;900&family=Bricolage+Grotesque:wght@700;800&family=Nunito:wght@400;600;700;800;900&family=Caveat:wght@600;700&display=swap" rel="stylesheet">
   
   <!-- Leaflet GIS CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
+<body class="skin-tomato-toast" data-motion="normal">
 
   <!-- Top Tricolor Ribbon (Indian Saffron, White, Green) -->
   <div class="tricolor-strip"></div>
@@ -25,17 +25,30 @@
     <div style="display: flex; align-items: center; gap: 10px;">
       <span>🇮🇳 <strong>राष्ट्रीय नगर सेवा एवं पालिका महासंघ</strong> | National Municipal Care & Citizen Redressal Portal</span>
       <span style="opacity: 0.4;">|</span>
-      <span>सत्यमेव जयते (Satyameva Jayate)</span>
+      <span>सत्यमेव जयते</span>
     </div>
     <div class="topbar-accessibility">
-      <span>National Civic Helpline: <strong>112</strong> / <strong>1916</strong></span>
+      <!-- 4 Light Skins (Section 6.2) -->
+      <span>Skin:</span>
+      <button class="skin-btn active" data-skin="tomato-toast" onclick="applySkin('tomato-toast')" title="Tomato Toast Skin">🍅 Tomato</button>
+      <button class="skin-btn" data-skin="mint-gelato" onclick="applySkin('mint-gelato')" title="Mint Gelato Skin">🍦 Mint</button>
+      <button class="skin-btn" data-skin="bubblegum-pop" onclick="applySkin('bubblegum-pop')" title="Bubblegum Pop Skin">🍬 Bubblegum</button>
+      <button class="skin-btn" data-skin="mustard-mayhem" onclick="applySkin('mustard-mayhem')" title="Mustard Mayhem Skin">🥨 Mustard</button>
       <span style="opacity: 0.4;">|</span>
-      <span>Text Size:</span>
-      <button class="font-resize-btn" onclick="changeFontSize(-1)" title="Decrease Text Size">A-</button>
-      <button class="font-resize-btn" onclick="changeFontSize(0)" title="Default Text Size">A</button>
-      <button class="font-resize-btn" onclick="changeFontSize(1)" title="Increase Text Size">A+</button>
+      <!-- Motion Settings (Section 6.7) -->
+      <span>Motion:</span>
+      <button class="motion-btn" data-motion="chaos" onclick="applyMotion('chaos')" title="Chaos Motion (22 Objects)">Chaos</button>
+      <button class="motion-btn active" data-motion="normal" onclick="applyMotion('normal')" title="Normal Motion (14 Objects)">Normal</button>
+      <button class="motion-btn" data-motion="calm" onclick="applyMotion('calm')" title="Calm Motion (7 Objects)">Calm</button>
+      <button class="motion-btn" data-motion="off" onclick="applyMotion('off')" title="Motion Off (0 Objects)">Off</button>
       <span style="opacity: 0.4;">|</span>
-      <button class="font-resize-btn" onclick="toggleHighContrast()" title="Toggle High Contrast Sunlight Mode">🌓 Sunlight Mode</button>
+      <!-- Font Size Setting (Section 6.3) -->
+      <span>Text:</span>
+      <button class="font-choice-btn" data-size="S" onclick="setFontSizeChoice('S')" title="Small Text">S</button>
+      <button class="font-choice-btn active" data-size="M" onclick="setFontSizeChoice('M')" title="Medium Text">M</button>
+      <button class="font-choice-btn" data-size="L" onclick="setFontSizeChoice('L')" title="Large Text">L</button>
+      <span style="opacity: 0.4;">|</span>
+      <button class="font-resize-btn" onclick="toggleHighContrast()" title="Toggle High Contrast Sunlight Mode">☀️ Contrast</button>
     </div>
   </div>
 
@@ -213,8 +226,8 @@
 
           <!-- Fast Grievance / Application Tracker Card -->
           <div class="tracking-hero-card">
-            <h3>🔍 Instant Grievance & Application Tracker</h3>
-            <p style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 0.75rem;">
+            <h3 style="font-family: var(--font-display); font-weight: 900; color: var(--ink);">🔍 Instant Grievance & Application Tracker</h3>
+            <p style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600; margin-bottom: 0.75rem;">
               Enter your Grievance Tracking ID (e.g. <code>CMP-XXXX</code>) or Master Incident ID (e.g. <code>MST-XXXX</code>) 
               to inspect live SLA timer, assigned engineer, corporator oversight, and AI audit steps.
             </p>
@@ -222,18 +235,51 @@
               <input type="text" id="track-id-input" placeholder="e.g. CMP-A1B2C3 or SYN-0001" onkeydown="if(event.key === 'Enter') trackApplication()">
               <button class="tracking-btn" onclick="trackApplication()">Track Status</button>
             </div>
-            <div style="margin-top: 10px; font-size: 0.72rem; color: #94a3b8;">
+            <div style="margin-top: 10px; font-size: 0.74rem; color: var(--text-muted); font-weight: 700;">
               💡 Quick Demo Trackers: 
-              <a href="javascript:void(0)" onclick="quickTrackDemo('SYN-0001')" style="color: #38bdf8; text-decoration: underline;">SYN-0001</a> &bull;
-              <a href="javascript:void(0)" onclick="quickTrackDemo('SYN-0002')" style="color: #38bdf8; text-decoration: underline;">SYN-0002</a> &bull;
-              <a href="javascript:void(0)" onclick="quickTrackDemo('SYN-0003')" style="color: #38bdf8; text-decoration: underline;">SYN-0003</a>
+              <a href="javascript:void(0)" onclick="quickTrackDemo('SYN-0001')" style="color: var(--tomato); font-weight: 800; text-decoration: underline;">SYN-0001</a> &bull;
+              <a href="javascript:void(0)" onclick="quickTrackDemo('SYN-0002')" style="color: var(--tomato); font-weight: 800; text-decoration: underline;">SYN-0002</a> &bull;
+              <a href="javascript:void(0)" onclick="quickTrackDemo('SYN-0003')" style="color: var(--tomato); font-weight: 800; text-decoration: underline;">SYN-0003</a>
             </div>
 
             <!-- Instant Dossier Output Container -->
-            <div id="quick-track-result" style="display: none; margin-top: 1rem; background: rgba(15, 23, 42, 0.95); border: 1px solid #1e3a8a; border-radius: 8px; padding: 12px; font-size: 0.8rem;">
+            <div id="quick-track-result" style="display: none; margin-top: 1rem; background: var(--paper-2); border: var(--border-ink); border-radius: var(--radius-sm); padding: 12px; font-size: 0.82rem; box-shadow: 2px 2px 0 var(--ink);">
               <!-- Filled dynamically -->
             </div>
           </div>
+        </div>
+      </div>
+
+      <!-- Live CampusHop / SamAashwas Squish Meter (Section 6.10) -->
+      <div class="squish-meter-card">
+        <div class="squish-meter-header">
+          <div class="squish-title-group">
+            <span style="font-size: 1.6rem;">🚌</span>
+            <div>
+              <div style="font-weight: 900; font-family: var(--font-display); font-size: 1.05rem;">
+                CampusHop Civic Transit & Grievance Squish Meter
+              </div>
+              <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">
+                Live load: &lt;40% Roomy (Mint) &bull; 40-70% Cozy (Mustard) &bull; 70-90% Snug (Peach) &bull; &gt;90% Sardine Mode (Tomato)
+              </div>
+            </div>
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="badge" id="squish-meter-label" style="background: var(--mustard); font-size: 0.78rem; padding: 4px 12px;">Cozy</span>
+            <span style="font-weight: 900; font-family: var(--font-display); font-size: 1.15rem;" id="squish-meter-val">62%</span>
+          </div>
+        </div>
+        <div class="squish-track">
+          <div class="squish-fill" id="squish-meter-bar" style="width: 62%;"></div>
+        </div>
+        <div class="squish-legend">
+          <span>🟢 0% Roomy</span>
+          <span>🟡 40% Cozy</span>
+          <span>🟠 70% Snug</span>
+          <span>🔴 90% Sardine Mode</span>
+        </div>
+        <div style="font-size: 0.76rem; font-weight: 800; color: var(--ink); margin-top: 2px;" id="squish-meter-comment">
+          Healthy urban pulse. 6 autonomous agents resolving tickets in time!
         </div>
       </div>
 
@@ -334,9 +380,9 @@
         <div class="services-heading-bar">
           <div>
             <h2>🏛️ Citizen Online Services Quick Grid (नागरिक सेवाएं)</h2>
-            <span style="font-size: 0.78rem; color: #94a3b8;">Unified Pan-India Municipal Local Body Gateway</span>
+            <span style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700;">Unified Pan-India Municipal Local Body Gateway</span>
           </div>
-          <span class="badge" style="background: rgba(37, 99, 235, 0.2); color: #93c5fd; border: 1px solid rgba(37, 99, 235, 0.4);">
+          <span class="badge" style="background: var(--lavender); color: var(--ink); border: 2px solid var(--ink); box-shadow: 2px 2px 0 var(--ink);">
             DigiLocker & QR Enabled
           </span>
         </div>
@@ -355,7 +401,7 @@
               Online issuance of birth and death certificates, institutional records verification, DigiLocker sync, and QR-verifiable digital downloads.
             </div>
             <div class="service-tile-footer">
-              <span class="badge" style="background: #064e3b; color: #34d399;">e-SLA 7 Days</span>
+              <span class="badge" style="background: var(--mint); color: var(--ink); border: 1.5px solid var(--ink);">e-SLA 7 Days</span>
               <button class="service-tile-btn">Access Service &rarr;</button>
             </div>
           </div>
@@ -373,7 +419,7 @@
               Geo-tagged UPIC assessment, SAS property tax payment, early-bird rebate calculation, and digital property mutation tracking.
             </div>
             <div class="service-tile-footer">
-              <span class="badge" style="background: #1e3a8a; color: #93c5fd;">Geo-Tagged GIS</span>
+              <span class="badge" style="background: var(--mustard); color: var(--ink); border: 1.5px solid var(--ink);">Geo-Tagged GIS</span>
               <button class="service-tile-btn">Pay Tax Online &rarr;</button>
             </div>
           </div>
@@ -391,7 +437,7 @@
               Instant issuance and auto-renewal of General Trade, Health Trade, Food establishments, and Factory operating permits under Ease of Doing Business.
             </div>
             <div class="service-tile-footer">
-              <span class="badge" style="background: #431407; color: #fdba74;">Single Window</span>
+              <span class="badge" style="background: var(--peach); color: var(--ink); border: 1.5px solid var(--ink);">Single Window</span>
               <button class="service-tile-btn">Apply / Renew &rarr;</button>
             </div>
           </div>
@@ -399,7 +445,7 @@
           <!-- 4. Citizen Grievance / Jan Sunwai -->
           <div class="mcd-service-tile" onclick="switchTab('citizen-portal')">
             <div class="service-tile-top">
-              <div class="service-tile-icon" style="background: rgba(220, 38, 38, 0.15); border-color: rgba(220, 38, 38, 0.3);">⚖️</div>
+              <div class="service-tile-icon">⚖️</div>
               <div>
                 <div class="service-tile-title">Citizen Grievance & Jan Sunwai</div>
                 <div class="service-tile-hi">जन शिकायत एवं जन सुनवाई निवारण</div>
@@ -409,8 +455,8 @@
               Multilingual grievance registration in Hindi, Hinglish, Kannada, Tamil, English with photo verification and automatic Friday public hearing escalation.
             </div>
             <div class="service-tile-footer">
-              <span class="badge" style="background: #7f1d1d; color: #fca5a5;">SamAashwas AI</span>
-              <button class="service-tile-btn" style="color: #f87171;">File Grievance &rarr;</button>
+              <span class="badge" style="background: var(--tomato); color: var(--cream-white); border: 1.5px solid var(--ink);">SamAashwas AI</span>
+              <button class="service-tile-btn">File Grievance &rarr;</button>
             </div>
           </div>
 
@@ -427,7 +473,7 @@
               Live GPS auto-tipper garbage route tracking, community Dhalao sensor monitoring, and Construction & Demolition (C&D) waste pickup requests.
             </div>
             <div class="service-tile-footer">
-              <span class="badge" style="background: #064e3b; color: #34d399;">SBM Urban 2.0</span>
+              <span class="badge" style="background: var(--mint); color: var(--ink); border: 1.5px solid var(--ink);">SBM Urban 2.0</span>
               <button class="service-tile-btn">Track Route &rarr;</button>
             </div>
           </div>
@@ -445,7 +491,7 @@
               Municipal road pothole patch repairs, dark-spot smart LED illumination, and real-time Junior Engineer field assignment tracking.
             </div>
             <div class="service-tile-footer">
-              <span class="badge" style="background: #312e81; color: #c7d2fe;">Smart LED Grid</span>
+              <span class="badge" style="background: var(--mustard); color: var(--ink); border: 1.5px solid var(--ink);">Smart LED Grid</span>
               <button class="service-tile-btn">View Status &rarr;</button>
             </div>
           </div>
@@ -463,7 +509,7 @@
               Automated building layout approval, structural stability scrutiny, green building compliance, and digital completion certificate issuance.
             </div>
             <div class="service-tile-footer">
-              <span class="badge" style="background: #1e3a8a; color: #93c5fd;">Automated DCR</span>
+              <span class="badge" style="background: var(--lavender); color: var(--ink); border: 1.5px solid var(--ink);">Automated DCR</span>
               <button class="service-tile-btn">OBPS Portal &rarr;</button>
             </div>
           </div>
@@ -481,7 +527,7 @@
               Transparent digital reservation of air-conditioned Barat Ghars, community centers, and municipal parks with real-time slot checking.
             </div>
             <div class="service-tile-footer">
-              <span class="badge" style="background: #064e3b; color: #34d399;">Public Amenities</span>
+              <span class="badge" style="background: var(--mint); color: var(--ink); border: 1.5px solid var(--ink);">Public Amenities</span>
               <button class="service-tile-btn">Book Venue &rarr;</button>
             </div>
           </div>
@@ -496,8 +542,8 @@
     <div id="gallery-view" class="view-container">
       <div class="section-header-row">
         <div>
-          <h2 style="font-size: 1.35rem; color: #ffffff;">📸 Civic Transformation & Verified Resolution Proof</h2>
-          <p style="font-size: 0.82rem; color: var(--text-muted);">
+          <h2 style="font-size: 1.35rem; color: var(--ink);">📸 Civic Transformation & Verified Resolution Proof</h2>
+          <p style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">
             Building transparent citizen trust through verified photographic evidence of pothole resurfacing, garbage elimination, and streetlight fixes.
           </p>
         </div>
@@ -509,6 +555,8 @@
       </div>
     </div>
 
+    <div class="sticker-divider-wavy"></div>
+
     <!-- ========================================== -->
     <!-- TAB 3: SWACHH NAGRIK COMMUNITY REWARDS   -->
     <!-- ========================================== -->
@@ -517,9 +565,9 @@
         <div class="rewards-user-profile">
           <div class="rewards-avatar">🎖️</div>
           <div>
-            <div style="font-size: 0.75rem; color: #6ee7b7; font-weight: 700;">SWACHH NAGRIK CITIZEN PROFILE</div>
-            <h2 style="font-size: 1.4rem; color: #ffffff;" id="reward-user-name">Aarav Sharma</h2>
-            <div style="font-size: 0.8rem; color: #cbd5e1;" id="reward-user-rank">Rank #14 in Ward Squad &bull; Gold Civic Sentinel</div>
+            <div style="font-size: 0.72rem; color: var(--ink); font-weight: 800; background: var(--mint); display: inline-block; padding: 2px 8px; border: 1.5px solid var(--ink); border-radius: 6px; box-shadow: 1px 1px 0 var(--ink);">SWACHH NAGRIK CITIZEN PROFILE</div>
+            <h2 style="font-size: 1.4rem; color: var(--ink); margin-top: 4px;" id="reward-user-name">Aarav Sharma</h2>
+            <div style="font-size: 0.82rem; color: var(--text-muted); font-weight: 700;" id="reward-user-rank">Rank #14 in Ward Squad &bull; Gold Civic Sentinel</div>
           </div>
         </div>
 
@@ -531,7 +579,7 @@
 
       <!-- Badges Section -->
       <div style="margin-bottom: 1.5rem;">
-        <h3 style="font-size: 1.1rem; color: #ffffff; margin-bottom: 0.75rem;">🛡️ Earned Badges & Civic Honors</h3>
+        <h3 style="font-size: 1.15rem; color: var(--ink); margin-bottom: 0.75rem;">🛡️ Earned Badges & Civic Honors</h3>
         <div class="badges-grid" id="rewards-badges-container">
           <!-- Filled dynamically -->
         </div>
@@ -539,7 +587,7 @@
 
       <!-- Redeemable Perks Section -->
       <div>
-        <h3 style="font-size: 1.1rem; color: #ffffff; margin-bottom: 0.75rem;">🎟️ Redeemable Civic Perks & Municipal Benefits</h3>
+        <h3 style="font-size: 1.15rem; color: var(--ink); margin-bottom: 0.75rem;">🎟️ Redeemable Civic Perks & Municipal Benefits</h3>
         <div class="perks-grid" id="rewards-perks-container">
           <!-- Filled dynamically -->
         </div>
@@ -591,9 +639,9 @@
         <div class="map-panel">
           <div id="map"></div>
           <div id="lite-map-fallback">
-            <div style="background: rgba(15, 23, 42, 0.95); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem;">
-              <h3 style="color: #60a5fa; margin-bottom: 0.5rem;">📶 2G Low-Bandwidth Ward Grid Active</h3>
-              <p style="font-size: 0.8rem; color: var(--text-muted); margin-bottom: 1rem;">
+            <div style="background: var(--paper-2); border: var(--border-ink-thick); border-radius: var(--radius-md); padding: 1.25rem; box-shadow: var(--shadow-hard);">
+              <h3 style="color: var(--ink); margin-bottom: 0.5rem; font-family: var(--font-display); font-weight: 800;">📶 2G Low-Bandwidth Ward Grid Active</h3>
+              <p style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600; margin-bottom: 1rem;">
                 Heavy map satellite tiles disabled to save data. Below is the lightweight vector status of active city wards.
               </p>
               <div id="lite-wards-container" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
@@ -602,16 +650,18 @@
             </div>
           </div>
 
-          <div style="position: absolute; bottom: 12px; left: 12px; z-index: 500; background: rgba(15,23,42,0.92); padding: 8px 12px; border-radius: 6px; font-size: 0.72rem; border: 1px solid var(--border);">
-            <div style="font-weight: bold; margin-bottom: 4px;" data-i18n="map_legend_title">Map Legend</div>
+          <div style="position: absolute; bottom: 12px; left: 12px; z-index: 500; background: var(--cream-white); color: var(--ink); padding: 10px 14px; border-radius: 14px; font-size: 0.74rem; border: var(--border-ink-thick); box-shadow: var(--shadow-hard-sm); font-weight: 700;">
+            <div style="font-weight: 900; font-family: var(--font-display); margin-bottom: 4px;" data-i18n="map_legend_title">Map Legend</div>
             <div data-i18n="map_legend_critical">🔴 Critical Urgency (5+ Citizen Reports / Hazard)</div>
             <div data-i18n="map_legend_high">🟠 High Urgency (2-4 Citizen Reports)</div>
             <div data-i18n="map_legend_med">🟡 Moderate Urgency (1 Citizen Report)</div>
-            <div data-i18n="map_legend_gate">🔵 300m Spatial Clustering Gate Perimeter</div>
+            <div data-i18n="map_legend_gate">⚫ 300m Spatial Clustering Gate Perimeter</div>
           </div>
         </div>
       </div>
     </div>
+
+    <div class="sticker-divider-wavy"></div>
 
     <!-- ========================================== -->
     <!-- TAB 5: SMART AI MULTI-AGENT ASSISTANCE    -->
@@ -619,8 +669,8 @@
     <div id="agent-view" class="view-container">
       <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 1rem;">
         <div>
-          <h2 style="font-size: 1.35rem; color: #ffffff;">🤖 Smart AI Assistance & Deliberation Architecture</h2>
-          <p style="font-size: 0.82rem; color: var(--text-muted);">
+          <h2 style="font-size: 1.35rem; color: var(--ink);">🤖 Smart AI Assistance & Deliberation Architecture</h2>
+          <p style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">
             Transparent coordination of 6 specialized autonomous civic agents resolving citizen grievances under statutory Citizen Charter SLAs.
           </p>
         </div>
@@ -645,7 +695,7 @@
           </div>
           <div class="agent-metric">
             <span>Supported Dialects:</span>
-            <strong style="color: #60a5fa;">5 Vernacular / Hinglish</strong>
+            <strong style="color: var(--ink); font-family: var(--font-display);">5 Vernacular / Hinglish</strong>
           </div>
         </div>
 
@@ -664,7 +714,7 @@
           </div>
           <div class="agent-metric">
             <span>Trust Shield Accuracy:</span>
-            <strong style="color: #34d399;">94.2% Verified</strong>
+            <strong style="color: var(--ink); font-family: var(--font-display);">94.2% Verified</strong>
           </div>
         </div>
 
@@ -683,7 +733,7 @@
           </div>
           <div class="agent-metric">
             <span>Spatial Gate Perimeter:</span>
-            <strong style="color: #f59e0b;">300 Meters</strong>
+            <strong style="color: var(--ink); font-family: var(--font-display);">300 Meters</strong>
           </div>
         </div>
 
@@ -702,7 +752,7 @@
           </div>
           <div class="agent-metric">
             <span>Coverage Jurisdiction:</span>
-            <strong style="color: #c084fc;">8 Major Corporations</strong>
+            <strong style="color: var(--ink); font-family: var(--font-display);">8 Major Corporations</strong>
           </div>
         </div>
 
@@ -721,7 +771,7 @@
           </div>
           <div class="agent-metric">
             <span>Forecast Horizon:</span>
-            <strong style="color: #38bdf8;">48-Hour Radar</strong>
+            <strong style="color: var(--ink); font-family: var(--font-display);">48-Hour Radar</strong>
           </div>
         </div>
 
@@ -740,7 +790,7 @@
           </div>
           <div class="agent-metric">
             <span>Hearing Docket:</span>
-            <strong style="color: #f87171;">Every Friday 11 AM</strong>
+            <strong style="color: var(--tomato); font-family: var(--font-display);">Every Friday 11 AM</strong>
           </div>
         </div>
 
@@ -748,10 +798,10 @@
 
       <!-- Simulation Controller -->
       <div class="sim-controls-panel">
-        <h3 style="font-size: 1.05rem; color: #fef08a; margin-bottom: 0.5rem;">
+        <h3 style="font-size: 1.1rem; color: var(--ink); font-family: var(--font-display); font-weight: 900; margin-bottom: 0.5rem;">
           ⚡ Interactive Multi-Agent Deliberation Simulator
         </h3>
-        <p style="font-size: 0.8rem; color: var(--text-muted);">
+        <p style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">
           Trigger simulated municipal events across Indian cities to observe real-time autonomous reasoning and collaboration across all 6 agents.
         </p>
 
@@ -768,7 +818,7 @@
           <button class="sim-btn" onclick="simulateAgentScenario('sewage_leak')">
             💧 Severe Sewer Rupture (Laxmi Nagar / Bandra)
           </button>
-          <button class="sim-btn" onclick="simulateAgentScenario('spam_selfie_meme')" style="border-color: #f87171;">
+          <button class="sim-btn" onclick="simulateAgentScenario('spam_selfie_meme')" style="border-color: var(--tomato);">
             🚫 Fraud / Spam Selfie Image Test
           </button>
         </div>
@@ -777,13 +827,13 @@
       <!-- Live Deliberation Console -->
       <div>
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-          <h3 style="font-size: 0.95rem; font-family: monospace; color: #38bdf8;">
+          <h3 style="font-size: 0.95rem; font-family: var(--font-display); font-weight: 900; color: var(--ink);">
             &gt; MULTI_AGENT_DELIBERATION_TRACE.log
           </h3>
-          <span id="sim-status-indicator" style="font-size: 0.72rem; color: #34d399;">System Idle & Ready</span>
+          <span id="sim-status-indicator" style="font-size: 0.72rem; color: var(--ink); font-weight: 800; background: var(--mint); padding: 2px 8px; border: 1.5px solid var(--ink); border-radius: 6px;">System Idle & Ready</span>
         </div>
         <div class="deliberation-console" id="deliberation-console">
-          <div style="color: #64748b; font-style: italic;">
+          <div style="color: var(--text-muted); font-style: italic; font-weight: 600;">
             Select an interactive scenario above or submit a citizen grievance to watch autonomous agent deliberations in real-time...
           </div>
         </div>
@@ -809,17 +859,17 @@
         <!-- Rendered dynamically -->
       </div>
 
-      <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin-top: 1rem; overflow-x: auto;">
-        <h3 style="margin-bottom: 1rem; font-size: 1.05rem;" data-i18n="critical_infra_title">Critical Municipal Infrastructure Failure Risk</h3>
+      <div style="background: var(--cream-white); border: var(--border-ink-thick); border-radius: var(--radius-md); box-shadow: var(--shadow-hard); padding: 1.25rem; margin-top: 1rem; overflow-x: auto;">
+        <h3 style="margin-bottom: 1rem; font-size: 1.1rem; color: var(--ink); font-family: var(--font-display); font-weight: 800;" data-i18n="critical_infra_title">Critical Municipal Infrastructure Failure Risk</h3>
         <table style="width: 100%; border-collapse: collapse; font-size: 0.82rem; text-align: left; min-width: 600px;">
           <thead>
-            <tr style="border-bottom: 1px solid var(--border); color: var(--text-muted);">
-              <th style="padding: 8px;">Asset ID</th>
-              <th style="padding: 8px;">Asset Type</th>
-              <th style="padding: 8px;">Ward / Zone</th>
-              <th style="padding: 8px;">Structural Health</th>
-              <th style="padding: 8px;">Failure Probability</th>
-              <th style="padding: 8px;">Recommended Proactive Action</th>
+            <tr style="border-bottom: 2.5px solid var(--ink); color: var(--ink);">
+              <th style="padding: 10px;">Asset ID</th>
+              <th style="padding: 10px;">Asset Type</th>
+              <th style="padding: 10px;">Ward / Zone</th>
+              <th style="padding: 10px;">Structural Health</th>
+              <th style="padding: 10px;">Failure Probability</th>
+              <th style="padding: 10px;">Recommended Proactive Action</th>
             </tr>
           </thead>
           <tbody id="assets-table-body">
@@ -829,13 +879,15 @@
       </div>
     </div>
 
+    <div class="sticker-divider-wavy"></div>
+
     <!-- ========================================== -->
     <!-- TAB 7: JAN SUNWAI & WARD SABHA             -->
     <!-- ========================================== -->
     <div id="jan-sunwai-view" class="view-container">
       <div>
-        <h2 style="font-size: 1.25rem;" data-i18n="jan_sunwai_title">Jan Sunwai & Democratic Ward Sabha Dashboard</h2>
-        <p style="font-size: 0.82rem; color: var(--text-muted);" data-i18n="jan_sunwai_desc">
+        <h2 style="font-size: 1.35rem; color: var(--ink);" data-i18n="jan_sunwai_title">Jan Sunwai & Democratic Ward Sabha Dashboard</h2>
+        <p style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;" data-i18n="jan_sunwai_desc">
           Track Friday Jan Sunwai (Public Grievance Day) dockets, Corporator & MLA accountability, Ward Sabha dates, and Pre-Monsoon Desilting readiness.
         </p>
       </div>
@@ -844,23 +896,23 @@
         <!-- Rendered dynamically -->
       </div>
 
-      <div style="background: var(--bg-card); border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; margin-top: 1rem; overflow-x: auto;">
+      <div style="background: var(--cream-white); border: var(--border-ink-thick); border-radius: var(--radius-md); box-shadow: var(--shadow-hard); padding: 1.25rem; margin-top: 1rem; overflow-x: auto;">
         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-          <h3 style="font-size: 1.05rem; display: flex; align-items: center; gap: 8px;">
+          <h3 style="font-size: 1.1rem; color: var(--ink); font-family: var(--font-display); font-weight: 800; display: flex; align-items: center; gap: 8px;">
             ⚖️ <span data-i18n="col_jan_sunwai_cases">Jan Sunwai Docketed Incidents (Commissioner Review)</span>
           </h3>
           <span class="badge badge-jan-sunwai" id="jan-sunwai-badge-total">0 Docketed Cases</span>
         </div>
         <table style="width: 100%; border-collapse: collapse; font-size: 0.82rem; text-align: left; min-width: 650px;">
           <thead>
-            <tr style="border-bottom: 1px solid var(--border); color: var(--text-muted);">
-              <th style="padding: 8px;">Docket ID</th>
-              <th style="padding: 8px;">Incident Title</th>
-              <th style="padding: 8px;">Ward & Corporator</th>
-              <th style="padding: 8px;">National Mission</th>
-              <th style="padding: 8px;">Citizens Linked</th>
-              <th style="padding: 8px;">SLA Status</th>
-              <th style="padding: 8px;">Action</th>
+            <tr style="border-bottom: 2.5px solid var(--ink); color: var(--ink);">
+              <th style="padding: 10px;">Docket ID</th>
+              <th style="padding: 10px;">Incident Title</th>
+              <th style="padding: 10px;">Ward & Corporator</th>
+              <th style="padding: 10px;">National Mission</th>
+              <th style="padding: 10px;">Citizens Linked</th>
+              <th style="padding: 10px;">SLA Status</th>
+              <th style="padding: 10px;">Action</th>
             </tr>
           </thead>
           <tbody id="jan-sunwai-table-body">
@@ -870,23 +922,25 @@
       </div>
     </div>
 
+    <div class="sticker-divider-wavy"></div>
+
     <!-- ========================================== -->
     <!-- TAB 8: CITIZEN GRIEVANCE SUBMISSION        -->
     <!-- ========================================== -->
     <div id="citizen-portal" class="view-container">
-      <div style="max-width: 680px; margin: 0 auto; width: 100%; background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.75rem; box-shadow: var(--shadow-md);">
-        <h2 style="margin-bottom: 0.5rem; font-size: 1.3rem;" data-i18n="portal_title">Citizen Grievance Submission</h2>
-        <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 1.25rem;" data-i18n="portal_sub">
+      <div style="max-width: 680px; margin: 0 auto; width: 100%; background: var(--cream-white); border: var(--border-ink-thick); border-radius: var(--radius-lg); padding: 1.75rem; box-shadow: var(--shadow-hard);">
+        <h2 style="margin-bottom: 0.5rem; font-size: 1.35rem; color: var(--ink); font-family: var(--font-display); font-weight: 900;" data-i18n="portal_title">Citizen Grievance Submission</h2>
+        <p style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600; margin-bottom: 1.25rem;" data-i18n="portal_sub">
           Report municipal issues in Hindi, Hinglish, Kannada, Tamil, or English. Our AI automatically extracts department, verifies photos, and merges neighborhood complaints.
         </p>
 
         <!-- Vernacular Speech / Voice Note Recorder Widget -->
         <div class="voice-recorder-card">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-            <div style="font-size: 0.85rem; font-weight: bold; color: #60a5fa; display: flex; align-items: center; gap: 6px;">
+            <div style="font-size: 0.88rem; font-weight: 800; color: var(--ink); font-family: var(--font-display); display: flex; align-items: center; gap: 6px;">
               🎙️ <span data-i18n="voice_record_btn">Bolkar Batayein / Record Voice Grievance</span>
             </div>
-            <select id="voice-lang-select" class="form-control" style="padding: 3px 8px; font-size: 0.75rem; width: auto;">
+            <select id="voice-lang-select" class="form-control" style="padding: 4px 8px; font-size: 0.75rem; width: auto;">
               <option value="hi-IN">हिन्दी (Hindi)</option>
               <option value="kn-IN">ಕನ್ನಡ (Kannada)</option>
               <option value="ta-IN">தமிழ் (Tamil)</option>
@@ -895,11 +949,11 @@
             </select>
           </div>
 
-          <div style="display: flex; align-items: center; gap: 12px; margin-top: 8px;">
+          <div style="display: flex; align-items: center; gap: 12px; margin-top: 10px;">
             <button type="button" id="voice-record-btn" class="btn-primary" onclick="toggleVoiceRecording()">
               🎙️ <span id="voice-btn-label">Start Speaking</span>
             </button>
-            <span id="voice-status-label" style="font-size: 0.78rem; color: #94a3b8;">Click mic or select quick vernacular sample below</span>
+            <span id="voice-status-label" style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700;">Click mic or select quick vernacular sample below</span>
           </div>
 
           <!-- Quick Vernacular Sample Buttons -->
@@ -934,7 +988,7 @@
 
           <!-- Dynamic City Pin Presets -->
           <div style="margin-bottom: 1rem; display: flex; gap: 8px; flex-wrap: wrap;" id="form-quick-pins">
-            <button type="button" class="btn-primary" style="background: #334155; font-size: 0.8rem;" onclick="detectLocation()" data-i18n="btn_gps">
+            <button type="button" class="btn-primary" style="background: var(--paper-2); color: var(--ink); border: var(--border-ink); font-size: 0.8rem;" onclick="detectLocation()" data-i18n="btn_gps">
               📍 Auto-Detect GPS Location
             </button>
             <button type="button" class="btn-secondary" style="font-size: 0.8rem;" onclick="setLocationCoords(12.9716, 77.6412)">
@@ -976,7 +1030,7 @@
           </button>
         </form>
 
-        <div id="submission-result" style="display: none; margin-top: 1.5rem; background: #0f172a; border: 1px solid var(--border); border-radius: 8px; padding: 1.25rem; font-size: 0.85rem;">
+        <div id="submission-result" style="display: none; margin-top: 1.5rem; background: var(--paper-2); border: var(--border-ink-thick); border-radius: var(--radius-md); padding: 1.25rem; font-size: 0.85rem; box-shadow: var(--shadow-hard);">
           <!-- Result rendered dynamically -->
         </div>
       </div>
@@ -1061,8 +1115,8 @@
     <div class="modal-content" onclick="event.stopPropagation()">
       <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem;">
         <div>
-          <span id="modal-ticket-id" style="font-size: 0.8rem; color: #60a5fa; font-weight: bold;"></span>
-          <h3 id="modal-ticket-title" style="margin-top: 4px; font-size: 1.1rem;"></h3>
+          <span id="modal-ticket-id" style="font-size: 0.9rem; color: var(--tomato); font-family: var(--font-display); font-weight: 900;"></span>
+          <h3 id="modal-ticket-title" style="margin-top: 4px; font-size: 1.15rem; color: var(--ink);"></h3>
           <div style="margin-top: 4px; display: flex; gap: 6px; flex-wrap: wrap;">
             <span class="badge badge-mission" id="modal-mission">Flagship Mission</span>
             <span class="badge badge-jan-sunwai" id="modal-jan-sunwai-tag" style="display: none;">⚖️ Jan Sunwai Docketed</span>
@@ -1071,7 +1125,7 @@
         <button onclick="closeModal()" style="background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;">&times;</button>
       </div>
 
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem; background: #0f172a; padding: 1rem; border-radius: 6px; font-size: 0.82rem;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem; background: var(--paper-2); border: var(--border-ink); border-radius: var(--radius-sm); padding: 1rem; font-size: 0.82rem; box-shadow: var(--shadow-hard-sm);">
         <div><strong>Department:</strong> <span id="modal-dept"></span></div>
         <div><strong>Corporation & Ward:</strong> <span id="modal-ward"></span></div>
         <div><strong>Urgency:</strong> <span id="modal-urgency"></span></div>
@@ -1085,9 +1139,9 @@
       <div style="margin-bottom: 1rem;">
         <label style="font-size: 0.82rem; font-weight: bold; color: var(--text-muted);">Action Controls & Jan Sunwai Escalation:</label>
         <div style="display: flex; gap: 8px; margin-top: 6px; flex-wrap: wrap;">
-          <button class="btn-primary" style="background: #2563eb; font-size: 0.78rem; padding: 6px 12px;" onclick="updateTicketStatus('IN_PROGRESS')">Mark In Progress</button>
-          <button class="btn-primary" style="background: #10b981; font-size: 0.78rem; padding: 6px 12px;" onclick="updateTicketStatus('RESOLVED')">Mark Resolved</button>
-          <button class="btn-primary" id="modal-btn-jan-sunwai" style="background: #dc2626; font-size: 0.78rem; padding: 6px 12px;" onclick="escalateModalToJanSunwai()">⚖️ Docket for Friday Jan Sunwai</button>
+          <button class="btn-primary" style="background: var(--mustard); color: var(--ink); font-size: 0.78rem; padding: 6px 14px;" onclick="updateTicketStatus('IN_PROGRESS')">Mark In Progress</button>
+          <button class="btn-primary" style="background: var(--mint); color: var(--ink); font-size: 0.78rem; padding: 6px 14px;" onclick="updateTicketStatus('RESOLVED')">Mark Resolved</button>
+          <button class="btn-primary" id="modal-btn-jan-sunwai" style="background: var(--tomato); color: var(--cream-white); font-size: 0.78rem; padding: 6px 14px;" onclick="escalateModalToJanSunwai()">⚖️ Docket for Friday Jan Sunwai</button>
         </div>
       </div>
 
@@ -1101,15 +1155,15 @@
   <!-- Modal: Application Tracking Certificate -->
   <div class="modal-overlay" id="tracking-modal" onclick="closeTrackingModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 620px;">
-      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; border-bottom: 1px solid var(--border); padding-bottom: 0.75rem;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; border-bottom: var(--border-ink); padding-bottom: 0.75rem;">
         <div style="display: flex; align-items: center; gap: 10px;">
           <div style="font-size: 1.8rem;">🏛️</div>
           <div>
-            <h3 style="margin: 0; font-size: 1.15rem; color: #ffffff;">SamAashwas Grievance Tracking Dossier</h3>
-            <span style="font-size: 0.72rem; color: #fef08a;" id="track-modal-id">Tracking ID</span>
+            <h3 style="margin: 0; font-size: 1.15rem; color: var(--ink);">SamAashwas Grievance Tracking Dossier</h3>
+            <span class="badge" style="background: var(--mustard);" id="track-modal-id">Tracking ID</span>
           </div>
         </div>
-        <button onclick="closeTrackingModal()" style="background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer;">&times;</button>
+        <button onclick="closeTrackingModal()" style="background: none; border: none; color: var(--ink); font-size: 1.6rem; font-weight: 900; cursor: pointer;">&times;</button>
       </div>
 
       <div id="track-modal-body">
@@ -1122,12 +1176,12 @@
   <div class="modal-overlay" id="perk-modal" onclick="closePerkModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 480px; text-align: center;">
       <div style="font-size: 3rem; margin-bottom: 10px;">🎉</div>
-      <h3 style="font-size: 1.25rem; color: #ffffff; margin-bottom: 6px;" id="perk-modal-title">Perk Unlocked!</h3>
-      <p style="font-size: 0.82rem; color: #cbd5e1; margin-bottom: 14px;" id="perk-modal-desc"></p>
+      <h3 style="font-size: 1.25rem; color: var(--ink); margin-bottom: 6px;" id="perk-modal-title">Perk Unlocked!</h3>
+      <p style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 14px;" id="perk-modal-desc"></p>
       
-      <div style="background: #0f172a; border: 2px dashed #f59e0b; padding: 12px; border-radius: 8px; margin-bottom: 1rem;">
-        <div style="font-size: 0.7rem; color: #94a3b8; text-transform: uppercase;">Official Coupon Voucher Code</div>
-        <div style="font-size: 1.3rem; font-weight: 800; color: #fef08a; letter-spacing: 0.08em;" id="perk-modal-code">CODE-1234</div>
+      <div style="background: var(--paper-2); border: 2.5px dashed var(--ink); padding: 12px; border-radius: var(--radius-sm); margin-bottom: 1rem; box-shadow: 2px 2px 0 var(--ink);">
+        <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">Official Coupon Voucher Code</div>
+        <div style="font-size: 1.4rem; font-weight: 900; font-family: var(--font-display); color: var(--theme-primary); letter-spacing: 0.08em;" id="perk-modal-code">CODE-1234</div>
       </div>
 
       <button class="btn-primary" style="width: 100%;" onclick="closePerkModal()">Done / Save to DigiLocker</button>
@@ -1139,10 +1193,10 @@
     <div class="footer-grid">
       <div class="footer-col">
         <h4>SamAashwas (समाश्वास)</h4>
-        <p style="line-height: 1.5; color: #cbd5e1;">
+        <p style="line-height: 1.5; color: var(--text-muted); font-size: 0.82rem;">
           National Municipal Grievance Intelligence & Urban Care Platform connecting Indian Urban Local Bodies with responsive, transparent, and digitally empowered civic governance.
         </p>
-        <div style="margin-top: 10px; font-weight: bold; color: #fef08a;">
+        <div style="margin-top: 10px; font-weight: 800; color: var(--theme-primary); font-size: 0.85rem;">
           National Civic Control Room: 112 / 1916 / 1533
         </div>
       </div>
@@ -1197,6 +1251,7 @@
 
   <!-- Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/sticker_theme.js"></script>
   <script src="js/translations.js"></script>
   <script src="js/map_view.js"></script>
   <script src="js/whatsapp_bot.js"></script>

@@ -460,6 +460,12 @@ async function loadKPIStats(cityFilter = '') {
     if (dedEl) dedEl.innerText = `${stats.deduplication_rate_pct}%`;
     if (wrkEl) wrkEl.innerText = stats.high_risk_wards_count;
     if (janEl) janEl.innerText = stats.jan_sunwai_escalated_count || 0;
+
+    // Update CampusHop Squish Meter (Section 6.10)
+    if (typeof updateSquishMeter === 'function' && stats.total_master_tickets !== undefined) {
+      const loadPct = Math.min(95, Math.max(25, Math.round((stats.total_master_tickets / 16) * 100)));
+      updateSquishMeter(loadPct);
+    }
   } catch (e) {
     console.warn('Could not fetch stats:', e);
   }
@@ -504,7 +510,9 @@ function renderTicketList(tickets) {
   listEl.innerHTML = '';
 
   if (tickets.length === 0) {
-    listEl.innerHTML = '<div style="padding: 1.5rem; text-align: center; color: var(--text-muted);">No incidents found for this filter.</div>';
+    listEl.innerHTML = typeof getStickerEmptyStateHTML === 'function'
+      ? getStickerEmptyStateHTML('No Incidents in Queue!', 'All reported civic issues in this filter have been resolved or routed. Hop on to another ward!', 'Refresh Queue', 'loadMasterTickets()')
+      : '<div style="padding: 1.5rem; text-align: center; color: var(--text-muted); font-weight: 700;">No incidents found for this filter.</div>';
     return;
   }
 
@@ -542,10 +550,10 @@ function renderTicketList(tickets) {
       <div style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px;">
         📍 ${cityLabel}${t.ward_name} &bull; 🏛️ ${corporatorName}
       </div>
-      <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #93c5fd;">
+      <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--ink); font-weight: 700;">
         <span>Status: <strong>${t.status}</strong></span>
         ${t.is_sla_breached || t.sla_hours_remaining <= 0
-          ? `<span style="color: #ef4444; font-weight: bold;">⚠️ SLA: Overdue</span>`
+          ? `<span style="color: var(--tomato); font-weight: 900;">⚠️ SLA: Overdue</span>`
           : `<span>⏱️ SLA: <strong>${t.sla_hours_remaining}h</strong></span>`
         }
       </div>
@@ -598,18 +606,20 @@ function openTicketModal(ticketId) {
 
   (ticket.citizen_reports || []).forEach((r, idx) => {
     const reportItem = document.createElement('div');
-    reportItem.style.background = '#1e293b';
-    reportItem.style.padding = '8px 12px';
-    reportItem.style.borderRadius = '6px';
-    reportItem.style.border = '1px solid var(--border)';
-    reportItem.style.fontSize = '0.8rem';
+    reportItem.style.background = '#FFFDF7';
+    reportItem.style.padding = '10px 14px';
+    reportItem.style.borderRadius = '14px';
+    reportItem.style.border = '2px solid #231F20';
+    reportItem.style.boxShadow = '2px 2px 0 #231F20';
+    reportItem.style.fontSize = '0.82rem';
+    reportItem.style.color = '#231F20';
 
     reportItem.innerHTML = `
-      <div style="display: flex; justify-content: space-between; color: #94a3b8; margin-bottom: 4px;">
+      <div style="display: flex; justify-content: space-between; color: #57534e; font-weight: 800; margin-bottom: 4px;">
         <strong>#${idx + 1} ${r.citizen_name} (${r.citizen_phone})</strong>
-        <span>Channel: <strong>${r.channel}</strong></span>
+        <span>Channel: <strong style="color: #231F20;">${r.channel}</strong></span>
       </div>
-      <div style="color: #f8fafc; font-style: italic;">"${r.raw_text}"</div>
+      <div style="color: #231F20; font-style: italic; font-weight: 600;">"${r.raw_text}"</div>
     `;
     reportsList.appendChild(reportItem);
   });
@@ -631,13 +641,18 @@ async function updateTicketStatus(newStatus) {
       body: JSON.stringify({ status: newStatus })
     });
     if (res.ok) {
+      if (typeof showStickerToast === 'function') {
+        showStickerToast(`Ticket status updated to ${newStatus}!`, 'success');
+      }
       closeModal();
       loadMasterTickets();
       loadKPIStats();
       loadWardGovernanceData();
     }
   } catch (e) {
-    alert('Failed to update ticket status');
+    if (typeof showStickerToast === 'function') {
+      showStickerToast('Failed to update ticket status', 'error');
+    }
   }
 }
 
@@ -648,14 +663,18 @@ async function escalateModalToJanSunwai() {
       method: 'POST'
     });
     if (res.ok) {
-      alert(`Incident docketed for upcoming Friday Jan Sunwai before the Municipal Commissioner.`);
+      if (typeof showStickerToast === 'function') {
+        showStickerToast('Incident docketed for upcoming Friday Jan Sunwai before the Municipal Commissioner.', 'success');
+      }
       closeModal();
       loadMasterTickets();
       loadKPIStats();
       loadWardGovernanceData();
     }
   } catch (e) {
-    alert('Failed to escalate to Jan Sunwai');
+    if (typeof showStickerToast === 'function') {
+      showStickerToast('Failed to escalate to Jan Sunwai', 'error');
+    }
   }
 }
 
@@ -713,10 +732,14 @@ async function loadTransformations() {
 }
 
 function endorseTransformation(id, btnEl) {
-  btnEl.style.background = '#10b981';
-  btnEl.style.borderColor = '#10b981';
+  btnEl.style.background = 'var(--mint)';
+  btnEl.style.borderColor = 'var(--ink)';
+  btnEl.style.color = 'var(--ink)';
   btnEl.innerText = '✅ Endorsed by You';
   btnEl.disabled = true;
+  if (typeof showStickerToast === 'function') {
+    showStickerToast('Thank you for verifying civic transformation!', 'success');
+  }
 }
 
 // SWACHH NAGRIK COMMUNITY REWARDS & BADGES
@@ -737,16 +760,16 @@ async function loadRewards() {
       const badgeCard = document.createElement('div');
       badgeCard.className = 'reward-badge-card';
       badgeCard.innerHTML = `
-        <div class="badge-icon-box" style="${isUnlocked ? 'background: rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.4);' : 'opacity: 0.5;'}">
+        <div class="badge-icon-box" style="${isUnlocked ? 'background: #E8F9F2; border-color: var(--ink);' : 'opacity: 0.5;'}">
           ${b.icon}
         </div>
         <div>
           <div style="display: flex; align-items: center; gap: 8px;">
-            <div style="font-weight: 700; font-size: 0.92rem; color: #ffffff;">${b.name}</div>
+            <div style="font-weight: 800; font-size: 0.95rem; color: var(--ink); font-family: var(--font-display);">${b.name}</div>
             <span class="badge ${isUnlocked ? 'badge-low' : 'badge-medium'}">${isUnlocked ? 'UNLOCKED' : 'IN PROGRESS'}</span>
           </div>
-          <div style="font-size: 0.76rem; color: #cbd5e1; margin-top: 4px;">${b.description}</div>
-          <div style="font-size: 0.68rem; color: #94a3b8; margin-top: 6px;">Points Required: <strong>${b.points_req} Karma</strong></div>
+          <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600; margin-top: 4px;">${b.description}</div>
+          <div style="font-size: 0.72rem; color: var(--ink); font-weight: 700; margin-top: 6px;">Points Required: <strong>${b.points_req} Karma</strong></div>
         </div>
       `;
       badgesContainer.appendChild(badgeCard);
@@ -759,11 +782,11 @@ async function loadRewards() {
       perkCard.className = 'perk-card';
       perkCard.innerHTML = `
         <div>
-          <div style="font-weight: 700; font-size: 0.95rem; color: #ffffff; margin-bottom: 6px;">${p.title}</div>
-          <div style="font-size: 0.78rem; color: #cbd5e1; line-height: 1.45; margin-bottom: 12px;">${p.desc}</div>
+          <div style="font-weight: 800; font-size: 0.95rem; color: var(--ink); font-family: var(--font-display); margin-bottom: 6px;">${p.title}</div>
+          <div style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600; line-height: 1.45; margin-bottom: 12px;">${p.desc}</div>
         </div>
-        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1px solid rgba(255, 255, 255, 0.08);">
-          <span style="font-size: 0.78rem; color: #fef08a; font-weight: 700;">🪙 ${p.points_cost} Karma Points</span>
+        <div style="display: flex; justify-content: space-between; align-items: center; padding-top: 10px; border-top: 1.5px dashed var(--ink);">
+          <span style="font-size: 0.8rem; color: var(--ink); font-weight: 800;">🪙 ${p.points_cost} Karma Points</span>
           <button class="btn-primary" style="font-size: 0.75rem; padding: 5px 12px;" onclick="claimPerk('${p.title}', '${p.code}', '${p.desc}')">Claim Perk</button>
         </div>
       `;
@@ -817,18 +840,18 @@ async function loadPredictiveData(cityFilter = '') {
         card.innerHTML = `
           <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
             <div>
-              <div style="font-weight: 700; font-size: 0.95rem; color: #ffffff;">${w.ward_name}</div>
-              <div style="font-size: 0.72rem; color: #94a3b8;">${w.ward_id}</div>
+              <div style="font-weight: 800; font-size: 0.95rem; color: var(--ink); font-family: var(--font-display);">${w.ward_name}</div>
+              <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">${w.ward_id}</div>
             </div>
             <div class="risk-score-badge ${badgeClass}">${w.risk_score}</div>
           </div>
-          <div style="font-size: 0.78rem; color: #cbd5e1; margin-bottom: 8px;">
+          <div style="font-size: 0.78rem; color: var(--ink); font-weight: 600; margin-bottom: 8px;">
             🌧️ Rain 24h: <strong>${w.rainfall_forecast_24h_mm}mm</strong> &bull; Active Issues: <strong>${w.active_complaints_count}</strong>
           </div>
-          <div style="font-size: 0.74rem; color: #f87171; background: rgba(239, 68, 68, 0.1); padding: 6px; border-radius: 4px; margin-bottom: 6px;">
+          <div style="font-size: 0.74rem; color: var(--ink); background: #FFE8E5; border: 1.5px solid var(--ink); padding: 6px; border-radius: 8px; margin-bottom: 6px; font-weight: 700;">
             ⚠️ ${w.recommendation}
           </div>
-          <div style="font-size: 0.7rem; color: #64748b;">
+          <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">
             Desilting Readiness: <strong>${w.desilting_readiness_pct}%</strong>
           </div>
         `;
@@ -841,16 +864,16 @@ async function loadPredictiveData(cityFilter = '') {
       tableBody.innerHTML = '';
       assets.forEach(a => {
         const row = document.createElement('tr');
-        row.style.borderBottom = '1px solid rgba(255, 255, 255, 0.05)';
+        row.style.borderBottom = '1.5px solid var(--paper-2)';
         row.innerHTML = `
-          <td style="padding: 10px; font-weight: 600; color: #38bdf8;">${a.asset_id}</td>
-          <td style="padding: 10px;">${a.type}</td>
-          <td style="padding: 10px;">${a.ward_id}</td>
-          <td style="padding: 10px;">${a.structural_health_score}/100</td>
-          <td style="padding: 10px; font-weight: 700; color: ${a.failure_probability > 0.4 ? '#f87171' : '#34d399'};">
+          <td style="padding: 10px; font-weight: 800; color: var(--ink); font-family: var(--font-display);">${a.asset_id}</td>
+          <td style="padding: 10px; font-weight: 600;">${a.type}</td>
+          <td style="padding: 10px; font-weight: 600;">${a.ward_id}</td>
+          <td style="padding: 10px; font-weight: 700;">${a.structural_health_score}/100</td>
+          <td style="padding: 10px; font-weight: 900; color: ${a.failure_probability > 0.4 ? 'var(--tomato)' : 'var(--mint)'};">
             ${(a.failure_probability * 100).toFixed(1)}%
           </td>
-          <td style="padding: 10px; font-size: 0.75rem; color: #cbd5e1;">${a.recommended_action}</td>
+          <td style="padding: 10px; font-size: 0.75rem; color: var(--ink); font-weight: 600;">${a.recommended_action}</td>
         `;
         tableBody.appendChild(row);
       });
@@ -882,20 +905,20 @@ async function loadWardGovernanceData(cityFilter = '') {
     tableBody.innerHTML = '';
     tickets.forEach(t => {
       const row = document.createElement('tr');
-      row.style.borderBottom = '1px solid rgba(255, 255, 255, 0.05)';
+      row.style.borderBottom = '1.5px solid var(--paper-2)';
       const corpName = t.corporator && t.corporator.name ? t.corporator.name : 'Parshad';
 
       row.innerHTML = `
-        <td style="padding: 10px; font-weight: 700; color: #f87171;">${t.master_ticket_id}</td>
-        <td style="padding: 10px; font-weight: 600;">${t.title}</td>
-        <td style="padding: 10px;">${t.ward_name}<br/><span style="font-size: 0.7rem; color: #94a3b8;">${corpName}</span></td>
+        <td style="padding: 10px; font-weight: 800; color: var(--tomato); font-family: var(--font-display);">${t.master_ticket_id}</td>
+        <td style="padding: 10px; font-weight: 700; color: var(--ink);">${t.title}</td>
+        <td style="padding: 10px; color: var(--ink);">${t.ward_name}<br/><span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">${corpName}</span></td>
         <td style="padding: 10px;"><span class="badge badge-mission">${(t.national_mission || '').split('/')[0]}</span></td>
-        <td style="padding: 10px; font-weight: bold;">${t.report_count} Citizens</td>
-        <td style="padding: 10px;">
-          ${t.is_sla_breached ? '<span style="color: #ef4444; font-weight: bold;">⚠️ SLA Breached</span>' : `${t.sla_hours_remaining}h rem.`}
+        <td style="padding: 10px; font-weight: 800; color: var(--ink);">${t.report_count} Citizens</td>
+        <td style="padding: 10px; font-weight: 700;">
+          ${t.is_sla_breached ? '<span style="color: var(--tomato); font-weight: 900;">⚠️ SLA Breached</span>' : `${t.sla_hours_remaining}h rem.`}
         </td>
         <td style="padding: 10px;">
-          <button class="btn-primary" style="font-size: 0.72rem; padding: 4px 8px;" onclick="openTicketModal('${t.master_ticket_id}')">Inspect</button>
+          <button class="btn-primary" style="font-size: 0.72rem; padding: 4px 10px;" onclick="openTicketModal('${t.master_ticket_id}')">Inspect</button>
         </td>
       `;
       tableBody.appendChild(row);
@@ -916,15 +939,15 @@ async function loadWardGovernanceData(cityFilter = '') {
       const card = document.createElement('div');
       card.className = 'ward-gov-card';
       card.innerHTML = `
-        <div style="font-weight: 800; font-size: 1rem; color: #ffffff; margin-bottom: 4px;">${w.ward_name}</div>
-        <div style="font-size: 0.75rem; color: #38bdf8; margin-bottom: 8px;">Corporation: ${w.city || 'Municipal'} &bull; ${w.ward_id}</div>
-        <div style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 4px;">
+        <div style="font-weight: 800; font-size: 1rem; color: var(--ink); font-family: var(--font-display); margin-bottom: 4px;">${w.ward_name}</div>
+        <div style="font-size: 0.75rem; color: var(--tomato); font-weight: 800; margin-bottom: 8px;">Corporation: ${w.city || 'Municipal'} &bull; ${w.ward_id}</div>
+        <div style="font-size: 0.8rem; color: var(--ink); margin-bottom: 4px;">
           🏛️ <strong>Parshad:</strong> ${corp.name || 'Elected Ward Councillor'} (${corp.phone || 'N/A'})
         </div>
-        <div style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 8px;">
+        <div style="font-size: 0.8rem; color: var(--ink); margin-bottom: 8px;">
           🏛️ <strong>MLA:</strong> ${mla.name || 'Constituency MLA'} (${mla.constituency || 'Assembly'})
         </div>
-        <div style="font-size: 0.72rem; color: #94a3b8; background: rgba(15, 23, 42, 0.6); padding: 6px; border-radius: 4px;">
+        <div style="font-size: 0.74rem; color: var(--ink); background: var(--paper-2); border: 1.5px solid var(--ink); padding: 6px 10px; border-radius: 8px; font-weight: 700;">
           📅 <strong>Ward Sabha:</strong> ${w.ward_sabha_schedule || '1st Saturday of Month, 10:30 AM'}
         </div>
       `;
@@ -945,35 +968,35 @@ async function trackApplication() {
   if (!trackingId) return;
 
   resultEl.style.display = 'block';
-  resultEl.innerHTML = '<div style="color: #94a3b8;">Searching municipal database...</div>';
+  resultEl.innerHTML = '<div style="color: var(--ink); font-weight: 700;">Searching municipal database...</div>';
 
   try {
     const res = await fetch(`/api/v1/tracking/${encodeURIComponent(trackingId)}`);
     if (!res.ok) {
-      resultEl.innerHTML = `<div style="color: #f87171;">Tracking ID '${trackingId}' not found. Please verify.</div>`;
+      resultEl.innerHTML = `<div style="color: var(--tomato); font-weight: 800;">Tracking ID '${trackingId}' not found. Please verify.</div>`;
       return;
     }
 
     const data = await res.json();
     resultEl.innerHTML = `
       <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px;">
-        <strong style="color: #60a5fa; font-size: 0.95rem;">${data.tracking_id}</strong>
+        <strong style="color: var(--tomato); font-size: 0.95rem; font-family: var(--font-display);">${data.tracking_id}</strong>
         <span class="badge ${data.urgency === 'Critical' ? 'badge-critical' : 'badge-low'}">${data.status}</span>
       </div>
-      <div style="font-weight: 600; color: #ffffff; margin-bottom: 4px;">${data.title}</div>
-      <div style="color: #94a3b8; font-size: 0.75rem; margin-bottom: 6px;">
+      <div style="font-weight: 800; color: var(--ink); margin-bottom: 4px; font-size: 0.95rem;">${data.title}</div>
+      <div style="color: var(--text-muted); font-size: 0.75rem; margin-bottom: 6px; font-weight: 700;">
         📍 Ward: ${data.ward_name} &bull; Officer: ${data.assigned_engineer}
       </div>
-      <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: #93c5fd; margin-bottom: 8px;">
+      <div style="display: flex; justify-content: space-between; font-size: 0.75rem; color: var(--ink); margin-bottom: 8px; font-weight: 700;">
         <span>SLA Remaining: <strong>${data.sla_hours_remaining} Hours</strong></span>
         <span>Citizens Endorsed: <strong>${data.report_count}</strong></span>
       </div>
-      <button class="btn-primary" style="font-size: 0.72rem; padding: 4px 10px; width: 100%;" onclick="openTrackingModal('${data.tracking_id}')">
+      <button class="btn-primary" style="font-size: 0.75rem; padding: 6px 12px; width: 100%;" onclick="openTrackingModal('${data.tracking_id}')">
         Open Full Multi-Agent Dossier &rarr;
       </button>
     `;
   } catch (e) {
-    resultEl.innerHTML = `<div style="color: #f87171;">Error tracking application.</div>`;
+    resultEl.innerHTML = `<div style="color: var(--tomato); font-weight: 800;">Error tracking application.</div>`;
   }
 }
 
@@ -997,15 +1020,15 @@ async function openTrackingModal(trackingId) {
     let traceHtml = '';
     (data.agent_trace || []).forEach((st, idx) => {
       traceHtml += `
-        <div style="border-left: 2px solid #38bdf8; padding-left: 8px; margin-bottom: 6px; font-size: 0.75rem;">
-          <div style="color: #fef08a; font-weight: bold;">Step ${idx + 1}: ${st.agent_name} [${st.status}]</div>
-          <div style="color: #cbd5e1;">${st.thought_log}</div>
+        <div style="background: #FFFDF7; border: 2px solid #231F20; border-left: 5px solid #FF5A4E; border-radius: 10px; padding: 8px 12px; margin-bottom: 8px; font-size: 0.78rem; box-shadow: 1px 1px 0 #231F20;">
+          <div style="color: #231F20; font-weight: 800; font-family: 'Fredoka', cursive;">Step ${idx + 1}: ${st.agent_name} <span class="badge" style="background: #FFC93C; font-size: 10px; margin-left: 6px;">${st.status}</span></div>
+          <div style="color: #57534e; font-weight: 600; margin-top: 3px;">${st.thought_log}</div>
         </div>
       `;
     });
 
     body.innerHTML = `
-      <div style="background: rgba(15, 23, 42, 0.6); padding: 12px; border-radius: 6px; margin-bottom: 12px; font-size: 0.82rem;">
+      <div style="background: #FFEFD0; border: 2.5px solid #231F20; border-radius: 14px; padding: 12px; margin-bottom: 12px; font-size: 0.82rem; color: #231F20; box-shadow: 2px 2px 0 #231F20;">
         <div><strong>Title:</strong> ${data.title}</div>
         <div><strong>Department:</strong> ${data.department}</div>
         <div><strong>Ward & Zone:</strong> ${data.ward_name} (${data.mcd_zone || ''})</div>
@@ -1013,15 +1036,17 @@ async function openTrackingModal(trackingId) {
         <div><strong>Statutory SLA:</strong> ${data.sla_hours_remaining} Hours remaining</div>
         <div><strong>Jan Sunwai Status:</strong> ${data.jan_sunwai_status || 'NONE'}</div>
       </div>
-      <h4 style="font-size: 0.88rem; color: #38bdf8; margin-bottom: 6px;">Autonomous 6-Agent Deliberation Trail</h4>
-      <div style="max-height: 220px; overflow-y: auto; background: #070d18; padding: 10px; border-radius: 6px;">
-        ${traceHtml || '<div style="color: #64748b; font-style: italic;">Standard SLA intake processing.</div>'}
+      <h4 style="font-size: 0.95rem; font-family: 'Fredoka', cursive; color: #231F20; margin-bottom: 6px;">Autonomous 6-Agent Deliberation Trail</h4>
+      <div style="max-height: 220px; overflow-y: auto; background: #FFF6E5; border: 2px solid #231F20; padding: 10px; border-radius: 14px; box-shadow: inset 1px 1px 0 #231F20;">
+        ${traceHtml || '<div style="color: #57534e; font-style: italic;">Standard SLA intake processing.</div>'}
       </div>
     `;
 
     document.getElementById('tracking-modal').style.display = 'flex';
   } catch (e) {
-    alert('Failed to load tracking modal');
+    if (typeof showStickerToast === 'function') {
+      showStickerToast('Failed to load tracking modal', 'error');
+    }
   }
 }
 
@@ -1042,7 +1067,7 @@ async function handleCitizenSubmit(event) {
   const resultEl = document.getElementById('submission-result');
 
   resultEl.style.display = 'block';
-  resultEl.innerHTML = '<div style="color: #60a5fa;">Submitting and processing with 6 autonomous agents...</div>';
+  resultEl.innerHTML = '<div style="color: var(--ink); font-weight: 700;">Submitting and processing with 6 autonomous agents...</div>';
 
   try {
     const payload = {
@@ -1066,15 +1091,15 @@ async function handleCitizenSubmit(event) {
 
     const isDup = data.is_duplicate;
     const dupNotice = isDup
-      ? `<div style="color: #f59e0b; margin-top: 4px;">🤝 <strong>Merged into Existing Master Incident:</strong> 300m spatial clustering detected neighborhood duplicate. You are linked as an active endorsement.</div>`
-      : `<div style="color: #10b981; margin-top: 4px;">✨ <strong>New Master Incident Created:</strong> Automatically routed to Ward Junior Engineer with statutory SLA.</div>`;
+      ? `<div style="color: var(--ink); background: #FFF3DA; border: 1.5px solid var(--ink); border-radius: 8px; padding: 8px; margin-top: 6px; font-weight: 700;">🤝 <strong>Merged into Existing Master Incident:</strong> 300m spatial clustering detected neighborhood duplicate. You are linked as an active endorsement.</div>`
+      : `<div style="color: var(--ink); background: #E8F9F2; border: 1.5px solid var(--ink); border-radius: 8px; padding: 8px; margin-top: 6px; font-weight: 700;">✨ <strong>New Master Incident Created:</strong> Automatically routed to Ward Junior Engineer with statutory SLA.</div>`;
 
     resultEl.innerHTML = `
-      <div style="font-weight: bold; font-size: 1rem; color: #ffffff; margin-bottom: 4px;">
-        Grievance Successfully Registered!
+      <div style="font-weight: 900; font-size: 1.1rem; color: var(--ink); font-family: var(--font-display); margin-bottom: 6px;">
+        🎉 Grievance Successfully Registered!
       </div>
-      <div>Tracking ID: <strong style="color: #38bdf8;">${data.complaint_id}</strong></div>
-      <div>Master Incident ID: <strong style="color: #fef08a;">${data.master_ticket_id}</strong></div>
+      <div>Tracking ID: <strong style="color: var(--tomato); font-family: var(--font-display);">${data.complaint_id}</strong></div>
+      <div>Master Incident ID: <strong style="color: var(--ink); font-family: var(--font-display);">${data.master_ticket_id}</strong></div>
       <div>Department: <strong>${data.department}</strong> &bull; Urgency: <strong>${data.urgency}</strong></div>
       <div>Assigned Ward: <strong>${data.ward_extracted}</strong> &bull; Corporator: <strong>${data.corporator_name}</strong></div>
       <div>Statutory SLA: <strong>${data.citizen_charter_sla_hours} Hours</strong></div>
@@ -1082,10 +1107,13 @@ async function handleCitizenSubmit(event) {
     `;
 
     document.getElementById('citizen-form').reset();
+    if (typeof showStickerToast === 'function') {
+      showStickerToast('Grievance registered and routed to Ward Engineer!', 'success');
+    }
     loadKPIStats();
     loadMasterTickets();
   } catch (err) {
-    resultEl.innerHTML = `<div style="color: #ef4444;">Error: ${err.message}</div>`;
+    resultEl.innerHTML = `<div style="color: var(--tomato); font-weight: 800;">Error: ${err.message}</div>`;
   }
 }
 
@@ -1099,7 +1127,8 @@ function toggleVoiceRecording() {
   if (isRecording) {
     if (speechRecognizer) speechRecognizer.stop();
     isRecording = false;
-    btn.style.background = '#2563eb';
+    btn.style.background = 'var(--theme-primary)';
+    btn.style.color = 'var(--cream-white)';
     label.innerText = 'Start Speaking';
     statusLabel.innerText = 'Recording completed and transcribed';
     return;
@@ -1119,7 +1148,8 @@ function toggleVoiceRecording() {
 
     speechRecognizer.onstart = () => {
       isRecording = true;
-      btn.style.background = '#ef4444';
+      btn.style.background = 'var(--tomato)';
+      btn.style.color = 'var(--cream-white)';
       label.innerText = 'Listening... Tap to Stop';
       statusLabel.innerText = 'Listening in ' + langSelect.options[langSelect.selectedIndex].text;
     };
@@ -1133,14 +1163,16 @@ function toggleVoiceRecording() {
     speechRecognizer.onerror = (e) => {
       statusLabel.innerText = `Microphone notice: ${e.error}. Selected sample loaded.`;
       isRecording = false;
-      btn.style.background = '#2563eb';
+      btn.style.background = 'var(--theme-primary)';
+      btn.style.color = 'var(--cream-white)';
       label.innerText = 'Start Speaking';
       fillSampleGrievance('hi');
     };
 
     speechRecognizer.onend = () => {
       isRecording = false;
-      btn.style.background = '#2563eb';
+      btn.style.background = 'var(--theme-primary)';
+      btn.style.color = 'var(--cream-white)';
       label.innerText = 'Start Speaking';
     };
 
@@ -1178,11 +1210,15 @@ function detectLocation() {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         setLocationCoords(pos.coords.latitude.toFixed(6), pos.coords.longitude.toFixed(6));
-        alert(`Detected GPS: (${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)})`);
+        if (typeof showStickerToast === 'function') {
+          showStickerToast(`Detected GPS: (${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)})`, 'info');
+        }
       },
       () => {
         setLocationCoords(fallbackLat, fallbackLon);
-        alert(`Simulated GPS location set to ${city.name} Central.`);
+        if (typeof showStickerToast === 'function') {
+          showStickerToast(`Simulated GPS location set to ${city.name} Central.`, 'info');
+        }
       }
     );
   } else {
@@ -1207,13 +1243,14 @@ function renderLiteWardGrid(tickets) {
 
   Object.values(wardsMap).forEach(w => {
     const card = document.createElement('div');
-    card.style.background = '#1e293b';
-    card.style.padding = '10px';
-    card.style.borderRadius = '6px';
-    card.style.border = '1px solid var(--border)';
+    card.style.background = '#FFFDF7';
+    card.style.padding = '10px 14px';
+    card.style.borderRadius = '14px';
+    card.style.border = '2.5px solid #231F20';
+    card.style.boxShadow = '2px 2px 0 #231F20';
     card.innerHTML = `
-      <div style="font-weight: bold; color: #ffffff;">${w.name}</div>
-      <div style="font-size: 0.75rem; color: #94a3b8;">Reports: ${w.count} &bull; Critical: ${w.critical}</div>
+      <div style="font-weight: 800; color: #231F20; font-family: 'Fredoka', cursive;">${w.name}</div>
+      <div style="font-size: 0.75rem; color: #57534e; font-weight: 700;">Reports: ${w.count} &bull; Critical: ${w.critical}</div>
     `;
     container.appendChild(card);
   });
@@ -1225,13 +1262,17 @@ async function simulateAgentScenario(scenarioType) {
   const statusEl = document.getElementById('sim-status-indicator');
   if (!consoleEl) return;
 
+  if (typeof setMascotMood === 'function') {
+    setMascotMood(scenarioType === 'spam_selfie_meme' ? 'confused' : 'panicking');
+  }
+
   if (statusEl) {
     statusEl.innerText = 'Deliberating across 6 Autonomous Civic Agents...';
-    statusEl.style.color = '#f59e0b';
+    statusEl.style.color = '#231F20';
   }
 
   consoleEl.innerHTML = `
-    <div style="color: #fef08a; font-weight: bold;">
+    <div style="color: #FF5A4E; font-weight: 800; font-family: 'Fredoka', cursive;">
       &gt; INITIATING MULTI-AGENT CIVIC DELIBERATION PIPELINE FOR [${scenarioType.toUpperCase()}]...
     </div>
   `;
@@ -1256,7 +1297,7 @@ async function simulateAgentScenario(scenarioType) {
 
           stepDiv.innerHTML = `
             <div class="step-header">
-              <span>Step ${idx + 1}: ${step.agent_name}</span>
+              <span style="font-family: 'Fredoka', cursive;">Step ${idx + 1}: ${step.agent_name}</span>
               <span class="badge ${isAlert ? 'badge-critical' : 'badge-low'}">${step.status}</span>
             </div>
             <div class="step-thought">&gt; ${step.thought_log}</div>
@@ -1267,21 +1308,26 @@ async function simulateAgentScenario(scenarioType) {
 
           if (idx === data.agent_trace.length - 1) {
             const summaryDiv = document.createElement('div');
-            summaryDiv.style.marginTop = '10px';
-            summaryDiv.style.padding = '10px';
-            summaryDiv.style.background = 'rgba(56, 189, 248, 0.1)';
-            summaryDiv.style.border = '1px solid #38bdf8';
-            summaryDiv.style.borderRadius = '6px';
+            summaryDiv.style.marginTop = '12px';
+            summaryDiv.style.padding = '12px';
+            summaryDiv.style.background = '#FFEFD0';
+            summaryDiv.style.border = '2.5px solid #231F20';
+            summaryDiv.style.borderRadius = '14px';
+            summaryDiv.style.boxShadow = '3px 3px 0 #231F20';
             summaryDiv.innerHTML = `
-              <div style="font-weight: bold; color: #fef08a; margin-bottom: 4px;">Executive Multi-Agent Summary:</div>
-              <div style="color: #f8fafc; font-size: 0.8rem; line-height: 1.4;">${data.narrative_summary}</div>
+              <div style="font-weight: 800; font-family: 'Fredoka', cursive; color: #FF5A4E; margin-bottom: 4px;">Executive Multi-Agent Summary:</div>
+              <div style="color: #231F20; font-size: 0.82rem; font-weight: 600; line-height: 1.45;">${data.narrative_summary}</div>
             `;
             consoleEl.appendChild(summaryDiv);
             consoleEl.scrollTop = consoleEl.scrollHeight;
 
             if (statusEl) {
               statusEl.innerText = 'Orchestration Completed Successfully';
-              statusEl.style.color = '#34d399';
+              statusEl.style.color = '#7BDCB5';
+            }
+
+            if (typeof setMascotMood === 'function') {
+              setMascotMood('celebrating');
             }
           }
         }, delay);
@@ -1332,7 +1378,9 @@ function openServiceInfo(serviceKey) {
 
   const s = serviceDetails[serviceKey];
   if (s) {
-    alert(`${s.title}\n\n${s.body}\n\n(Official link enabled for participating urban municipal corporations)`);
+    if (typeof showStickerToast === 'function') {
+      showStickerToast(`${s.title}: ${s.body}`, 'info', 5500);
+    }
   }
 }
 
