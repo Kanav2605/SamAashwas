@@ -127,3 +127,8 @@ function renderMapIncidents(masterTickets) {
     map.fitBounds(bounds, { padding: [50, 50], maxZoom: 14 });
   }
 }
+
+// Expose map functions on window
+window.initMap = initMap;
+window.flyToCity = flyToCity;
+window.renderMapIncidents = renderMapIncidents;

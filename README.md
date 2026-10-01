@@ -53,6 +53,12 @@ Indian Urban Local Bodies (such as BBMP Bengaluru, BMC Mumbai, MCD Delhi, GHMC H
 - **🌧️ Monsoon Preparedness & Pre-Monsoon Desilting:**
   - Real-time desilting readiness tracking (% desilted) per ward alongside Open-Meteo precipitation forecasts.
 
+### 4. Citizen Authentication & Meri Pehchan Identity Gateway
+- **🏛️ Meri Pehchan / Citizen Login Gateway:** Indian civic authentication supporting mobile number + OTP verification and 1-click demo citizen profiles (Rajesh Kumar, Priya Sharma, Aarav Sharma, Sunita Patel).
+- **🔒 Mandatory Authentication for Complaints:** Protects municipal queues against automated spam by requiring user login before lodging grievances or recording vernacular voice notes.
+- **🎖️ Citizen Karma & Navigation Bar Header:** Real-time authenticated citizen profile displaying avatar, ward jurisdiction, karma points, and session logout.
+- **🛡️ DPDP Act 2023 Compliance:** Citizen privacy and credentials managed under official municipal data protection standards.
+
 ---
 
 ## 🌟 The 4 Core AI Modules

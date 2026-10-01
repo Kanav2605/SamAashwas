@@ -2393,3 +2393,284 @@ tr:nth-child(odd) td {
 .impact-metric-box.purple {
   background: #FFE8F2;
 }
+
+/* --------------------------------------------------------------------------
+   CITIZEN AUTHENTICATION & MERI PEHCHAN NAVBAR WIDGET
+   -------------------------------------------------------------------------- */
+.citizen-auth-widget {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-citizen-login {
+  background: var(--mustard);
+  color: var(--ink);
+  border: var(--border-ink);
+  border-radius: var(--radius-pill);
+  padding: 6px 14px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.8rem;
+  cursor: pointer;
+  box-shadow: var(--shadow-hard-sm);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.btn-citizen-login:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hard);
+  background: #ffc120;
+}
+
+.citizen-logged-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--cream-white);
+  border: var(--border-ink);
+  border-radius: var(--radius-pill);
+  padding: 4px 12px 4px 6px;
+  box-shadow: var(--shadow-hard-sm);
+  font-size: 0.78rem;
+}
+
+.citizen-avatar-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--paper-2);
+  border: 1.5px solid var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+}
+
+.citizen-name-text {
+  font-weight: 800;
+  color: var(--ink);
+  font-family: var(--font-display);
+  line-height: 1.1;
+}
+
+.citizen-karma-pill {
+  background: var(--mint);
+  color: var(--ink);
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius-pill);
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  font-weight: 900;
+}
+
+.btn-citizen-logout {
+  background: var(--paper-2);
+  color: var(--ink);
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius-pill);
+  padding: 3px 8px;
+  font-size: 0.72rem;
+  font-weight: 800;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-citizen-logout:hover {
+  background: var(--tomato);
+  color: var(--cream-white);
+}
+
+/* --------------------------------------------------------------------------
+   MERI PEHCHAN / INDIAN CIVIC LOGIN MODAL
+   -------------------------------------------------------------------------- */
+.login-modal-box {
+  max-width: 580px !important;
+  border: 3.5px solid var(--ink) !important;
+  border-radius: var(--radius-lg) !important;
+  overflow: hidden;
+  padding: 0 !important;
+  background: var(--paper) !important;
+}
+
+.login-modal-header {
+  background: var(--paper-2);
+  border-bottom: var(--border-ink);
+  padding: 1.25rem 1.5rem;
+  position: relative;
+}
+
+.login-tricolor-accent {
+  height: 5px;
+  width: 100%;
+  background: linear-gradient(90deg, #FF9933 33.3%, #FFFFFF 33.3%, #FFFFFF 66.6%, #138808 66.6%);
+  border-bottom: 1.5px solid var(--ink);
+}
+
+.login-presets-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+@media (max-width: 600px) {
+  .login-presets-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.login-preset-card {
+  background: var(--cream-white);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--ink);
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+}
+
+.login-preset-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 4px 4px 0 var(--ink);
+  border-color: var(--tomato);
+}
+
+.login-preset-avatar {
+  font-size: 1.8rem;
+  background: var(--paper-2);
+  border: 1.5px solid var(--ink);
+  border-radius: 50%;
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.login-preset-name {
+  font-weight: 800;
+  font-family: var(--font-display);
+  font-size: 0.88rem;
+  color: var(--ink);
+}
+
+.login-preset-role {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 700;
+}
+
+.login-preset-badge {
+  font-size: 0.68rem;
+  background: var(--mustard);
+  color: var(--ink);
+  border: 1px solid var(--ink);
+  padding: 1px 6px;
+  border-radius: 9999px;
+  font-weight: 800;
+  display: inline-block;
+  margin-top: 2px;
+}
+
+.login-divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 1.25rem 0;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.login-divider::before,
+.login-divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 2px dashed var(--ink);
+}
+
+.login-divider span {
+  padding: 0 10px;
+}
+
+.login-phone-box {
+  background: var(--cream-white);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   GALLERY FILTER PILLS & JAN SUNWAI CONTROLS
+   -------------------------------------------------------------------------- */
+.gallery-filter-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 1.25rem;
+}
+
+.gallery-filter-btn {
+  background: var(--cream-white);
+  color: var(--ink);
+  border: var(--border-ink);
+  border-radius: var(--radius-pill);
+  padding: 6px 14px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  font-family: var(--font-display);
+  cursor: pointer;
+  box-shadow: var(--shadow-hard-sm);
+  transition: all 0.15s ease;
+}
+
+.gallery-filter-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-hard);
+}
+
+.gallery-filter-btn.active {
+  background: var(--tomato);
+  color: var(--cream-white);
+}
+
+.map-floating-controls {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.map-control-btn {
+  background: var(--cream-white);
+  color: var(--ink);
+  border: var(--border-ink-thick);
+  border-radius: var(--radius-sm);
+  padding: 6px 12px;
+  font-family: var(--font-display);
+  font-size: 0.76rem;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: var(--shadow-hard-sm);
+  transition: all 0.15s ease;
+}
+
+.map-control-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-hard);
+  background: var(--mustard);
+}
+

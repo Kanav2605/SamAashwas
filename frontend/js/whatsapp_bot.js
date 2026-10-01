@@ -30,12 +30,17 @@ async function sendWhatsAppMessage(overrideText = null) {
   const waLat = (cityObj && cityObj.pins && cityObj.pins.length > 0) ? cityObj.pins[0].lat : (cityObj ? cityObj.lat : 28.6139);
   const waLon = (cityObj && cityObj.pins && cityObj.pins.length > 0) ? cityObj.pins[0].lon : (cityObj ? cityObj.lon : 77.2090);
 
+  // Determine sender phone from authenticated user or fallback
+  const senderPhone = (typeof currentUser !== 'undefined' && currentUser && currentUser.user && currentUser.user.phone)
+    ? `+91${currentUser.user.phone.replace(/[^0-9]/g, '').slice(-10)}`
+    : '+919876543210';
+
   try {
     const response = await fetch('/api/v1/webhook/whatsapp', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        From: 'whatsapp:+919876543210',
+        From: `whatsapp:${senderPhone}`,
         Body: text,
         Latitude: waLat,
         Longitude: waLon,
@@ -119,11 +124,15 @@ function sendWhatsAppVoice() {
     const waLat = (cityObj && cityObj.pins && cityObj.pins.length > 0) ? cityObj.pins[0].lat : (cityObj ? cityObj.lat : 28.6139);
     const waLon = (cityObj && cityObj.pins && cityObj.pins.length > 0) ? cityObj.pins[0].lon : (cityObj ? cityObj.lon : 77.2090);
 
+    const senderPhone = (typeof currentUser !== 'undefined' && currentUser && currentUser.user && currentUser.user.phone)
+      ? `+91${currentUser.user.phone.replace(/[^0-9]/g, '').slice(-10)}`
+      : '+919876543210';
+
     fetch('/api/v1/webhook/whatsapp', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        From: 'whatsapp:+919876543210',
+        From: `whatsapp:${senderPhone}`,
         Body: cleanText,
         Latitude: waLat,
         Longitude: waLon,
@@ -144,3 +153,8 @@ function sendWhatsAppVoice() {
     });
   }, 1000);
 }
+
+// Expose on window for global click handlers
+window.sendWhatsAppMessage = sendWhatsAppMessage;
+window.sendQuickWhatsApp = sendQuickWhatsApp;
+window.sendWhatsAppVoice = sendWhatsAppVoice;

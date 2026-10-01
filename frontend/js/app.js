@@ -7,6 +7,11 @@ let isRecording = false;
 let speechRecognizer = null;
 let allWardsData = [];
 let currentSelectedCity = 'all';
+let currentUser = null;
+let pendingPostLoginAction = null;
+let currentGalleryCategory = 'all';
+let currentJanSunwaiFilter = 'ALL';
+let showSpatialClusters = true;
 
 // Supported Metros & Corporations Metadata
 const CITIES_DATA = {
@@ -237,6 +242,262 @@ const CITIES_DATA = {
   }
 };
 
+// ==========================================================================
+// CITIZEN AUTHENTICATION & MERI PEHCHAN CONTROLLER
+// ==========================================================================
+
+function initAuth() {
+  try {
+    const saved = localStorage.getItem('civicsense_auth');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (parsed && parsed.user && parsed.token) {
+        currentUser = parsed;
+      }
+    }
+  } catch (e) {
+    console.warn('Error reading saved session:', e);
+  }
+  renderAuthHeader();
+  syncFormWithUser();
+  updateRewardsProfile();
+}
+
+function renderAuthHeader() {
+  const container = document.getElementById('citizen-auth-widget');
+  if (!container) return;
+
+  if (currentUser && currentUser.user) {
+    const u = currentUser.user;
+    container.innerHTML = `
+      <div class="citizen-logged-pill" title="Logged in as ${u.name} (${u.role || 'Citizen'})">
+        <div class="citizen-avatar-icon">${u.avatar || '👤'}</div>
+        <div>
+          <div class="citizen-name-text">${u.name}</div>
+          <div style="font-size: 0.65rem; color: var(--text-muted); font-weight: 700;">${u.ward || u.city || 'Citizen'}</div>
+        </div>
+        <span class="citizen-karma-pill">🪙 ${u.karma_points || 850}</span>
+        <button class="btn-citizen-logout" onclick="logoutCitizen()" title="Log out of Citizen Session">🚪 Logout</button>
+      </div>
+    `;
+  } else {
+    container.innerHTML = `
+      <button class="btn-citizen-login" onclick="openLoginModal()">
+        <span>🔑</span> <span>Citizen Login</span> <span style="opacity: 0.6;">|</span> <span>मेरी पहचान</span>
+      </button>
+    `;
+  }
+}
+
+function openLoginModal(actionCallback = null) {
+  pendingPostLoginAction = actionCallback;
+  const modal = document.getElementById('citizen-login-modal');
+  if (modal) {
+    modal.style.display = 'flex';
+    const phoneStep = document.getElementById('login-phone-step');
+    const otpStep = document.getElementById('login-otp-step');
+    if (phoneStep) phoneStep.style.display = 'block';
+    if (otpStep) otpStep.style.display = 'none';
+  }
+}
+
+function closeLoginModal(event = null) {
+  if (event && event.target !== document.getElementById('citizen-login-modal')) return;
+  const modal = document.getElementById('citizen-login-modal');
+  if (modal) modal.style.display = 'none';
+  pendingPostLoginAction = null;
+}
+
+async function loginWithPreset(presetId) {
+  try {
+    const res = await fetch('/api/v1/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ preset_id: presetId })
+    });
+    if (!res.ok) throw new Error('Preset login failed');
+    const data = await res.json();
+    setAuthenticatedUser(data.access_token, data.user);
+    if (typeof showStickerToast === 'function') {
+      showStickerToast(`Namaste, ${data.user.name}! Citizen profile verified.`, 'success');
+    }
+    const modal = document.getElementById('citizen-login-modal');
+    if (modal) modal.style.display = 'none';
+    executePendingAction();
+  } catch (err) {
+    if (typeof showStickerToast === 'function') {
+      showStickerToast('Login failed: ' + err.message, 'error');
+    }
+  }
+}
+
+async function sendMobileOTP() {
+  const phoneInput = document.getElementById('login-phone-input');
+  if (!phoneInput) return;
+  const phone = phoneInput.value.trim();
+  if (phone.length < 10) {
+    if (typeof showStickerToast === 'function') {
+      showStickerToast('Please enter a valid 10-digit mobile number', 'error');
+    }
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/v1/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: phone })
+    });
+    if (!res.ok) throw new Error('Failed to send OTP');
+    const data = await res.json();
+
+    document.getElementById('login-phone-step').style.display = 'none';
+    document.getElementById('login-otp-step').style.display = 'block';
+    const otpInput = document.getElementById('login-otp-input');
+    if (otpInput) otpInput.focus();
+
+    if (typeof showStickerToast === 'function') {
+      showStickerToast(`OTP sent to +91-${phone}! Demo code: ${data.demo_otp}`, 'info');
+    }
+  } catch (err) {
+    if (typeof showStickerToast === 'function') {
+      showStickerToast('Error sending OTP: ' + err.message, 'error');
+    }
+  }
+}
+
+function autoFillDemoOTP() {
+  const otpInput = document.getElementById('login-otp-input');
+  if (otpInput) {
+    otpInput.value = '123456';
+    verifyMobileOTP();
+  }
+}
+
+async function verifyMobileOTP() {
+  const phoneInput = document.getElementById('login-phone-input');
+  const otpInput = document.getElementById('login-otp-input');
+  if (!phoneInput || !otpInput) return;
+
+  const phone = phoneInput.value.trim();
+  const otp = otpInput.value.trim();
+
+  if (otp.length !== 6) {
+    if (typeof showStickerToast === 'function') {
+      showStickerToast('Please enter the 6-digit OTP (use 123456)', 'error');
+    }
+    return;
+  }
+
+  try {
+    const res = await fetch('/api/v1/auth/verify-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ phone: phone, otp: otp })
+    });
+    if (!res.ok) {
+      const errData = await res.json().catch(() => ({}));
+      throw new Error(errData.detail || 'OTP verification failed');
+    }
+    const data = await res.json();
+    setAuthenticatedUser(data.access_token, data.user);
+    if (typeof showStickerToast === 'function') {
+      showStickerToast(`Welcome, ${data.user.name}! Citizen account verified.`, 'success');
+    }
+    const modal = document.getElementById('citizen-login-modal');
+    if (modal) modal.style.display = 'none';
+    executePendingAction();
+  } catch (err) {
+    if (typeof showStickerToast === 'function') {
+      showStickerToast(err.message, 'error');
+    }
+  }
+}
+
+function setAuthenticatedUser(token, user) {
+  currentUser = { token: token, user: user };
+  localStorage.setItem('civicsense_auth', JSON.stringify(currentUser));
+  renderAuthHeader();
+  syncFormWithUser();
+  updateRewardsProfile();
+}
+
+function executePendingAction() {
+  if (typeof pendingPostLoginAction === 'function') {
+    const cb = pendingPostLoginAction;
+    pendingPostLoginAction = null;
+    cb();
+  }
+}
+
+function syncFormWithUser() {
+  if (currentUser && currentUser.user) {
+    const nameInput = document.getElementById('citizen-name');
+    const phoneInput = document.getElementById('citizen-phone');
+    if (nameInput) nameInput.value = currentUser.user.name;
+    if (phoneInput) phoneInput.value = currentUser.user.phone;
+  }
+}
+
+function updateRewardsProfile() {
+  if (currentUser && currentUser.user) {
+    const u = currentUser.user;
+    const nameEl = document.getElementById('reward-user-name');
+    const rankEl = document.getElementById('reward-user-rank');
+    const karmaEl = document.getElementById('reward-karma-points');
+    if (nameEl) nameEl.innerText = u.name;
+    if (rankEl) rankEl.innerText = `${u.role_title || u.role} • ${u.badge || 'Active Citizen'}`;
+    if (karmaEl) karmaEl.innerText = u.karma_points || 850;
+  }
+}
+
+async function logoutCitizen() {
+  if (currentUser && currentUser.token) {
+    try {
+      await fetch('/api/v1/auth/logout', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${currentUser.token}` }
+      });
+    } catch (e) {
+      console.warn('Logout request notice:', e);
+    }
+  }
+  currentUser = null;
+  localStorage.removeItem('civicsense_auth');
+  renderAuthHeader();
+
+  const nameInput = document.getElementById('citizen-name');
+  const phoneInput = document.getElementById('citizen-phone');
+  if (nameInput) nameInput.value = 'Citizen';
+  if (phoneInput) phoneInput.value = '9876543210';
+
+  if (typeof showStickerToast === 'function') {
+    showStickerToast('Logged out successfully. Login anytime to file grievances.', 'info');
+  }
+}
+
+function requireLogin(callback) {
+  if (currentUser && currentUser.user) {
+    callback();
+  } else {
+    openLoginModal(callback);
+  }
+}
+
+function handleReportIssueClick() {
+  requireLogin(() => {
+    switchTab('citizen-portal');
+    const txtArea = document.getElementById('complaint-text');
+    if (txtArea) txtArea.focus();
+  });
+}
+
+function handleGrievanceTabClick() {
+  requireLogin(() => {
+    switchTab('citizen-portal');
+  });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   // Restore language preference
   const savedLang = localStorage.getItem('civicsense_lang') || 'en';
@@ -252,6 +513,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.classList.add('lite-data-mode');
   }
 
+  initAuth();
   initMap();
   animateHeroCounters();
   loadKPIStats();
@@ -679,16 +941,26 @@ async function escalateModalToJanSunwai() {
 }
 
 // BEFORE & AFTER TRANSFORMATION GALLERY
-async function loadTransformations() {
+async function loadTransformations(categoryFilter = null) {
   const container = document.getElementById('transformation-cards-container');
   if (!container) return;
 
+  const cat = categoryFilter !== null ? categoryFilter : currentGalleryCategory;
+  const url = (cat && cat !== 'all')
+    ? `/api/v1/transformations?category=${encodeURIComponent(cat)}`
+    : '/api/v1/transformations';
+
   try {
-    const res = await fetch('/api/v1/transformations');
+    const res = await fetch(url);
     if (!res.ok) return;
     const items = await res.json();
 
     container.innerHTML = '';
+    if (items.length === 0) {
+      container.innerHTML = '<div style="grid-column: 1/-1; text-align: center; padding: 2rem; color: var(--text-muted); font-weight: 700;">No verified transformations in this category.</div>';
+      return;
+    }
+
     items.forEach(t => {
       const card = document.createElement('div');
       card.className = 'transformation-card';
@@ -729,6 +1001,14 @@ async function loadTransformations() {
   } catch (e) {
     console.warn('Failed to load transformations:', e);
   }
+}
+
+function filterGallery(category) {
+  currentGalleryCategory = category;
+  document.querySelectorAll('.gallery-filter-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-cat') === category);
+  });
+  loadTransformations(category);
 }
 
 function endorseTransformation(id, btnEl) {
@@ -884,6 +1164,16 @@ async function loadPredictiveData(cityFilter = '') {
 }
 
 // JAN SUNWAI & WARD GOVERNANCE
+function filterJanSunwai(filterType) {
+  currentJanSunwaiFilter = filterType;
+  document.querySelectorAll('#jan-sunwai-view .gallery-filter-btn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  const activeBtn = document.getElementById(`jan-filter-${filterType.toLowerCase()}`);
+  if (activeBtn) activeBtn.classList.add('active');
+  loadWardGovernanceData();
+}
+
 async function loadWardGovernanceData(cityFilter = '') {
   const cardsContainer = document.getElementById('ward-governance-cards');
   const tableBody = document.getElementById('jan-sunwai-table-body');
@@ -900,29 +1190,41 @@ async function loadWardGovernanceData(cityFilter = '') {
     if (!res.ok) return;
     const tickets = await res.json();
 
-    if (badgeTotal) badgeTotal.innerText = `${tickets.length} Docketed Cases`;
+    // Filter tickets according to currentJanSunwaiFilter
+    let filteredTickets = tickets;
+    if (currentJanSunwaiFilter === 'CRITICAL') {
+      filteredTickets = tickets.filter(t => t.urgency === 'Critical');
+    } else if (currentJanSunwaiFilter === 'BREACHED') {
+      filteredTickets = tickets.filter(t => t.is_sla_breached || t.sla_hours_remaining <= 0);
+    }
+
+    if (badgeTotal) badgeTotal.innerText = `${filteredTickets.length} Docketed Cases`;
 
     tableBody.innerHTML = '';
-    tickets.forEach(t => {
-      const row = document.createElement('tr');
-      row.style.borderBottom = '1.5px solid var(--paper-2)';
-      const corpName = t.corporator && t.corporator.name ? t.corporator.name : 'Parshad';
+    if (filteredTickets.length === 0) {
+      tableBody.innerHTML = '<tr><td colspan="7" style="padding: 1.5rem; text-align: center; color: var(--text-muted); font-weight: 700;">No Jan Sunwai cases matching this filter.</td></tr>';
+    } else {
+      filteredTickets.forEach(t => {
+        const row = document.createElement('tr');
+        row.style.borderBottom = '1.5px solid var(--paper-2)';
+        const corpName = t.corporator && t.corporator.name ? t.corporator.name : 'Parshad';
 
-      row.innerHTML = `
-        <td style="padding: 10px; font-weight: 800; color: var(--tomato); font-family: var(--font-display);">${t.master_ticket_id}</td>
-        <td style="padding: 10px; font-weight: 700; color: var(--ink);">${t.title}</td>
-        <td style="padding: 10px; color: var(--ink);">${t.ward_name}<br/><span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">${corpName}</span></td>
-        <td style="padding: 10px;"><span class="badge badge-mission">${(t.national_mission || '').split('/')[0]}</span></td>
-        <td style="padding: 10px; font-weight: 800; color: var(--ink);">${t.report_count} Citizens</td>
-        <td style="padding: 10px; font-weight: 700;">
-          ${t.is_sla_breached ? '<span style="color: var(--tomato); font-weight: 900;">⚠️ SLA Breached</span>' : `${t.sla_hours_remaining}h rem.`}
-        </td>
-        <td style="padding: 10px;">
-          <button class="btn-primary" style="font-size: 0.72rem; padding: 4px 10px;" onclick="openTicketModal('${t.master_ticket_id}')">Inspect</button>
-        </td>
-      `;
-      tableBody.appendChild(row);
-    });
+        row.innerHTML = `
+          <td style="padding: 10px; font-weight: 800; color: var(--tomato); font-family: var(--font-display);">${t.master_ticket_id}</td>
+          <td style="padding: 10px; font-weight: 700; color: var(--ink);">${t.title}</td>
+          <td style="padding: 10px; color: var(--ink);">${t.ward_name}<br/><span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">${corpName}</span></td>
+          <td style="padding: 10px;"><span class="badge badge-mission">${(t.national_mission || '').split('/')[0]}</span></td>
+          <td style="padding: 10px; font-weight: 800; color: var(--ink);">${t.report_count} Citizens</td>
+          <td style="padding: 10px; font-weight: 700;">
+            ${t.is_sla_breached ? '<span style="color: var(--tomato); font-weight: 900;">⚠️ SLA Breached</span>' : `${t.sla_hours_remaining}h rem.`}
+          </td>
+          <td style="padding: 10px;">
+            <button class="btn-primary" style="font-size: 0.72rem; padding: 4px 10px;" onclick="openTicketModal('${t.master_ticket_id}')">Inspect</button>
+          </td>
+        `;
+        tableBody.appendChild(row);
+      });
+    }
 
     // Populate Ward Governance representative cards
     cardsContainer.innerHTML = '';
@@ -1058,11 +1360,23 @@ function closeTrackingModal(event) {
 // CITIZEN FORM SUBMISSION
 async function handleCitizenSubmit(event) {
   event.preventDefault();
+
+  // Enforce Citizen Authentication before lodging complaint
+  if (!currentUser || !currentUser.user) {
+    if (typeof showStickerToast === 'function') {
+      showStickerToast('Please log in with Meri Pehchan or 1-click citizen profile to lodge your complaint.', 'info');
+    }
+    openLoginModal(() => {
+      handleCitizenSubmit(event);
+    });
+    return;
+  }
+
   const rawText = document.getElementById('complaint-text').value;
   const lat = parseFloat(document.getElementById('form-lat').value);
   const lon = parseFloat(document.getElementById('form-lon').value);
-  const name = document.getElementById('citizen-name').value;
-  const phone = document.getElementById('citizen-phone').value;
+  const name = document.getElementById('citizen-name').value || currentUser.user.name;
+  const phone = document.getElementById('citizen-phone').value || currentUser.user.phone;
   const imageHint = document.getElementById('form-image-hint').value;
   const resultEl = document.getElementById('submission-result');
 
@@ -1080,9 +1394,14 @@ async function handleCitizenSubmit(event) {
       image_category_hint: imageHint || null
     };
 
+    const headers = { 'Content-Type': 'application/json' };
+    if (currentUser && currentUser.token) {
+      headers['Authorization'] = `Bearer ${currentUser.token}`;
+    }
+
     const res = await fetch('/api/v1/complaints/submit', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: headers,
       body: JSON.stringify(payload)
     });
 
@@ -1107,6 +1426,7 @@ async function handleCitizenSubmit(event) {
     `;
 
     document.getElementById('citizen-form').reset();
+    syncFormWithUser();
     if (typeof showStickerToast === 'function') {
       showStickerToast('Grievance registered and routed to Ward Engineer!', 'success');
     }
@@ -1119,6 +1439,17 @@ async function handleCitizenSubmit(event) {
 
 // VERNACULAR VOICE RECORDING
 function toggleVoiceRecording() {
+  // Enforce Citizen Authentication before recording voice grievance
+  if (!currentUser || !currentUser.user) {
+    if (typeof showStickerToast === 'function') {
+      showStickerToast('Please log in with Meri Pehchan before recording a vernacular voice grievance.', 'info');
+    }
+    openLoginModal(() => {
+      toggleVoiceRecording();
+    });
+    return;
+  }
+
   const btn = document.getElementById('voice-record-btn');
   const label = document.getElementById('voice-btn-label');
   const statusLabel = document.getElementById('voice-status-label');
@@ -1179,6 +1510,39 @@ function toggleVoiceRecording() {
     speechRecognizer.start();
   } catch (e) {
     fillSampleGrievance('hi');
+  }
+}
+
+// Interactive Map Controls
+function resetMapView() {
+  const city = (typeof CITIES_DATA !== 'undefined' && CITIES_DATA[currentSelectedCity])
+    ? CITIES_DATA[currentSelectedCity]
+    : CITIES_DATA['all'];
+  if (typeof flyToCity === 'function') {
+    flyToCity(city.lat, city.lon, city.zoom);
+  }
+  if (typeof showStickerToast === 'function') {
+    showStickerToast(`Map view centered on ${city.name}`, 'info');
+  }
+}
+
+function toggleSpatialClusters() {
+  showSpatialClusters = !showSpatialClusters;
+  const btn = document.getElementById('btn-toggle-clusters');
+  if (typeof radiusLayer !== 'undefined' && radiusLayer && typeof map !== 'undefined' && map) {
+    if (showSpatialClusters) {
+      map.addLayer(radiusLayer);
+      if (btn) btn.innerText = '🔵 Toggle 300m Rings';
+      if (typeof showStickerToast === 'function') {
+        showStickerToast('300m Spatial Clustering Perimeters visible', 'info');
+      }
+    } else {
+      map.removeLayer(radiusLayer);
+      if (btn) btn.innerText = '⚪ Show 300m Rings';
+      if (typeof showStickerToast === 'function') {
+        showStickerToast('300m Spatial Clustering Perimeters hidden', 'info');
+      }
+    }
   }
 }
 
@@ -1411,3 +1775,48 @@ function toggleLiteMode() {
   const isLite = document.body.classList.contains('lite-data-mode');
   localStorage.setItem('civicsense_lite', isLite ? 'true' : 'false');
 }
+
+// Expose functions globally on window for inline event handlers
+window.initAuth = initAuth;
+window.renderAuthHeader = renderAuthHeader;
+window.openLoginModal = openLoginModal;
+window.closeLoginModal = closeLoginModal;
+window.loginWithPreset = loginWithPreset;
+window.sendMobileOTP = sendMobileOTP;
+window.autoFillDemoOTP = autoFillDemoOTP;
+window.verifyMobileOTP = verifyMobileOTP;
+window.logoutCitizen = logoutCitizen;
+window.handleReportIssueClick = handleReportIssueClick;
+window.handleGrievanceTabClick = handleGrievanceTabClick;
+window.filterGallery = filterGallery;
+window.resetMapView = resetMapView;
+window.toggleSpatialClusters = toggleSpatialClusters;
+window.filterJanSunwai = filterJanSunwai;
+window.trackApplication = trackApplication;
+window.quickTrackDemo = quickTrackDemo;
+window.openTrackingModal = openTrackingModal;
+window.closeTrackingModal = closeTrackingModal;
+window.openTicketModal = openTicketModal;
+window.closeModal = closeModal;
+window.updateTicketStatus = updateTicketStatus;
+window.escalateModalToJanSunwai = escalateModalToJanSunwai;
+window.selectCity = selectCity;
+window.switchTab = switchTab;
+window.loadMasterTickets = loadMasterTickets;
+window.loadTransformations = loadTransformations;
+window.endorseTransformation = endorseTransformation;
+window.claimPerk = claimPerk;
+window.closePerkModal = closePerkModal;
+window.toggleVoiceRecording = toggleVoiceRecording;
+window.fillSampleGrievance = fillSampleGrievance;
+window.detectLocation = detectLocation;
+window.setLocationCoords = setLocationCoords;
+window.handleCitizenSubmit = handleCitizenSubmit;
+window.simulateAgentScenario = simulateAgentScenario;
+window.loadAgentStatus = loadAgentStatus;
+window.openServiceInfo = openServiceInfo;
+window.changeFontSize = changeFontSize;
+window.toggleHighContrast = toggleHighContrast;
+window.toggleSunlightMode = toggleSunlightMode;
+window.toggleLiteMode = toggleLiteMode;
+window.onCommandCityChange = onCommandCityChange;

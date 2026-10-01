@@ -375,11 +375,17 @@ async def get_city(city_id: str):
     return city
 
 @router.get("/transformations", summary="Before & After civic transformation showcases")
-async def get_transformations():
+async def get_transformations(category: Optional[str] = None):
     """
     Returns verified civic transformation proof gallery items showing before & after outcomes,
-    turnaround hours, and citizen endorsements.
+    turnaround hours, and citizen endorsements. Optionally filtered by category.
     """
+    if category and category.lower() not in ["all", ""]:
+        cat_lower = category.lower().strip()
+        return [
+            t for t in CIVIC_TRANSFORMATIONS
+            if cat_lower in t.get("category", "").lower() or cat_lower in t.get("title", "").lower()
+        ]
     return CIVIC_TRANSFORMATIONS
 
 @router.get("/rewards", summary="Swachh Nagrik rewards and gamification")

@@ -6,8 +6,10 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
 from .config import settings
-from .api import complaints, master_tickets, predictive, whatsapp, analytics, agents, cities
+from .api import complaints, master_tickets, predictive, whatsapp, analytics, agents, cities, auth
 from .db.seed_data import seed_database_and_export
+from .db.database import db
+from fastapi import HTTPException
 
 from contextlib import asynccontextmanager
 
@@ -41,6 +43,7 @@ app.add_middleware(
 
 # Register API Routers under /api/v1
 api_prefix = "/api/v1"
+app.include_router(auth.router, prefix=api_prefix)
 app.include_router(cities.router, prefix=api_prefix)
 app.include_router(complaints.router, prefix=api_prefix)
 app.include_router(master_tickets.router, prefix=api_prefix)
@@ -48,6 +51,16 @@ app.include_router(predictive.router, prefix=api_prefix)
 app.include_router(whatsapp.router, prefix=api_prefix)
 app.include_router(analytics.router, prefix=api_prefix)
 app.include_router(agents.router, prefix=api_prefix)
+
+@app.get(f"{api_prefix}/tracking/{{tracking_id}}", tags=["Tracking"])
+async def track_application(tracking_id: str):
+    """
+    Direct tracking lookup by Complaint ID (e.g. CMP-...) or Master Ticket ID (e.g. MST-..., SYN-...).
+    """
+    result = db.track_by_id(tracking_id)
+    if not result:
+        raise HTTPException(status_code=404, detail=f"Tracking ID '{tracking_id}' not found in municipal records")
+    return result
 
 @app.get(f"{api_prefix}/health", tags=["System Health"])
 async def health_check():

@@ -82,6 +82,13 @@
           📶 2G Lite
         </button>
 
+        <!-- Citizen Authentication / Meri Pehchan Header Widget -->
+        <div id="citizen-auth-widget" class="citizen-auth-widget">
+          <button class="btn-citizen-login" onclick="openLoginModal()">
+            <span>🔑</span> <span>Citizen Login</span> <span style="opacity: 0.6;">|</span> <span>मेरी पहचान</span>
+          </button>
+        </div>
+
         <div class="gov-badge alert">
           <span>🚨 24x7 Control Rooms Active</span>
         </div>
@@ -158,7 +165,7 @@
       <button class="tab-btn" data-tab="agent-view" onclick="switchTab('agent-view')" data-i18n="tab_agent_view">🤖 Smart AI Assistance</button>
       <button class="tab-btn" data-tab="predictive-view" onclick="switchTab('predictive-view')" data-i18n="tab_predictive_view">🌧️ Predictive Risk Shield</button>
       <button class="tab-btn" data-tab="jan-sunwai-view" onclick="switchTab('jan-sunwai-view')" data-i18n="tab_jan_sunwai">⚖️ Jan Sunwai & Ward Sabha</button>
-      <button class="tab-btn" data-tab="citizen-portal" onclick="switchTab('citizen-portal')" data-i18n="tab_citizen_portal">📝 File Grievance</button>
+      <button class="tab-btn" data-tab="citizen-portal" onclick="handleGrievanceTabClick()" data-i18n="tab_citizen_portal">📝 File Grievance</button>
       <button class="tab-btn" data-tab="whatsapp-simulator" onclick="switchTab('whatsapp-simulator')" data-i18n="tab_whatsapp_bot">💬 WhatsApp Assistant</button>
     </nav>
   </header>
@@ -188,7 +195,7 @@
             </p>
             
             <div class="hero-action-buttons">
-              <button class="btn-primary" onclick="switchTab('citizen-portal')">
+              <button class="btn-primary" onclick="handleReportIssueClick()">
                 📝 File Citizen Grievance
               </button>
               <button class="btn-secondary" onclick="switchTab('gallery-view')">
@@ -443,7 +450,7 @@
           </div>
 
           <!-- 4. Citizen Grievance / Jan Sunwai -->
-          <div class="mcd-service-tile" onclick="switchTab('citizen-portal')">
+          <div class="mcd-service-tile" onclick="handleReportIssueClick()">
             <div class="service-tile-top">
               <div class="service-tile-icon">⚖️</div>
               <div>
@@ -550,6 +557,15 @@
         <button class="btn-primary" onclick="loadTransformations()">🔄 Refresh Transformations</button>
       </div>
 
+      <!-- Before & After Category Filter Buttons -->
+      <div class="gallery-filter-bar" id="gallery-filter-bar">
+        <button class="gallery-filter-btn active" data-cat="all" onclick="filterGallery('all')">🌟 All Transformations</button>
+        <button class="gallery-filter-btn" data-cat="Roads" onclick="filterGallery('Roads')">🕳️ Roads & Potholes</button>
+        <button class="gallery-filter-btn" data-cat="Sanitation" onclick="filterGallery('Sanitation')">🧹 Sanitation & Waste</button>
+        <button class="gallery-filter-btn" data-cat="Streetlight" onclick="filterGallery('Streetlight')">💡 Streetlighting</button>
+        <button class="gallery-filter-btn" data-cat="Water" onclick="filterGallery('Water')">💧 Water & Sewage</button>
+      </div>
+
       <div class="transformation-gallery-grid" id="transformation-cards-container">
         <!-- Rendered dynamically -->
       </div>
@@ -638,6 +654,11 @@
         <!-- Leaflet Map View & 2G Lite Fallback -->
         <div class="map-panel">
           <div id="map"></div>
+          <!-- Floating Interactive Map Controls -->
+          <div class="map-floating-controls">
+            <button class="map-control-btn" onclick="resetMapView()" title="Reset to City Center">🎯 Center Map</button>
+            <button class="map-control-btn" id="btn-toggle-clusters" onclick="toggleSpatialClusters()" title="Toggle 300m Spatial Clustering Gate Perimeter Rings">🔵 Toggle 300m Rings</button>
+          </div>
           <div id="lite-map-fallback">
             <div style="background: var(--paper-2); border: var(--border-ink-thick); border-radius: var(--radius-md); padding: 1.25rem; box-shadow: var(--shadow-hard);">
               <h3 style="color: var(--ink); margin-bottom: 0.5rem; font-family: var(--font-display); font-weight: 800;">📶 2G Low-Bandwidth Ward Grid Active</h3>
@@ -885,11 +906,18 @@
     <!-- TAB 7: JAN SUNWAI & WARD SABHA             -->
     <!-- ========================================== -->
     <div id="jan-sunwai-view" class="view-container">
-      <div>
-        <h2 style="font-size: 1.35rem; color: var(--ink);" data-i18n="jan_sunwai_title">Jan Sunwai & Democratic Ward Sabha Dashboard</h2>
-        <p style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;" data-i18n="jan_sunwai_desc">
-          Track Friday Jan Sunwai (Public Grievance Day) dockets, Corporator & MLA accountability, Ward Sabha dates, and Pre-Monsoon Desilting readiness.
-        </p>
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 1rem;">
+        <div>
+          <h2 style="font-size: 1.35rem; color: var(--ink);" data-i18n="jan_sunwai_title">Jan Sunwai & Democratic Ward Sabha Dashboard</h2>
+          <p style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;" data-i18n="jan_sunwai_desc">
+            Track Friday Jan Sunwai (Public Grievance Day) dockets, Corporator & MLA accountability, Ward Sabha dates, and Pre-Monsoon Desilting readiness.
+          </p>
+        </div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap;">
+          <button class="gallery-filter-btn active" id="jan-filter-all" onclick="filterJanSunwai('ALL')">All Dockets</button>
+          <button class="gallery-filter-btn" id="jan-filter-critical" onclick="filterJanSunwai('CRITICAL')">🔴 Critical Hazards</button>
+          <button class="gallery-filter-btn" id="jan-filter-breached" onclick="filterJanSunwai('BREACHED')">⚠️ SLA Breached</button>
+        </div>
       </div>
 
       <div class="ward-gov-grid" id="ward-governance-cards">
@@ -1100,7 +1128,7 @@
       <span>📊</span>
       <span>Map</span>
     </button>
-    <button class="mobile-nav-item" data-tab="citizen-portal" onclick="switchTab('citizen-portal')">
+    <button class="mobile-nav-item" data-tab="citizen-portal" onclick="handleGrievanceTabClick()">
       <span>📝</span>
       <span>Grievance</span>
     </button>
@@ -1108,6 +1136,130 @@
       <span>💬</span>
       <span>WhatsApp</span>
     </button>
+  </div>
+
+  <!-- Modal: Citizen Authentication ("Meri Pehchan / Citizen Login") -->
+  <div class="modal-overlay" id="citizen-login-modal" onclick="closeLoginModal(event)">
+    <div class="modal-content login-modal-box" onclick="event.stopPropagation()">
+      <div class="login-tricolor-accent"></div>
+      <div class="login-modal-header">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="font-size: 2rem; background: var(--cream-white); border: 2px solid var(--ink); border-radius: 12px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; box-shadow: 2px 2px 0 var(--ink);">🏛️</div>
+            <div>
+              <div style="font-size: 0.72rem; color: var(--tomato); font-weight: 900; letter-spacing: 0.05em; text-transform: uppercase;">
+                मेरी पहचान &bull; MERI PEHCHAN NATIONAL GATEWAY
+              </div>
+              <h3 style="margin: 2px 0 0; font-size: 1.25rem; color: var(--ink); font-family: var(--font-display); font-weight: 900;">
+                Citizen Login &amp; Grievance Access
+              </h3>
+              <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700;">
+                Log in to lodge grievances, record vernacular voice notes, and track resolutions.
+              </div>
+            </div>
+          </div>
+          <button onclick="closeLoginModal()" style="background: none; border: none; color: var(--ink); font-size: 1.8rem; font-weight: 900; cursor: pointer; line-height: 1;">&times;</button>
+        </div>
+      </div>
+
+      <div style="padding: 1.25rem 1.5rem;">
+        <!-- 1-Click Citizen Demo Presets -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+            <span style="font-size: 0.84rem; font-weight: 900; color: var(--ink); font-family: var(--font-display);">
+              ⚡ 1-Click Citizen Demo Profiles:
+            </span>
+            <span style="font-size: 0.7rem; color: var(--tomato); font-weight: 800;">Instant Verification</span>
+          </div>
+
+          <div class="login-presets-grid">
+            <!-- Rajesh Kumar -->
+            <div class="login-preset-card" onclick="loginWithPreset('rajesh_kumar')">
+              <div class="login-preset-avatar">👨🏽</div>
+              <div>
+                <div class="login-preset-name">Rajesh Kumar</div>
+                <div class="login-preset-role">Citizen &bull; Bengaluru</div>
+                <div class="login-preset-badge">🪙 850 Karma &bull; Gold</div>
+              </div>
+            </div>
+
+            <!-- Priya Sharma -->
+            <div class="login-preset-card" onclick="loginWithPreset('priya_sharma')">
+              <div class="login-preset-avatar">👩🏽</div>
+              <div>
+                <div class="login-preset-name">Priya Sharma</div>
+                <div class="login-preset-role">Ward Volunteer &bull; Delhi</div>
+                <div class="login-preset-badge">🪙 1,240 Karma &bull; Star</div>
+              </div>
+            </div>
+
+            <!-- Aarav Sharma -->
+            <div class="login-preset-card" onclick="loginWithPreset('aarav_sharma')">
+              <div class="login-preset-avatar">🧑🏽</div>
+              <div>
+                <div class="login-preset-name">Aarav Sharma</div>
+                <div class="login-preset-role">Resident &bull; Mumbai</div>
+                <div class="login-preset-badge">🪙 920 Karma &bull; Silver</div>
+              </div>
+            </div>
+
+            <!-- Sunita Patel -->
+            <div class="login-preset-card" onclick="loginWithPreset('sunita_patel')">
+              <div class="login-preset-avatar">👩🏽‍💼</div>
+              <div>
+                <div class="login-preset-name">Sunita Patel</div>
+                <div class="login-preset-role">RWA Lead &bull; Pune</div>
+                <div class="login-preset-badge">🪙 1,650 Karma &bull; Pillar</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="login-divider">
+          <span>OR SIGN IN WITH MOBILE NUMBER</span>
+        </div>
+
+        <!-- Phone + OTP Section -->
+        <div class="login-phone-box">
+          <div id="login-phone-step">
+            <label style="font-size: 0.78rem; font-weight: 800; color: var(--ink); margin-bottom: 6px; display: block;">
+              Mobile Number (10 Digits)
+            </label>
+            <div style="display: flex; gap: 8px;">
+              <span style="background: var(--paper-2); border: 2px solid var(--ink); border-radius: var(--radius-sm); padding: 8px 12px; font-weight: 800; font-size: 0.85rem; display: flex; align-items: center;">🇮🇳 +91</span>
+              <input type="tel" id="login-phone-input" class="form-control" placeholder="e.g. 9876543210" maxlength="10" style="flex: 1;" onkeydown="if(event.key === 'Enter') sendMobileOTP()">
+              <button type="button" class="btn-primary" style="font-size: 0.82rem; padding: 8px 14px; white-space: nowrap;" onclick="sendMobileOTP()">
+                Send OTP &rarr;
+              </button>
+            </div>
+          </div>
+
+          <div id="login-otp-step" style="display: none; margin-top: 10px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+              <label style="font-size: 0.78rem; font-weight: 800; color: var(--ink); display: block;">
+                Enter 6-Digit Verification OTP
+              </label>
+              <button type="button" onclick="autoFillDemoOTP()" style="background: none; border: none; color: var(--tomato); font-size: 0.72rem; font-weight: 800; cursor: pointer; text-decoration: underline;">
+                Auto-Fill Demo (123456)
+              </button>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <input type="text" id="login-otp-input" class="form-control" placeholder="123456" maxlength="6" style="flex: 1; letter-spacing: 0.2em; font-weight: 900; font-size: 1.1rem; text-align: center;" onkeydown="if(event.key === 'Enter') verifyMobileOTP()">
+              <button type="button" class="btn-primary" style="font-size: 0.82rem; padding: 8px 14px; background: var(--mint); color: var(--ink); white-space: nowrap;" onclick="verifyMobileOTP()">
+                Verify &amp; Enter &rarr;
+              </button>
+            </div>
+            <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700; margin-top: 6px;">
+              💡 Demo OTP <strong>123456</strong> is pre-authorized for instant verification.
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 1rem; text-align: center; font-size: 0.7rem; color: var(--text-muted); font-weight: 700;">
+          🔒 Secured under Digital Personal Data Protection (DPDP) Act 2023 &bull; Municipal Citizen Redressal Guarantee
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- Modal: Master Ticket Details -->
