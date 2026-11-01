@@ -39,6 +39,9 @@
       <button class="skin-btn" data-skin="bubblegum-pop" onclick="applySkin('bubblegum-pop')" title="Bubblegum Pop Skin">🍬 Bubblegum</button>
       <button class="skin-btn" data-skin="mustard-mayhem" onclick="applySkin('mustard-mayhem')" title="Mustard Mayhem Skin">🥨 Mustard</button>
       <span style="opacity: 0.4;">|</span>
+      <!-- Web Audio Synthesizer Sound Feedback -->
+      <button class="btn-sound-toggle active" id="btn-sound-toggle" onclick="toggleCivicAudio()" title="Toggle Web Audio tactile sound effects">🔊 Sound: ON</button>
+      <span style="opacity: 0.4;">|</span>
       <!-- Motion Settings (Section 6.7) -->
       <span>Motion:</span>
       <button class="motion-btn" data-motion="chaos" onclick="applyMotion('chaos')" title="Chaos Motion (22 Objects)">Chaos</button>
@@ -53,6 +56,7 @@
       <button class="font-choice-btn" data-size="L" onclick="setFontSizeChoice('L')" title="Large Text">L</button>
       <span style="opacity: 0.4;">|</span>
       <button class="font-resize-btn" onclick="toggleHighContrast()" title="Toggle High Contrast Sunlight Mode">☀️ Contrast</button>
+      <button class="font-resize-btn" onclick="openShortcutsModal()" title="Keyboard Shortcuts Palette (?)">⌨️ Hotkeys (?)</button>
     </div>
   </div>
 
@@ -156,6 +160,41 @@
           🦟 Anti-Dengue & Malaria Vector Control Door-to-Door Fogging Squads active in all high-density wards &bull;
           ⚖️ Friday Jan Sunwai (Public Grievance Day) conducted every Friday 11:00 AM at all Zonal Offices &bull;
           🤖 Powered by SamAashwas Smart AI Assistance for 300m spatial clustering & guaranteed Citizen Charter SLAs.
+        </div>
+      </div>
+    </div>
+
+    <!-- Dynamic City Weather, AQI & Flood Hazard Live Widget -->
+    <div class="city-weather-widget" id="city-weather-widget">
+      <div class="weather-city-brand">
+        <div class="weather-city-icon" id="weather-city-icon">🏛️</div>
+        <div>
+          <div style="font-weight: 900; font-family: var(--font-display); font-size: 0.95rem; color: var(--ink);" id="weather-city-heading">
+            Pan-India Municipal Weather, AQI &amp; Flood Preparedness Shield
+          </div>
+          <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;" id="weather-forecast-source">
+            Live Open-Meteo Radar &bull; CPCB Air Quality Telemetry &bull; Automated 48h Surge Warnings
+          </div>
+        </div>
+      </div>
+      <div class="weather-metrics-strip">
+        <div class="weather-stat-chip">
+          <span>🌡️ Temp:</span>
+          <strong id="weather-temp-val">26.5°C</strong>
+          <span style="opacity: 0.75;" id="weather-condition-val">• Mild Breeze</span>
+        </div>
+        <div class="weather-stat-chip">
+          <span>🌫️ AQI:</span>
+          <span class="aqi-indicator-badge" id="weather-aqi-badge" style="background: #10B981;">68 Satisfactory</span>
+        </div>
+        <div class="weather-stat-chip">
+          <span>🌧️ 24h Rain:</span>
+          <strong id="weather-rain-val">12.0 mm</strong>
+          <span class="badge" id="weather-flood-badge" style="background: var(--mint); font-size: 0.68rem; margin-left: 4px;">Flood Risk: LOW</span>
+        </div>
+        <div class="weather-stat-chip">
+          <span>🧹 SWD Desilting:</span>
+          <strong id="weather-desilting-val">88.5% Ready</strong>
         </div>
       </div>
     </div>
@@ -599,6 +638,13 @@
           <div class="karma-points" id="reward-karma-points">850</div>
           <div class="karma-label">Citizen Karma Points</div>
         </div>
+
+        <!-- 1-Click Nagrik Samman Patra Generator Button -->
+        <div style="display: flex; gap: 8px; align-items: center; justify-content: flex-end; margin-top: 12px; width: 100%;">
+          <button type="button" class="btn-primary" style="font-size: 0.82rem; padding: 6px 16px; background: var(--mustard); color: var(--ink); border: var(--border-ink); box-shadow: var(--shadow-hard-sm);" onclick="openCertificateModal()">
+            📜 Generate Official Nagrik Samman Patra (नागरिक सम्मान पत्र)
+          </button>
+        </div>
       </div>
 
       <!-- Badges Section -->
@@ -704,6 +750,61 @@
           </p>
         </div>
         <button class="btn-primary" onclick="loadAgentStatus()">🔄 Refresh Agent Engine</button>
+      </div>
+
+      <!-- Interactive Visual Multi-Agent Flowchart ("Orchestra in Action") -->
+      <div class="agent-flow-container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 6px;">
+          <span style="font-weight: 900; font-family: var(--font-display); font-size: 0.95rem; color: var(--ink);">
+            🎼 Autonomous Multi-Agent Deliberation Pipeline (Live Synapse)
+          </span>
+          <span style="font-size: 0.74rem; color: var(--text-muted); font-weight: 800;">
+            Watch signals pulse dynamically from Citizen Intake through Ombudsman Escalation!
+          </span>
+        </div>
+        <div class="agent-flow-track" id="agent-visual-flowtrack">
+          <!-- Node 1: Citizen Intake -->
+          <div class="agent-flow-node" id="flownode-1">
+            <div class="agent-flow-node-icon">🎙️</div>
+            <div class="agent-flow-node-name">1. Reception</div>
+            <span class="agent-flow-node-badge">Indic-NLP</span>
+          </div>
+          <div class="agent-flow-connector" id="flowconn-1"></div>
+          <!-- Node 2: Vision Fraud -->
+          <div class="agent-flow-node" id="flownode-2">
+            <div class="agent-flow-node-icon">👁️</div>
+            <div class="agent-flow-node-name">2. Vision Verifier</div>
+            <span class="agent-flow-node-badge">CLIP Civic</span>
+          </div>
+          <div class="agent-flow-connector" id="flowconn-2"></div>
+          <!-- Node 3: Geo Dedup -->
+          <div class="agent-flow-node" id="flownode-3">
+            <div class="agent-flow-node-icon">📍</div>
+            <div class="agent-flow-node-name">3. Geo-Cluster</div>
+            <span class="agent-flow-node-badge">300m Dedup</span>
+          </div>
+          <div class="agent-flow-connector" id="flowconn-3"></div>
+          <!-- Node 4: Ward Routing -->
+          <div class="agent-flow-node" id="flownode-4">
+            <div class="agent-flow-node-icon">🏛️</div>
+            <div class="agent-flow-node-name">4. Ward &amp; SLA</div>
+            <span class="agent-flow-node-badge">Charter Clock</span>
+          </div>
+          <div class="agent-flow-connector" id="flowconn-4"></div>
+          <!-- Node 5: Predictive -->
+          <div class="agent-flow-node" id="flownode-5">
+            <div class="agent-flow-node-icon">🌧️</div>
+            <div class="agent-flow-node-name">5. Weather Shield</div>
+            <span class="agent-flow-node-badge">IMD Radar</span>
+          </div>
+          <div class="agent-flow-connector" id="flowconn-5"></div>
+          <!-- Node 6: Ombudsman -->
+          <div class="agent-flow-node" id="flownode-6">
+            <div class="agent-flow-node-icon">⚖️</div>
+            <div class="agent-flow-node-name">6. Jan Sunwai</div>
+            <span class="agent-flow-node-badge">Ombudsman</span>
+          </div>
+        </div>
       </div>
 
       <!-- 6 Specialized Agent Cards -->
@@ -1007,6 +1108,36 @@
           <!-- STEP 1: WHAT (Category, Text, Voice, QR)       -->
           <!-- ============================================== -->
           <div class="wizard-pane active" id="wizard-pane-1">
+
+            <!-- 1-Click AI Scenario Presets Accelerator -->
+            <div class="scenario-preset-container">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 6px;">
+                <span style="font-size: 0.82rem; font-weight: 900; color: var(--ink); font-family: var(--font-display);">
+                  ⚡ 1-Click AI Test Bench &amp; Grievance Presets:
+                </span>
+                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">
+                  Click any chip to test multi-agent Indic-NLP in 1 tap!
+                </span>
+              </div>
+              <div class="scenario-preset-pills">
+                <button type="button" class="preset-pill-btn" onclick="applyGrievancePreset('water_leak_hinglish')">
+                  💧 Water Main Burst (Hinglish • Indiranagar)
+                </button>
+                <button type="button" class="preset-pill-btn" onclick="applyGrievancePreset('garbage_hindi')">
+                  🧹 Dhalao Garbage (हिन्दी • Chandni Chowk)
+                </button>
+                <button type="button" class="preset-pill-btn" onclick="applyGrievancePreset('streetlight_english')">
+                  💡 Sparking Wire (English • Bandra West)
+                </button>
+                <button type="button" class="preset-pill-btn" onclick="applyGrievancePreset('wrong_door_nhai')" style="border-color: var(--tomato); color: var(--tomato);">
+                  🚧 Wrong-Door NHAI Expressway (Auto-Detector)
+                </button>
+                <button type="button" class="preset-pill-btn" onclick="applyGrievancePreset('negation_abstain')" style="border-color: #059669; color: #059669;">
+                  🕊️ Park Compliment (Negation Floor)
+                </button>
+              </div>
+            </div>
+
             <label style="font-size: 0.88rem; font-weight: 900; color: var(--ink); font-family: var(--font-display); display: block; margin-bottom: 6px;">
               Select Issue Category (Click to Pre-Filter):
             </label>
@@ -1882,8 +2013,77 @@
     </div>
   </footer>
 
+  <!-- Keyboard Shortcuts Help Modal ('?' Hotkeys) -->
+  <div id="shortcuts-modal" class="modal-backdrop" onclick="closeShortcutsModal(event)">
+    <div class="modal-card" style="max-width: 540px;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: var(--border-ink-thick); padding-bottom: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 1.4rem;">⌨️</span>
+          <h3 style="margin: 0; font-family: var(--font-display); font-size: 1.15rem; color: var(--ink);">
+            Keyboard Shortcuts &amp; Hotkeys
+          </h3>
+        </div>
+        <button type="button" class="btn-close-modal" onclick="closeShortcutsModal()">&times;</button>
+      </div>
+
+      <p style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700; margin-bottom: 12px;">
+        SamAashwas supports rapid navigation and high-velocity triage hotkeys.
+      </p>
+
+      <table class="shortcuts-table">
+        <tbody>
+          <tr>
+            <td><span class="kbd-tag">?</span></td>
+            <td>Open / Close this Keyboard Shortcuts palette</td>
+          </tr>
+          <tr>
+            <td><span class="kbd-tag">1</span> - <span class="kbd-tag">9</span></td>
+            <td>Directly switch navigation tabs</td>
+          </tr>
+          <tr>
+            <td><span class="kbd-tag">L</span></td>
+            <td>Open Citizen Login (Meri Pehchan) modal</td>
+          </tr>
+          <tr>
+            <td><span class="kbd-tag">R</span></td>
+            <td>Open 4-Step Grievance Report Wizard</td>
+          </tr>
+          <tr>
+            <td><span class="kbd-tag">M</span></td>
+            <td>Focus Live GIS Incident Map</td>
+          </tr>
+          <tr>
+            <td><span class="kbd-tag">T</span></td>
+            <td>Focus Instant Application Tracker input</td>
+          </tr>
+          <tr>
+            <td><span class="kbd-tag">S</span></td>
+            <td>Toggle Tactile Sound Effects (ON/OFF)</td>
+          </tr>
+          <tr>
+            <td><span class="kbd-tag">J</span> / <span class="kbd-tag">K</span></td>
+            <td>Navigate Officer Triage Inbox rows</td>
+          </tr>
+          <tr>
+            <td><span class="kbd-tag">Esc</span></td>
+            <td>Dismiss any active modal / drawer</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top: 1.25rem; display: flex; justify-content: flex-end;">
+        <button class="btn-primary" onclick="closeShortcutsModal()" style="font-size: 0.8rem; padding: 6px 16px;">
+          Got it!
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="js/audio_engine.js"></script>
+  <script src="js/celebration.js"></script>
+  <script src="js/certificate_generator.js"></script>
   <script src="js/sticker_theme.js"></script>
   <script src="js/translations.js"></script>
   <script src="js/map_view.js"></script>

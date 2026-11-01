@@ -3290,5 +3290,275 @@ tr:nth-child(odd) td {
   box-shadow: 3px 3px 0 var(--ink);
 }
 
+/* --------------------------------------------------------------------------
+   DYNAMIC CITY WEATHER, AQI & MONSOON HAZARD LIVE WIDGET
+   -------------------------------------------------------------------------- */
+.city-weather-widget {
+  background: var(--paper-2);
+  border: var(--border-ink-thick);
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+  margin: 10px 0 16px 0;
+  box-shadow: var(--shadow-hard-sm);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.weather-city-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.weather-city-icon {
+  font-size: 2rem;
+  background: var(--mustard);
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.weather-metrics-strip {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.weather-stat-chip {
+  background: var(--cream-white);
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius-pill);
+  padding: 4px 12px;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+.aqi-indicator-badge {
+  padding: 3px 10px;
+  border-radius: var(--radius-pill);
+  border: 1.5px solid var(--ink);
+  font-size: 0.75rem;
+  font-weight: 900;
+  color: var(--ink);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   1-CLICK AI SCENARIO PRESETS (REPORT WIZARD ACCELERATOR)
+   -------------------------------------------------------------------------- */
+.scenario-preset-container {
+  background: #FFFDF0;
+  border: 2px dashed var(--ink);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  margin-bottom: 14px;
+}
+
+.scenario-preset-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.preset-pill-btn {
+  background: var(--cream-white);
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius-pill);
+  padding: 5px 12px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: var(--ink);
+  cursor: pointer;
+  box-shadow: 1px 1px 0 var(--ink);
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.preset-pill-btn:hover {
+  background: var(--mustard);
+  transform: translateY(-2px);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.preset-pill-btn:active {
+  transform: translateY(0);
+}
+
+/* --------------------------------------------------------------------------
+   INTERACTIVE MULTI-AGENT VISUAL FLOWCHART ("ORCHESTRA IN ACTION")
+   -------------------------------------------------------------------------- */
+.agent-flow-container {
+  background: #FFFDF7;
+  border: var(--border-ink-thick);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  margin-bottom: 1.5rem;
+  box-shadow: var(--shadow-hard);
+  overflow-x: auto;
+}
+
+.agent-flow-track {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-width: 820px;
+  position: relative;
+  padding: 10px 0;
+}
+
+.agent-flow-node {
+  background: var(--cream-white);
+  border: 2.5px solid var(--ink);
+  border-radius: var(--radius-card);
+  padding: 10px;
+  width: 120px;
+  text-align: center;
+  box-shadow: 2px 2px 0 var(--ink);
+  transition: all 0.25s ease;
+  position: relative;
+  z-index: 2;
+}
+
+.agent-flow-node.active-agent {
+  background: var(--mustard) !important;
+  border-color: var(--tomato) !important;
+  transform: translateY(-4px) scale(1.06);
+  box-shadow: 4px 4px 0 var(--tomato) !important;
+}
+
+.agent-flow-node.completed-agent {
+  background: var(--mint);
+  border-color: var(--ink);
+}
+
+.agent-flow-node-icon {
+  font-size: 1.6rem;
+  margin-bottom: 4px;
+}
+
+.agent-flow-node-name {
+  font-size: 0.72rem;
+  font-weight: 900;
+  font-family: var(--font-display);
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.agent-flow-node-badge {
+  margin-top: 4px;
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--ink);
+  display: inline-block;
+  background: var(--paper-2);
+}
+
+.agent-flow-connector {
+  flex: 1;
+  height: 4px;
+  background: var(--ink);
+  position: relative;
+  margin: 0 4px;
+}
+
+.agent-flow-connector.active {
+  background: var(--tomato);
+}
+
+/* --------------------------------------------------------------------------
+   KEYBOARD SHORTCUTS PALETTE MODAL ('?' HELP)
+   -------------------------------------------------------------------------- */
+.kbd-tag {
+  background: #E5E7EB;
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-family: monospace;
+  font-size: 0.8rem;
+  font-weight: 900;
+  color: var(--ink);
+  box-shadow: 1px 1px 0 var(--ink);
+  display: inline-block;
+}
+
+.shortcuts-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.84rem;
+}
+
+.shortcuts-table td {
+  padding: 8px 10px;
+  border-bottom: 1.5px dashed #D1D5DB;
+}
+
+/* --------------------------------------------------------------------------
+   AASHWAS-BABU CHAI BREAK & AUDIO INTERACTION
+   -------------------------------------------------------------------------- */
+.mascot-actions-bar {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.mascot-action-mini-btn {
+  background: var(--paper-2);
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius-pill);
+  padding: 2px 8px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  cursor: pointer;
+  color: var(--ink);
+  box-shadow: 1px 1px 0 var(--ink);
+  transition: all 0.12s ease;
+}
+
+.mascot-action-mini-btn:hover {
+  background: var(--mustard);
+  transform: translateY(-1px);
+}
+
+.mascot-action-mini-btn:active {
+  transform: translateY(0);
+}
+
+.btn-sound-toggle {
+  background: var(--cream-white);
+  border: var(--border-ink);
+  border-radius: var(--radius-pill);
+  padding: 3px 10px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  cursor: pointer;
+  color: var(--ink);
+  box-shadow: 1px 1px 0 var(--ink);
+  transition: all 0.15s ease;
+}
+
+.btn-sound-toggle.active {
+  background: var(--mint);
+}
+
+
 
 

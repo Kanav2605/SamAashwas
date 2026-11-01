@@ -541,13 +541,54 @@ function updateMascotDisplay() {
     <div class="mascot-speech-bubble" id="mascot-speech">
       <span class="mascot-speech-mood">${currentMascotMood.toUpperCase()}</span>
       <div class="mascot-speech-text">"${quote}"</div>
-      <div class="mascot-speech-hint">Click me to inspect status! 🏛️</div>
+      <div class="mascot-actions-bar">
+        <button type="button" class="mascot-action-mini-btn" onclick="event.stopPropagation(); triggerMascotChaiBreak()">☕ Chai</button>
+        <button type="button" class="mascot-action-mini-btn" onclick="event.stopPropagation(); speakMascotQuote('${encodeURIComponent(quote)}')">🔊 Speak</button>
+        <button type="button" class="mascot-action-mini-btn" onclick="event.stopPropagation(); blowMascotWhistle()">🚨 Whistle</button>
+      </div>
     </div>
     <div class="mascot-avatar-wrapper" title="Aashwas-Babu, Municipal Chief Civic Inspector">
       ${getMascotSVG(currentMascotMood, 72)}
       <div class="mascot-name-badge">Aashwas-Babu</div>
     </div>
   `;
+}
+
+function triggerMascotChaiBreak() {
+  setMascotMood('happy');
+  if (window.civicAudio && typeof window.civicAudio.playClick === 'function') {
+    window.civicAudio.playClick();
+  }
+  const speechText = document.querySelector('.mascot-speech-text');
+  if (speechText) {
+    speechText.innerHTML = '"Aah, mast cutting chai! ☕ 10-minute break while our 6 autonomous agents keep the city sparkling!"';
+  }
+  if (typeof showStickerToast === 'function') {
+    showStickerToast('☕ Aashwas-Babu is enjoying hot cutting chai with biscuits!', 'info', 2500);
+  }
+}
+
+function speakMascotQuote(encodedQuote) {
+  try {
+    const text = decodeURIComponent(encodedQuote);
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1.0;
+      utterance.lang = 'en-IN';
+      window.speechSynthesis.speak(utterance);
+    }
+  } catch (e) {}
+}
+
+function blowMascotWhistle() {
+  setMascotMood('inspecting');
+  if (window.civicAudio && typeof window.civicAudio.playInspectorWhistle === 'function') {
+    window.civicAudio.playInspectorWhistle();
+  }
+  if (typeof showStickerToast === 'function') {
+    showStickerToast('🚨 *FWEEEET!* Municipal Chief Inspector on site! Checking road levels.', 'warning', 2500);
+  }
 }
 
 function setMascotMood(mood) {
@@ -558,6 +599,7 @@ function setMascotMood(mood) {
 }
 
 function cycleMascotMood() {
+
   const moods = ['happy', 'inspecting', 'celebrating', 'confused', 'soaked', 'panicking'];
   const nextIdx = (moods.indexOf(currentMascotMood) + 1) % moods.length;
   setMascotMood(moods[nextIdx]);
@@ -711,3 +753,7 @@ window.getMascotSVG = getMascotSVG;
 window.showStickerToast = showStickerToast;
 window.showToast = showStickerToast;
 window.getStickerEmptyStateHTML = getStickerEmptyStateHTML;
+window.triggerMascotChaiBreak = triggerMascotChaiBreak;
+window.speakMascotQuote = speakMascotQuote;
+window.blowMascotWhistle = blowMascotWhistle;
+

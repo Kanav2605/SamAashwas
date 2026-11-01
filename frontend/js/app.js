@@ -566,7 +566,12 @@ document.addEventListener('DOMContentLoaded', () => {
   loadPredictiveData();
   loadWardGovernanceData();
   handleHashRouting();
+  updateCityWeatherAQI('bengaluru');
+  if (window.civicAudio && typeof window.civicAudio.updateSoundButtonUI === 'function') {
+    window.civicAudio.updateSoundButtonUI();
+  }
 });
+
 
 // Animate Dynamic Hero Impact Metrics Counters
 function animateHeroCounters() {
@@ -634,7 +639,9 @@ function selectCity(cityId) {
   loadMasterTickets(cityQuery);
   loadPredictiveData(cityQuery);
   loadWardGovernanceData(cityQuery);
+  updateCityWeatherAQI(cityId);
 }
+
 
 function updateFormPins(city) {
   const container = document.getElementById('form-quick-pins');
@@ -723,7 +730,11 @@ function onCommandCityChange(cityVal) {
 
 // Tab Switcher for Desktop & Mobile
 function switchTab(tabId) {
+  if (window.civicAudio && typeof window.civicAudio.playTabSwitch === 'function') {
+    window.civicAudio.playTabSwitch();
+  }
   document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
   document.querySelectorAll('.mobile-nav-item').forEach(btn => btn.classList.remove('active'));
   document.querySelectorAll('.view-container').forEach(view => view.classList.remove('active'));
 
@@ -1524,6 +1535,11 @@ async function openTrackingModal(trackingId) {
         <div><strong>Ward & Zone:</strong> ${esc(data.ward_name)} (${esc(data.mcd_zone || '')})</div>
         <div><strong>Assigned Officer:</strong> ${esc(data.assigned_engineer)}</div>
         <div><strong>Jan Sunwai Status:</strong> ${esc(data.jan_sunwai_status || 'NONE')}</div>
+        <div style="margin-top: 8px; border-top: 1px dashed var(--ink); padding-top: 8px; display: flex; justify-content: flex-end;">
+          <button type="button" class="btn-secondary" style="font-size: 0.74rem; padding: 4px 10px; background: var(--paper-2);" onclick="printRtiDocket(${JSON.stringify(data).replace(/"/g, '&quot;')})">
+            🖨️ Print Statutory RTI Grievance Docket / Petition
+          </button>
+        </div>
       </div>
 
       <h4 style="font-size: 0.95rem; font-family: var(--font-display); color: #231F20; margin-bottom: 6px;">Autonomous 6-Agent Deliberation Trail</h4>
@@ -1599,13 +1615,21 @@ function confirmTicketResolution(trackingId, isFixed) {
       currentUser.karma_points = (currentUser.karma_points || 0) + 25;
       updateCitizenAuthHeader();
     }
+    if (window.fireCivicCelebration) window.fireCivicCelebration();
+    if (window.civicAudio && typeof window.civicAudio.playSuccessFanfare === 'function') {
+      window.civicAudio.playSuccessFanfare();
+    }
   } else {
     if (typeof showStickerToast === 'function') {
       showStickerToast(`Grievance ${trackingId} reopened! Logged as False-Closure Audit Alert and escalated to Ward JE.`, 'warning');
     }
+    if (window.civicAudio && typeof window.civicAudio.playAlertBell === 'function') {
+      window.civicAudio.playAlertBell();
+    }
   }
   closeTrackingModal();
 }
+
 
 function rateCSAT(stars) {
   document.querySelectorAll('.csat-star-btn').forEach((btn, idx) => {
@@ -2019,7 +2043,12 @@ async function handleCitizenSubmit(event) {
     if (typeof showStickerToast === 'function') {
       showStickerToast('Grievance registered and routed to Ward Engineer!', 'success');
     }
+    if (window.fireCivicCelebration) window.fireCivicCelebration();
+    if (window.civicAudio && typeof window.civicAudio.playSuccessFanfare === 'function') {
+      window.civicAudio.playSuccessFanfare();
+    }
     loadKPIStats();
+
     loadMasterTickets();
     resultEl.scrollIntoView({ behavior: 'smooth' });
   } catch (err) {
@@ -2603,6 +2632,14 @@ async function simulateAgentScenario(scenarioType) {
     const data = await res.json();
 
     if (data.agent_trace && data.agent_trace.length > 0) {
+      // Reset visual flowchart nodes
+      document.querySelectorAll('.agent-flow-node').forEach(n => {
+        n.classList.remove('active-agent', 'completed-agent');
+      });
+      document.querySelectorAll('.agent-flow-connector').forEach(c => {
+        c.classList.remove('active');
+      });
+
       let delay = 250;
       data.agent_trace.forEach((step, idx) => {
         setTimeout(() => {
@@ -2610,9 +2647,22 @@ async function simulateAgentScenario(scenarioType) {
           stepDiv.className = 'deliberation-step';
           const isAlert = step.status.includes('FLAGGED') || step.status === 'ALERT' || step.status === 'ESCALATED';
 
+          // Animate Visual Flowchart Node
+          const nodeNum = (idx % 6) + 1;
+          document.querySelectorAll('.agent-flow-node').forEach(n => n.classList.remove('active-agent'));
+          const flowNode = document.getElementById(`flownode-${nodeNum}`);
+          if (flowNode) {
+            flowNode.classList.add('active-agent');
+            if (window.civicAudio && typeof window.civicAudio.playClick === 'function') {
+              window.civicAudio.playClick();
+            }
+          }
+          const conn = document.getElementById(`flowconn-${nodeNum - 1}`);
+          if (conn) conn.classList.add('active');
+
           stepDiv.innerHTML = `
             <div class="step-header">
-              <span style="font-family: 'Fredoka', cursive;">Step ${idx + 1}: ${step.agent_name}</span>
+              <span style="font-family: var(--font-display);">Step ${idx + 1}: ${step.agent_name}</span>
               <span class="badge ${isAlert ? 'badge-critical' : 'badge-low'}">${step.status}</span>
             </div>
             <div class="step-thought">&gt; ${step.thought_log}</div>
@@ -2630,23 +2680,34 @@ async function simulateAgentScenario(scenarioType) {
             summaryDiv.style.borderRadius = '14px';
             summaryDiv.style.boxShadow = '3px 3px 0 #231F20';
             summaryDiv.innerHTML = `
-              <div style="font-weight: 800; font-family: 'Fredoka', cursive; color: #FF5A4E; margin-bottom: 4px;">Executive Multi-Agent Summary:</div>
+              <div style="font-weight: 800; font-family: var(--font-display); color: #FF5A4E; margin-bottom: 4px;">Executive Multi-Agent Summary:</div>
               <div style="color: #231F20; font-size: 0.82rem; font-weight: 600; line-height: 1.45;">${data.narrative_summary}</div>
             `;
             consoleEl.appendChild(summaryDiv);
             consoleEl.scrollTop = consoleEl.scrollHeight;
 
+            document.querySelectorAll('.agent-flow-node').forEach(n => {
+              n.classList.remove('active-agent');
+              n.classList.add('completed-agent');
+            });
+
             if (statusEl) {
               statusEl.innerText = 'Orchestration Completed Successfully';
-              statusEl.style.color = '#7BDCB5';
+              statusEl.style.color = '#10B981';
             }
 
             if (typeof setMascotMood === 'function') {
               setMascotMood('celebrating');
             }
+
+            if (window.fireCivicCelebration) window.fireCivicCelebration();
+            if (window.civicAudio && typeof window.civicAudio.playSuccessFanfare === 'function') {
+              window.civicAudio.playSuccessFanfare();
+            }
           }
         }, delay);
         delay += 350;
+
       });
     }
   } catch (err) {
@@ -3293,5 +3354,254 @@ window.loadDispatchData = loadDispatchData;
 window.loadTransparencyData = loadTransparencyData;
 window.downloadSanitizedCSV = downloadSanitizedCSV;
 window.handleHashRouting = handleHashRouting;
+
+// ==========================================================================
+// DYNAMIC MUNICIPAL WEATHER & AQI CONTROLLER
+// ==========================================================================
+async function updateCityWeatherAQI(cityId) {
+  try {
+    const targetCityId = (cityId === 'all' || !cityId) ? 'bengaluru' : cityId;
+    const res = await fetch(`/api/v1/cities/${encodeURIComponent(targetCityId)}/weather-aqi`);
+    if (!res.ok) return;
+    const data = await res.json();
+
+    const headingEl = document.getElementById('weather-city-heading');
+    const iconEl = document.getElementById('weather-city-icon');
+    const tempEl = document.getElementById('weather-temp-val');
+    const condEl = document.getElementById('weather-condition-val');
+    const aqiBadge = document.getElementById('weather-aqi-badge');
+    const rainEl = document.getElementById('weather-rain-val');
+    const floodBadge = document.getElementById('weather-flood-badge');
+    const desiltEl = document.getElementById('weather-desilting-val');
+
+    if (headingEl) headingEl.innerText = `${data.city_name} (${data.corporation}) Weather, AQI & Flood Shield`;
+    if (iconEl) iconEl.innerText = data.city_id === 'mumbai' ? '🌊' : (data.city_id === 'pune' ? '🏰' : (data.city_id === 'chennai' ? '🌴' : (data.city_id === 'hyderabad' ? '🕌' : (data.city_id === 'kolkata' ? '🌉' : '🏛️'))));
+    if (tempEl) tempEl.innerText = `${data.temperature_c.toFixed(1)}°C`;
+    if (condEl) condEl.innerText = `• ${data.weather_condition}`;
+    if (aqiBadge) {
+      aqiBadge.innerText = `${data.aqi} ${data.aqi_category}`;
+      aqiBadge.style.backgroundColor = data.aqi_color;
+    }
+    if (rainEl) rainEl.innerText = `${data.rainfall_24h_mm} mm`;
+    if (floodBadge) {
+      floodBadge.innerText = `Flood Risk: ${data.flood_hazard_level}`;
+      floodBadge.style.backgroundColor = data.flood_hazard_level === 'HIGH' ? 'var(--tomato)' : (data.flood_hazard_level === 'MODERATE' ? 'var(--mustard)' : 'var(--mint)');
+    }
+    if (desiltEl) desiltEl.innerText = `${data.desilting_readiness_pct}% Ready`;
+  } catch (e) {
+    console.warn('Weather AQI fetch error:', e);
+  }
+}
+
+// ==========================================================================
+// 1-CLICK AI SCENARIO PRESETS CONTROLLER
+// ==========================================================================
+const GRIEVANCE_PRESETS = {
+  water_leak_hinglish: {
+    text: "Bhaiya 100ft road pe underground water pipe phat gaya hai, pure road par paani overflow ho raha hai near Indiranagar KFC",
+    category: "Water Supply & Sewage",
+    lat: 12.9716,
+    lon: 77.6412,
+    photo: "sewage_overflow",
+    label: "Water Main Burst (Hinglish • Indiranagar)"
+  },
+  garbage_hindi: {
+    text: "चांदनी चौक गली नंबर 4 में बड़ा कूड़े का ढेर लगा है, 3 दिन से सफाई कर्मचारी नहीं आए और बदबू फैल रही है",
+    category: "Sanitation & Waste Management",
+    lat: 28.6506,
+    lon: 77.2303,
+    photo: "garbage_dump",
+    label: "Dhalao Garbage (हिन्दी • Chandni Chowk)"
+  },
+  streetlight_english: {
+    text: "Dangerous live wire sparking from electric streetlight pole on Linking Road, completely dark and hazardous for pedestrians and vehicles",
+    category: "Electrical & Streetlights",
+    lat: 19.0596,
+    lon: 72.8295,
+    photo: "broken_streetlight",
+    label: "Sparking Wire (English • Bandra West)"
+  },
+  wrong_door_nhai: {
+    text: "Dangerous deep crater and collision hazard on National Highway 48 near expressway toll barrier gate, urgent NHAI intervention required",
+    category: "Roads & Footpaths",
+    lat: 28.4595,
+    lon: 77.0266,
+    photo: "pothole",
+    label: "Wrong-Door NHAI Expressway (Auto-Detector)"
+  },
+  negation_abstain: {
+    text: "The local community park is clean and well maintained, no garbage or issues here today",
+    category: "Horticulture & Parks",
+    lat: 12.9352,
+    lon: 77.6245,
+    photo: "",
+    label: "Park Compliment (Negation Abstention)"
+  }
+};
+
+function applyGrievancePreset(presetKey) {
+  const p = GRIEVANCE_PRESETS[presetKey];
+  if (!p) return;
+
+  const textEl = document.getElementById('complaint-text');
+  const latEl = document.getElementById('form-lat');
+  const lonEl = document.getElementById('form-lon');
+  const photoEl = document.getElementById('form-image-hint');
+
+  if (textEl) textEl.value = p.text;
+  if (latEl) latEl.value = p.lat;
+  if (lonEl) lonEl.value = p.lon;
+  if (photoEl) photoEl.value = p.photo;
+
+  selectWizardCategory(p.category);
+  if (typeof onGrievanceTextInput === 'function') {
+    onGrievanceTextInput();
+  }
+  if (typeof checkForNearbyDeflection === 'function') {
+    checkForNearbyDeflection();
+  }
+
+  if (window.civicAudio && typeof window.civicAudio.playClick === 'function') {
+    window.civicAudio.playClick();
+  }
+
+  if (typeof showStickerToast === 'function') {
+    showStickerToast(`⚡ Scenario preset loaded: "${p.label}". Review AI extraction!`, 'info', 3000);
+  }
+}
+
+// ==========================================================================
+// AUDIO CONTROLS & SHORTCUTS MODAL
+// ==========================================================================
+function toggleCivicAudio() {
+  if (window.civicAudio) {
+    const isNowOn = window.civicAudio.toggleSound();
+    const btn = document.getElementById('btn-sound-toggle');
+    if (btn) {
+      btn.innerText = isNowOn ? '🔊 Sound: ON' : '🔇 Sound: OFF';
+      btn.classList.toggle('active', isNowOn);
+    }
+  }
+}
+
+function openShortcutsModal() {
+  const modal = document.getElementById('shortcuts-modal');
+  if (modal) modal.style.display = 'flex';
+  if (window.civicAudio && typeof window.civicAudio.playClick === 'function') {
+    window.civicAudio.playClick();
+  }
+}
+
+function closeShortcutsModal(event = null) {
+  if (event && event.target !== document.getElementById('shortcuts-modal')) return;
+  const modal = document.getElementById('shortcuts-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+// Global Keyboard Shortcuts Event Handler
+document.addEventListener('keydown', (e) => {
+  if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName)) {
+    if (e.key === 'Escape') {
+      e.target.blur();
+    }
+    return;
+  }
+
+  // '?' -> Open / Close Shortcuts modal
+  if (e.key === '?' || (e.shiftKey && e.key === '/')) {
+    e.preventDefault();
+    const modal = document.getElementById('shortcuts-modal');
+    if (modal && modal.style.display === 'flex') {
+      closeShortcutsModal();
+    } else {
+      openShortcutsModal();
+    }
+    return;
+  }
+
+  // 'Escape' -> Close modals
+  if (e.key === 'Escape') {
+    closeShortcutsModal();
+    if (typeof closeModal === 'function') closeModal();
+    if (typeof closeTrackingModal === 'function') closeTrackingModal();
+    if (typeof closeLoginModal === 'function') closeLoginModal();
+    if (typeof closeServiceModal === 'function') closeServiceModal();
+    if (typeof closeCertificateModal === 'function') closeCertificateModal();
+    return;
+  }
+
+  // 'L' -> Login Modal
+  if (e.key === 'l' || e.key === 'L') {
+    e.preventDefault();
+    openLoginModal();
+    return;
+  }
+
+  // 'R' -> Report Wizard
+  if (e.key === 'r' || e.key === 'R') {
+    e.preventDefault();
+    handleGrievanceTabClick();
+    return;
+  }
+
+  // 'M' -> GIS Incident Map
+  if (e.key === 'm' || e.key === 'M') {
+    e.preventDefault();
+    switchTab('command-center');
+    return;
+  }
+
+  // 'T' -> Focus Tracking Input
+  if (e.key === 't' || e.key === 'T') {
+    e.preventDefault();
+    switchTab('home-view');
+    const trackInput = document.getElementById('track-id-input');
+    if (trackInput) {
+      trackInput.focus();
+      trackInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    return;
+  }
+
+  // 'S' -> Toggle Sound
+  if (e.key === 's' || e.key === 'S') {
+    e.preventDefault();
+    toggleCivicAudio();
+    return;
+  }
+
+  // '1' - '9' -> Switch Tabs
+  const tabKeys = {
+    '1': 'home-view',
+    '2': 'citizen-portal',
+    '3': 'field-tasks-view',
+    '4': 'triage-view',
+    '5': 'dispatch-view',
+    '6': 'transparency-view',
+    '7': 'command-center',
+    '8': 'gallery-view',
+    '9': 'rewards-view'
+  };
+  if (tabKeys[e.key]) {
+    e.preventDefault();
+    switchTab(tabKeys[e.key]);
+  }
+});
+
+// Global tactile button audio click delegation
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('button, .tab-btn, .city-pill, .category-card, .btn-primary, .btn-secondary');
+  if (btn && window.civicAudio && typeof window.civicAudio.playClick === 'function') {
+    window.civicAudio.playClick();
+  }
+});
+
+// Expose new functions globally on window
+window.updateCityWeatherAQI = updateCityWeatherAQI;
+window.applyGrievancePreset = applyGrievancePreset;
+window.toggleCivicAudio = toggleCivicAudio;
+window.openShortcutsModal = openShortcutsModal;
+window.closeShortcutsModal = closeShortcutsModal;
+
 
 

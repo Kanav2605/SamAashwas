@@ -130,3 +130,37 @@ def test_academic_prototype_banner_and_new_views_present():
     assert "wizard-node-1" in html
     assert "dpdp-consent-checkbox" in html
 
+def test_city_weather_aqi_endpoint():
+    res = client.get("/api/v1/cities/bengaluru/weather-aqi")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["city_name"] == "Bengaluru"
+    assert data["corporation"] == "BBMP"
+    assert "temperature_c" in data
+    assert "aqi" in data
+    assert "aqi_category" in data
+    assert "flood_hazard_level" in data
+    assert data["control_rooms_active"] is True
+
+def test_signature_interactive_features_present_in_index():
+    res = client.get("/")
+    assert res.status_code == 200
+    html = res.text
+    # Audio Engine & Celebration & Certificate scripts
+    assert "js/audio_engine.js" in html
+    assert "js/celebration.js" in html
+    assert "js/certificate_generator.js" in html
+    # Live Weather & AQI widget
+    assert "city-weather-widget" in html
+    # Scenario Presets
+    assert "scenario-preset-container" in html
+    assert "applyGrievancePreset" in html
+    # Visual Agent Flowchart
+    assert "agent-flow-container" in html
+    assert "agent-visual-flowtrack" in html
+    # Keyboard Shortcuts modal
+    assert "shortcuts-modal" in html
+    # Certificate button
+    assert "openCertificateModal" in html
+
+
