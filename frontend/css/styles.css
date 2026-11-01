@@ -2674,3 +2674,150 @@ tr:nth-child(odd) td {
   background: var(--mustard);
 }
 
+/* --------------------------------------------------------------------------
+   SERVICE MODAL, INFO MODAL & GRIEVANCE AUTH BANNER
+   -------------------------------------------------------------------------- */
+.service-modal-box,
+.info-modal-box {
+  background: var(--cream-white);
+  border: var(--border-ink-thick);
+  border-radius: var(--radius-md);
+  max-width: 620px;
+  width: 95%;
+  max-height: 88vh;
+  overflow-y: auto;
+  box-shadow: 6px 6px 0 var(--ink);
+  position: relative;
+  animation: modalPop 0.22s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.service-modal-header {
+  padding: 1.25rem 1.5rem 1rem;
+  border-bottom: 2px solid var(--ink);
+  background: var(--paper-2);
+}
+
+.service-action-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 10px;
+  margin: 1rem 0;
+}
+
+.service-action-btn {
+  background: var(--cream-white);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.82rem;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.12s ease;
+}
+
+.service-action-btn:hover {
+  background: var(--mustard);
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.service-action-btn:active {
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+.service-result-box {
+  background: var(--paper-2);
+  border: 2px dashed var(--ink);
+  border-radius: var(--radius-sm);
+  padding: 1rem;
+  margin-top: 1rem;
+  font-size: 0.82rem;
+  line-height: 1.5;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+/* Grievance Auth Banner */
+.grievance-auth-banner {
+  margin-bottom: 1.25rem;
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  border: 2px solid var(--ink);
+  box-shadow: 3px 3px 0 var(--ink);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  transition: all 0.2s ease;
+}
+
+.grievance-auth-banner.logged-out {
+  background: #fff3da;
+  border-color: var(--ink);
+}
+
+.grievance-auth-banner.logged-in {
+  background: #e8f9ee;
+  border-color: var(--ink);
+}
+
+.auth-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.auth-banner-icon {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.auth-banner-title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 0.88rem;
+  color: var(--ink);
+}
+
+.auth-banner-sub {
+  font-size: 0.74rem;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.auth-banner-btn {
+  background: var(--tomato);
+  color: var(--cream-white);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-sm);
+  padding: 6px 14px;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 0.78rem;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--ink);
+  white-space: nowrap;
+  transition: all 0.12s ease;
+}
+
+.auth-banner-btn:hover {
+  background: var(--mustard);
+  color: var(--ink);
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.auth-banner-btn.btn-switch {
+  background: var(--cream-white);
+  color: var(--ink);
+}
+
+

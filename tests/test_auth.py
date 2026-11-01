@@ -134,12 +134,24 @@ def test_frontend_auth_and_button_components():
     assert "Aarav Sharma" in html
     assert "Sunita Patel" in html
 
-    # Verify interactive controls
+    # Verify interactive controls and modals
     assert "gallery-filter-bar" in html
     assert "map-floating-controls" in html
     assert "jan-filter-all" in html
     assert "handleReportIssueClick" in html
     assert "handleGrievanceTabClick" in html
+    assert "grievance-auth-banner" in html
+    assert "service-modal" in html
+    assert "info-modal" in html
+    assert "openServiceModal('birth_death')" in html
+    assert "openServiceModal('property_tax')" in html
+    assert "openServiceModal('trade_license')" in html
+    assert "openServiceModal('sanitation')" in html
+    assert "openServiceModal('roads')" in html
+    assert "openServiceModal('building_plan')" in html
+    assert "openServiceModal('community_hall')" in html
+    assert "openInformationModal('rti')" in html
+    assert "openInformationModal('charter')" in html
 
 def test_transformations_category_filter():
     res_all = client.get("/api/v1/transformations")

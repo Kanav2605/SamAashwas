@@ -396,7 +396,7 @@
 
         <div class="mcd-services-grid">
           <!-- 1. Birth & Death -->
-          <div class="mcd-service-tile" onclick="openServiceInfo('birth_death')">
+          <div class="mcd-service-tile" onclick="openServiceModal('birth_death')">
             <div class="service-tile-top">
               <div class="service-tile-icon">📜</div>
               <div>
@@ -409,12 +409,12 @@
             </div>
             <div class="service-tile-footer">
               <span class="badge" style="background: var(--mint); color: var(--ink); border: 1.5px solid var(--ink);">e-SLA 7 Days</span>
-              <button class="service-tile-btn">Access Service &rarr;</button>
+              <button class="service-tile-btn" onclick="event.stopPropagation(); openServiceModal('birth_death')">Access Service &rarr;</button>
             </div>
           </div>
 
           <!-- 2. Property Tax PTR -->
-          <div class="mcd-service-tile" onclick="openServiceInfo('property_tax')">
+          <div class="mcd-service-tile" onclick="openServiceModal('property_tax')">
             <div class="service-tile-top">
               <div class="service-tile-icon">🏠</div>
               <div>
@@ -427,12 +427,12 @@
             </div>
             <div class="service-tile-footer">
               <span class="badge" style="background: var(--mustard); color: var(--ink); border: 1.5px solid var(--ink);">Geo-Tagged GIS</span>
-              <button class="service-tile-btn">Pay Tax Online &rarr;</button>
+              <button class="service-tile-btn" onclick="event.stopPropagation(); openServiceModal('property_tax')">Pay Tax Online &rarr;</button>
             </div>
           </div>
 
           <!-- 3. Trade & Factory License -->
-          <div class="mcd-service-tile" onclick="openServiceInfo('trade_license')">
+          <div class="mcd-service-tile" onclick="openServiceModal('trade_license')">
             <div class="service-tile-top">
               <div class="service-tile-icon">🏭</div>
               <div>
@@ -445,7 +445,7 @@
             </div>
             <div class="service-tile-footer">
               <span class="badge" style="background: var(--peach); color: var(--ink); border: 1.5px solid var(--ink);">Single Window</span>
-              <button class="service-tile-btn">Apply / Renew &rarr;</button>
+              <button class="service-tile-btn" onclick="event.stopPropagation(); openServiceModal('trade_license')">Apply / Renew &rarr;</button>
             </div>
           </div>
 
@@ -463,12 +463,12 @@
             </div>
             <div class="service-tile-footer">
               <span class="badge" style="background: var(--tomato); color: var(--cream-white); border: 1.5px solid var(--ink);">SamAashwas AI</span>
-              <button class="service-tile-btn">File Grievance &rarr;</button>
+              <button class="service-tile-btn" onclick="event.stopPropagation(); handleReportIssueClick()">File Grievance &rarr;</button>
             </div>
           </div>
 
           <!-- 5. Sanitation & Solid Waste -->
-          <div class="mcd-service-tile" onclick="switchTab('command-center')">
+          <div class="mcd-service-tile" onclick="openServiceModal('sanitation')">
             <div class="service-tile-top">
               <div class="service-tile-icon">🚛</div>
               <div>
@@ -481,12 +481,12 @@
             </div>
             <div class="service-tile-footer">
               <span class="badge" style="background: var(--mint); color: var(--ink); border: 1.5px solid var(--ink);">SBM Urban 2.0</span>
-              <button class="service-tile-btn">Track Route &rarr;</button>
+              <button class="service-tile-btn" onclick="event.stopPropagation(); openServiceModal('sanitation')">Track Route &rarr;</button>
             </div>
           </div>
 
           <!-- 6. Roads & Streetlights -->
-          <div class="mcd-service-tile" onclick="switchTab('command-center')">
+          <div class="mcd-service-tile" onclick="openServiceModal('roads')">
             <div class="service-tile-top">
               <div class="service-tile-icon">💡</div>
               <div>
@@ -499,12 +499,12 @@
             </div>
             <div class="service-tile-footer">
               <span class="badge" style="background: var(--mustard); color: var(--ink); border: 1.5px solid var(--ink);">Smart LED Grid</span>
-              <button class="service-tile-btn">View Status &rarr;</button>
+              <button class="service-tile-btn" onclick="event.stopPropagation(); openServiceModal('roads')">View Status &rarr;</button>
             </div>
           </div>
 
           <!-- 7. Building Plan Sanction (OBPS) -->
-          <div class="mcd-service-tile" onclick="openServiceInfo('building_plan')">
+          <div class="mcd-service-tile" onclick="openServiceModal('building_plan')">
             <div class="service-tile-top">
               <div class="service-tile-icon">🏗️</div>
               <div>
@@ -517,12 +517,12 @@
             </div>
             <div class="service-tile-footer">
               <span class="badge" style="background: var(--lavender); color: var(--ink); border: 1.5px solid var(--ink);">Automated DCR</span>
-              <button class="service-tile-btn">OBPS Portal &rarr;</button>
+              <button class="service-tile-btn" onclick="event.stopPropagation(); openServiceModal('building_plan')">OBPS Portal &rarr;</button>
             </div>
           </div>
 
           <!-- 8. Community Hall & Park Booking -->
-          <div class="mcd-service-tile" onclick="openServiceInfo('community_hall')">
+          <div class="mcd-service-tile" onclick="openServiceModal('community_hall')">
             <div class="service-tile-top">
               <div class="service-tile-icon">🌳</div>
               <div>
@@ -535,7 +535,7 @@
             </div>
             <div class="service-tile-footer">
               <span class="badge" style="background: var(--mint); color: var(--ink); border: 1.5px solid var(--ink);">Public Amenities</span>
-              <button class="service-tile-btn">Book Venue &rarr;</button>
+              <button class="service-tile-btn" onclick="event.stopPropagation(); openServiceModal('community_hall')">Book Venue &rarr;</button>
             </div>
           </div>
         </div>
@@ -962,6 +962,9 @@
           Report municipal issues in Hindi, Hinglish, Kannada, Tamil, or English. Our AI automatically extracts department, verifies photos, and merges neighborhood complaints.
         </p>
 
+        <!-- Citizen Authentication Status Banner -->
+        <div id="grievance-auth-banner" class="grievance-auth-banner"></div>
+
         <!-- Vernacular Speech / Voice Note Recorder Widget -->
         <div class="voice-recorder-card">
           <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
@@ -1340,6 +1343,66 @@
     </div>
   </div>
 
+  <!-- Modal: Citizen Municipal Service Execution Dialog -->
+  <div class="modal-overlay" id="service-modal" onclick="closeServiceModal(event)">
+    <div class="modal-content service-modal-box" onclick="event.stopPropagation()">
+      <div class="login-tricolor-accent"></div>
+      <div class="service-modal-header">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="font-size: 2.2rem; background: var(--cream-white); border: 2px solid var(--ink); border-radius: 12px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; box-shadow: 2px 2px 0 var(--ink);" id="service-modal-icon">🏛️</div>
+            <div>
+              <div style="font-size: 0.72rem; color: var(--tomato); font-weight: 900; letter-spacing: 0.05em; text-transform: uppercase;" id="service-modal-badge">
+                NATIONAL MUNICIPAL SERVICE GATEWAY
+              </div>
+              <h3 style="margin: 2px 0 0; font-size: 1.25rem; color: var(--ink); font-family: var(--font-display); font-weight: 900;" id="service-modal-title">
+                Municipal Service
+              </h3>
+              <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700;" id="service-modal-subtitle">
+                Official Urban Local Body Digital Services &bull; DigiLocker Verified
+              </div>
+            </div>
+          </div>
+          <button onclick="closeServiceModal()" style="background: none; border: none; color: var(--ink); font-size: 1.8rem; font-weight: 900; cursor: pointer; line-height: 1;">&times;</button>
+        </div>
+      </div>
+
+      <div id="service-modal-body" style="padding: 1.25rem 1.5rem;">
+        <!-- Filled dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Policy & Transparency Information Dialog -->
+  <div class="modal-overlay" id="info-modal" onclick="closeInformationModal(event)">
+    <div class="modal-content info-modal-box" onclick="event.stopPropagation()">
+      <div class="login-tricolor-accent"></div>
+      <div class="service-modal-header">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; width: 100%;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="font-size: 2.2rem; background: var(--cream-white); border: 2px solid var(--ink); border-radius: 12px; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; box-shadow: 2px 2px 0 var(--ink);" id="info-modal-icon">📜</div>
+            <div>
+              <div style="font-size: 0.72rem; color: var(--theme-primary); font-weight: 900; letter-spacing: 0.05em; text-transform: uppercase;" id="info-modal-badge">
+                GOVERNMENT OF INDIA &bull; CITIZEN TRANSPARENCY
+              </div>
+              <h3 style="margin: 2px 0 0; font-size: 1.25rem; color: var(--ink); font-family: var(--font-display); font-weight: 900;" id="info-modal-title">
+                Information Portal
+              </h3>
+              <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700;" id="info-modal-subtitle">
+                Statutory Guidelines, Rights &amp; National Urban Missions
+              </div>
+            </div>
+          </div>
+          <button onclick="closeInformationModal()" style="background: none; border: none; color: var(--ink); font-size: 1.8rem; font-weight: 900; cursor: pointer; line-height: 1;">&times;</button>
+        </div>
+      </div>
+
+      <div id="info-modal-body" style="padding: 1.25rem 1.5rem;">
+        <!-- Filled dynamically -->
+      </div>
+    </div>
+  </div>
+
   <!-- Official Pan-India Government & ULB Footer -->
   <footer class="mcd-footer">
     <div class="footer-grid">
@@ -1373,8 +1436,8 @@
           <li><a href="javascript:void(0)" onclick="switchTab('jan-sunwai-view')">Friday Jan Sunwai Public Hearing Docket</a></li>
           <li><a href="javascript:void(0)" onclick="switchTab('gallery-view')">Before & After Transformation Gallery</a></li>
           <li><a href="javascript:void(0)" onclick="switchTab('rewards-view')">Swachh Nagrik Citizen Karma Rewards</a></li>
-          <li><a href="javascript:void(0)">Right to Information (RTI Act 2005)</a></li>
-          <li><a href="javascript:void(0)">Statutory Citizen Charter SLAs</a></li>
+          <li><a href="javascript:void(0)" onclick="openInformationModal('rti')">Right to Information (RTI Act 2005)</a></li>
+          <li><a href="javascript:void(0)" onclick="openInformationModal('charter')">Statutory Citizen Charter SLAs</a></li>
           <li><a href="javascript:void(0)" onclick="switchTab('agent-view')">Autonomous Multi-Agent Audit Log</a></li>
         </ul>
       </div>
@@ -1382,11 +1445,11 @@
       <div class="footer-col">
         <h4>National Flagship Missions</h4>
         <ul>
-          <li><a href="javascript:void(0)">Swachh Bharat Mission (SBM-Urban 2.0)</a></li>
-          <li><a href="javascript:void(0)">AMRUT 2.0 & Jal Jeevan Urban Mission</a></li>
-          <li><a href="javascript:void(0)">National Clean Air Programme (NCAP)</a></li>
-          <li><a href="javascript:void(0)">Smart Cities Mission (MoHUA)</a></li>
-          <li><a href="javascript:void(0)">Disaster Management Authority (NDMA)</a></li>
+          <li><a href="javascript:void(0)" onclick="openInformationModal('sbm')">Swachh Bharat Mission (SBM-Urban 2.0)</a></li>
+          <li><a href="javascript:void(0)" onclick="openInformationModal('amrut')">AMRUT 2.0 & Jal Jeevan Urban Mission</a></li>
+          <li><a href="javascript:void(0)" onclick="openInformationModal('ncap')">National Clean Air Programme (NCAP)</a></li>
+          <li><a href="javascript:void(0)" onclick="openInformationModal('smart_cities')">Smart Cities Mission (MoHUA)</a></li>
+          <li><a href="javascript:void(0)" onclick="openInformationModal('ndma')">Disaster Management Authority (NDMA)</a></li>
         </ul>
       </div>
     </div>

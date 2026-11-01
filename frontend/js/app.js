@@ -265,27 +265,60 @@ function initAuth() {
 
 function renderAuthHeader() {
   const container = document.getElementById('citizen-auth-widget');
-  if (!container) return;
+  const bannerContainer = document.getElementById('grievance-auth-banner');
 
   if (currentUser && currentUser.user) {
     const u = currentUser.user;
-    container.innerHTML = `
-      <div class="citizen-logged-pill" title="Logged in as ${u.name} (${u.role || 'Citizen'})">
-        <div class="citizen-avatar-icon">${u.avatar || '👤'}</div>
-        <div>
-          <div class="citizen-name-text">${u.name}</div>
-          <div style="font-size: 0.65rem; color: var(--text-muted); font-weight: 700;">${u.ward || u.city || 'Citizen'}</div>
+    if (container) {
+      container.innerHTML = `
+        <div class="citizen-logged-pill" title="Logged in as ${u.name} (${u.role || 'Citizen'})">
+          <div class="citizen-avatar-icon">${u.avatar || '👤'}</div>
+          <div>
+            <div class="citizen-name-text">${u.name}</div>
+            <div style="font-size: 0.65rem; color: var(--text-muted); font-weight: 700;">${u.ward || u.city || 'Citizen'}</div>
+          </div>
+          <span class="citizen-karma-pill">🪙 ${u.karma_points || 850}</span>
+          <button class="btn-citizen-logout" onclick="logoutCitizen()" title="Log out of Citizen Session">🚪 Logout</button>
         </div>
-        <span class="citizen-karma-pill">🪙 ${u.karma_points || 850}</span>
-        <button class="btn-citizen-logout" onclick="logoutCitizen()" title="Log out of Citizen Session">🚪 Logout</button>
-      </div>
-    `;
+      `;
+    }
+    if (bannerContainer) {
+      bannerContainer.className = 'grievance-auth-banner logged-in';
+      bannerContainer.innerHTML = `
+        <div class="auth-banner-left">
+          <div class="auth-banner-icon">${u.avatar || '👤'}</div>
+          <div>
+            <div class="auth-banner-title">Authenticated as ${u.name} (${u.role_title || u.role || 'Citizen'})</div>
+            <div class="auth-banner-sub">Aadhaar Verified &bull; ${u.ward || u.city || 'Pan-India'} &bull; 🪙 ${u.karma_points || 850} Karma Points</div>
+          </div>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button type="button" class="auth-banner-btn btn-switch" onclick="openLoginModal()" title="Switch Profile">Switch Profile</button>
+          <button type="button" class="auth-banner-btn" onclick="logoutCitizen()" title="Log out">Logout</button>
+        </div>
+      `;
+    }
   } else {
-    container.innerHTML = `
-      <button class="btn-citizen-login" onclick="openLoginModal()">
-        <span>🔑</span> <span>Citizen Login</span> <span style="opacity: 0.6;">|</span> <span>मेरी पहचान</span>
-      </button>
-    `;
+    if (container) {
+      container.innerHTML = `
+        <button class="btn-citizen-login" onclick="openLoginModal()">
+          <span>🔑</span> <span>Citizen Login</span> <span style="opacity: 0.6;">|</span> <span>मेरी पहचान</span>
+        </button>
+      `;
+    }
+    if (bannerContainer) {
+      bannerContainer.className = 'grievance-auth-banner logged-out';
+      bannerContainer.innerHTML = `
+        <div class="auth-banner-left">
+          <div class="auth-banner-icon">🔒</div>
+          <div>
+            <div class="auth-banner-title">Citizen Login Required to Lodge Grievances</div>
+            <div class="auth-banner-sub">Log in with Meri Pehchan (Aadhaar / Mobile OTP) or choose a 1-Click Demo Profile to lodge complaints and voice notes.</div>
+          </div>
+        </div>
+        <button type="button" class="auth-banner-btn" onclick="openLoginModal()">🔑 Meri Pehchan Login &rarr;</button>
+      `;
+    }
   }
 }
 
@@ -1715,37 +1748,533 @@ async function loadAgentStatus() {
   }
 }
 
-// Official Municipal Online Services Modal / Prompt
-function openServiceInfo(serviceKey) {
-  const serviceDetails = {
-    birth_death: {
-      title: "Civil Registration System (CRS) - Birth & Death Registration",
-      body: "Institutional and home births/deaths within municipal jurisdiction can be registered online within 21 days with zero government fee. Digitize existing paper records, download verifiable QR certificates, or apply for corrections through the digital CRS gateway."
-    },
-    property_tax: {
-      title: "Municipal Online Property Tax (PTR) & Mutation Gateway",
-      body: "Compute property tax under Self-Assessment System (SAS) with geo-tagging validation. Access the 2026 Amnesty Rebate Scheme, view UPIC ownership dossiers, generate digital receipts, or track property mutation."
-    },
-    trade_license: {
-      title: "Single Window Factory & Trade Licensing Gateway",
-      body: "Instant issuance and auto-renewal of General Trade, Health, Factory, and Veterinary trade operating permits under the Ease of Doing Business framework with statutory e-SLA turnaround."
-    },
-    building_plan: {
-      title: "Online Building Plan Sanction (OBPS)",
-      body: "Submit architectural drawings, obtain automated structural stability scrutiny, and track sanction orders online with zero physical contact."
-    },
-    community_hall: {
-      title: "Community Hall & Park Online Booking",
-      body: "Reserve air-conditioned community centers, Barat Ghars, and municipal parks across all zones with transparent digital tariff payment."
-    }
-  };
-
-  const s = serviceDetails[serviceKey];
-  if (s) {
-    if (typeof showStickerToast === 'function') {
-      showStickerToast(`${s.title}: ${s.body}`, 'info', 5500);
-    }
+// Official Municipal Online Services Modal System
+const MUNICIPAL_SERVICES_CONFIG = {
+  birth_death: {
+    title: "Civil Registration System (CRS) - Birth & Death",
+    title_hi: "जन्म एवं मृत्यु पंजीकरण (CRS)",
+    badge: "NATIONAL CRS GATEWAY • SLA 7 DAYS",
+    icon: "📜",
+    subtitle: "Issue, verify, and digitize official vital records with DigiLocker sync.",
+    description: "Institutional and domicile births/deaths occurring within municipal jurisdiction can be registered online within 21 days with zero statutory fees. Search records, download verifiable QR certificates, or request clerical name/date corrections.",
+    actions: [
+      { key: "apply_reg", label: "📄 Apply New Registration", hint: "Register birth/death within 21 days" },
+      { key: "download_cert", label: "🔍 Download Verifiable QR Certificate", hint: "Fetch digital certificate with DigiLocker QR" },
+      { key: "record_correction", label: "📝 Apply for Spelling / Date Correction", hint: "File rectification petition" }
+    ]
+  },
+  property_tax: {
+    title: "Municipal Property Tax (PTR) & Mutation",
+    title_hi: "संपत्ति कर एवं नामांतरण",
+    badge: "GEO-TAGGED GIS SAS • 10% REBATE",
+    icon: "🏠",
+    subtitle: "Self-Assessment System (SAS) with automated UPIC tax ledger.",
+    description: "Compute annual property tax under SAS with geo-tagged building footprint validation. Avail the active 10% Early Bird rebate, inspect your UPIC property card, download instant clearance receipts, or initiate property mutation.",
+    actions: [
+      { key: "pay_tax", label: "💳 Pay Property Tax Online (Instant Receipt)", hint: "Demo calculation: ₹2,450 with 10% rebate" },
+      { key: "view_upic", label: "🗺️ View Geo-Tagged UPIC Property Dossier", hint: "Inspect ward boundary & property card" },
+      { key: "apply_mutation", label: "📑 File Property Mutation Request", hint: "Transfer ownership in municipal records" }
+    ]
+  },
+  trade_license: {
+    title: "Single Window Trade & Factory License Gateway",
+    title_hi: "व्यापार एवं कारखाना लाइसेंस",
+    badge: "EASE OF DOING BUSINESS • INSTANT APPROVAL",
+    icon: "🏭",
+    subtitle: "Instant issuance and auto-renewal of commercial operating permits.",
+    description: "Simplified single-window portal for General Trade, Health Trade, Food Business, and Factory operating licenses. Instant computerized verification against zonal master plans with statutory e-SLA guarantees.",
+    actions: [
+      { key: "auto_renew", label: "⚡ 1-Click License Auto-Renewal", hint: "Instant computerized renewal voucher" },
+      { key: "apply_fresh", label: "📋 Apply Fresh Trade License", hint: "Scrutiny checklist & fee estimation" },
+      { key: "report_unlicensed", label: "⚠️ Report Unlicensed Unit / Safety Hazard", hint: "Lodge commercial violation complaint" }
+    ]
+  },
+  sanitation: {
+    title: "Sanitation, SBM & Solid Waste Management",
+    title_hi: "स्वच्छ भारत मिशन एवं सफाई व्यवस्था",
+    badge: "SBM URBAN 2.0 • 100% ROUTE SURVEILLANCE",
+    icon: "🚛",
+    subtitle: "GPS tipper tracking, community Dhalao monitoring & C&D pickup.",
+    description: "Monitor live GPS routes of ward garbage collection tippers, track secondary waste transfer stations (Dhalaos), and schedule doorstep pickup for heavy Construction & Demolition (C&D) debris.",
+    actions: [
+      { key: "track_tipper", label: "🚛 Open Live GPS Tipper Map", hint: "View ward collection vehicles on GIS map" },
+      { key: "schedule_cd", label: "📦 Schedule C&D Debris Pickup", hint: "Book municipal pickup for renovation rubble" },
+      { key: "report_dump", label: "🧹 Report Overflowing Garbage Dump", hint: "File rapid-response sanitation grievance" }
+    ]
+  },
+  roads: {
+    title: "Roads, Potholes & Smart Streetlight Grid",
+    title_hi: "सड़क मरम्मत एवं स्ट्रीट लाइट रखरखाव",
+    badge: "RAPID REPAIR SQUAD • 24H DARK SPOT FIX",
+    icon: "💡",
+    subtitle: "Junior Engineer road repair squads & smart LED automation.",
+    description: "Report hazardous road potholes, broken pavers, or dark-spot streetlights. Field engineers are dispatched with mobile geo-tagging, requiring mandatory before-and-after photographic evidence upon repair.",
+    actions: [
+      { key: "report_pothole", label: "🕳️ Report Urgent Pothole Hazard", hint: "Pre-fill pothole grievance with GPS" },
+      { key: "report_streetlight", label: "💡 Report Dark Spot / Failed Streetlight", hint: "Pre-fill electrical repair complaint" },
+      { key: "view_squad_map", label: "🗺️ Inspect Active Ward Repair Squads", hint: "View field teams on GIS command map" }
+    ]
+  },
+  building_plan: {
+    title: "Online Building Plan Sanction (OBPS)",
+    title_hi: "ऑनलाइन भवन निर्माण स्वीकृति",
+    badge: "AUTOMATED DCR • ZERO-CONTACT APPROVAL",
+    icon: "🏗️",
+    subtitle: "Automated Development Control Rules (DCR) scrutiny system.",
+    description: "Submit CAD architectural drawings for automated computerized scrutiny. Get real-time compliance reports against FAR, ground coverage, setback, and fire safety norms with digital sanction order issuance.",
+    actions: [
+      { key: "fast_track", label: "📐 Fast-Track Sanction (<500 sqm)", hint: "Demo provisional clearance voucher" },
+      { key: "check_scrutiny", label: "📊 Check Automated DCR Scrutiny", hint: "View architectural compliance scorecard" },
+      { key: "report_encroachment", label: "🏗️ Report Illegal Encroachment", hint: "Lodge unauthorized construction alert" }
+    ]
+  },
+  community_hall: {
+    title: "Community Hall, Barat Ghar & Park Booking",
+    title_hi: "बारात घर एवं पार्क ऑनलाइन बुकिंग",
+    badge: "PUBLIC AMENITIES • TRANSPARENT TARIFF",
+    icon: "🌳",
+    subtitle: "Transparent digital reservation of municipal social venues.",
+    description: "Check real-time availability of air-conditioned Barat Ghars, community centers, and public parks across all municipal zones. Reserve dates online with standard government tariffs and no middlemen.",
+    actions: [
+      { key: "book_hall", label: "🎉 Check Availability & Reserve Slot", hint: "Demo slot booking with digital slip" },
+      { key: "park_permit", label: "🌳 Morning Yoga / Community Park Permit", hint: "Generate public garden activity pass" },
+      { key: "view_tariffs", label: "📋 View Standard Zonal Tariffs", hint: "Transparent municipal tariff schedule" }
+    ]
   }
+};
+
+function openServiceModal(serviceKey) {
+  const cfg = MUNICIPAL_SERVICES_CONFIG[serviceKey];
+  if (!cfg) {
+    if (typeof showStickerToast === 'function') {
+      showStickerToast('Service information loaded', 'info');
+    }
+    return;
+  }
+
+  const modal = document.getElementById('service-modal');
+  const titleEl = document.getElementById('service-modal-title');
+  const badgeEl = document.getElementById('service-modal-badge');
+  const subtitleEl = document.getElementById('service-modal-subtitle');
+  const iconEl = document.getElementById('service-modal-icon');
+  const bodyEl = document.getElementById('service-modal-body');
+
+  if (titleEl) titleEl.innerText = cfg.title;
+  if (badgeEl) badgeEl.innerText = cfg.badge;
+  if (subtitleEl) subtitleEl.innerText = `${cfg.title_hi} • ${cfg.subtitle}`;
+  if (iconEl) iconEl.innerText = cfg.icon;
+
+  if (bodyEl) {
+    const actionButtons = cfg.actions.map(act => `
+      <button type="button" class="service-action-btn" onclick="executeServiceAction('${serviceKey}', '${act.key}')">
+        <span>${act.label}</span>
+      </button>
+    `).join('');
+
+    bodyEl.innerHTML = `
+      <p style="font-size: 0.86rem; color: var(--ink); line-height: 1.5; margin-bottom: 1rem;">
+        ${cfg.description}
+      </p>
+      
+      <div style="font-size: 0.78rem; font-weight: 900; color: var(--ink); font-family: var(--font-display); margin-bottom: 6px;">
+        ⚡ Instant Digital Actions:
+      </div>
+      <div class="service-action-grid">
+        ${actionButtons}
+      </div>
+
+      <div id="service-action-output" style="display: none;"></div>
+    `;
+  }
+
+  if (modal) modal.style.display = 'flex';
+}
+
+function closeServiceModal(event = null) {
+  if (event && event.target !== document.getElementById('service-modal')) return;
+  const modal = document.getElementById('service-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+function executeServiceAction(serviceKey, actionKey) {
+  const outEl = document.getElementById('service-action-output');
+  if (!outEl) return;
+
+  const currentCityName = (currentCityConfig && currentCityConfig.name) ? currentCityConfig.name : 'Bengaluru';
+  const currentCorpCode = (currentCityConfig && currentCityConfig.code) ? currentCityConfig.code : 'BBMP';
+  const citizenName = (currentUser && currentUser.user) ? currentUser.user.name : 'Citizen';
+
+  outEl.style.display = 'block';
+
+  if (actionKey === 'apply_reg') {
+    const refId = `CRS-${currentCorpCode}-${Math.floor(100000 + Math.random() * 900000)}`;
+    outEl.innerHTML = `
+      <div class="service-result-box">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <strong style="color: var(--theme-primary); font-family: var(--font-display); font-size: 0.95rem;">✅ Registration Application Initialized</strong>
+          <span class="badge" style="background: var(--mint); color: var(--ink);">DigiLocker Synced</span>
+        </div>
+        <div>Reference Docket ID: <code style="font-size: 0.95rem; font-weight: 900; color: var(--tomato);">${refId}</code></div>
+        <p style="margin: 6px 0; color: var(--text-muted); font-size: 0.78rem;">
+          Applicant: <strong>${citizenName}</strong> &bull; Municipal Jurisdiction: <strong>${currentCityName} (${currentCorpCode})</strong>.
+          Mandatory e-SLA turnaround: <strong>7 Working Days</strong>. SMS notifications active.
+        </p>
+        <button class="btn-primary" style="margin-top: 8px; font-size: 0.76rem; padding: 6px 12px;" onclick="closeServiceModal(); if(typeof showStickerToast==='function') showStickerToast('Registration Reference ${refId} saved to session.', 'success');">
+          Save to My Applications &rarr;
+        </button>
+      </div>
+    `;
+  } else if (actionKey === 'download_cert') {
+    outEl.innerHTML = `
+      <div class="service-result-box" style="background: #eef2ff;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <strong style="color: #3730a3; font-family: var(--font-display); font-size: 0.95rem;">📜 DigiLocker QR Certificate Verified</strong>
+          <span class="badge" style="background: #c7d2fe; color: #312e81;">SHA-256 Valid</span>
+        </div>
+        <div style="font-size: 0.8rem; line-height: 1.5; color: var(--ink);">
+          Issued under Section 12/17 of Registration of Births and Deaths Act, 1969. Digitally signed by Registrar of Vital Statistics, ${currentCorpCode}.
+        </div>
+        <div style="margin-top: 8px; display: flex; gap: 8px;">
+          <button class="btn-primary" style="font-size: 0.76rem; padding: 6px 12px;" onclick="if(typeof showStickerToast==='function') showStickerToast('Simulated QR Certificate downloaded to device.', 'success');">
+            ⬇️ Download Signed PDF
+          </button>
+          <button class="btn-secondary" style="font-size: 0.76rem; padding: 6px 12px;" onclick="closeServiceModal();">
+            Close
+          </button>
+        </div>
+      </div>
+    `;
+  } else if (actionKey === 'pay_tax') {
+    const recId = `PTX-${currentCorpCode}-${Math.floor(100000 + Math.random() * 900000)}`;
+    outEl.innerHTML = `
+      <div class="service-result-box" style="background: #ecfdf5;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <strong style="color: #065f46; font-family: var(--font-display); font-size: 0.95rem;">🧾 Property Tax Payment Cleared (Demo)</strong>
+          <span class="badge" style="background: var(--mint); color: var(--ink);">Zero Dues</span>
+        </div>
+        <div>Receipt Number: <code style="font-weight: 900; color: #047857; font-size: 0.92rem;">${recId}</code></div>
+        <div style="font-size: 0.78rem; color: var(--text-muted); margin-top: 4px;">
+          Assessed Property UPIC: <code>UPIC-${currentCorpCode}-8842</code> &bull; Assessed Amount: ₹2,450 (Includes 10% Early Bird Rebate).
+        </div>
+        <button class="btn-primary" style="margin-top: 8px; font-size: 0.76rem; padding: 6px 12px; background: #059669;" onclick="closeServiceModal(); if(typeof showStickerToast==='function') showStickerToast('Tax clearance certificate generated.', 'success');">
+          Download Tax Clearance Receipt &rarr;
+        </button>
+      </div>
+    `;
+  } else if (actionKey === 'track_tipper' || actionKey === 'view_squad_map') {
+    closeServiceModal();
+    switchTab('command-center');
+    if (typeof showStickerToast === 'function') {
+      showStickerToast('GIS incident and field asset layer active on map.', 'info');
+    }
+  } else if (actionKey === 'report_pothole' || actionKey === 'report_dump' || actionKey === 'report_streetlight' || actionKey === 'report_unlicensed' || actionKey === 'record_correction' || actionKey === 'report_encroachment' || actionKey === 'apply_mutation') {
+    closeServiceModal();
+    requireLogin(() => {
+      switchTab('citizen-portal');
+      const txtArea = document.getElementById('complaint-text');
+      const hintSelect = document.getElementById('form-image-hint');
+
+      if (actionKey === 'report_pothole') {
+        if (txtArea) txtArea.value = `Urgent road repair needed: Dangerous deep pothole causing traffic slowdown and two-wheeler hazard, Ward 1 (${currentCityName}).`;
+        if (hintSelect) hintSelect.value = 'pothole';
+      } else if (actionKey === 'report_dump') {
+        if (txtArea) txtArea.value = `Overflowing municipal garbage dump near residential corner not cleared for 2 days. Foul smell and stray dogs hazard in Ward 4 (${currentCityName}).`;
+        if (hintSelect) hintSelect.value = 'garbage_dump';
+      } else if (actionKey === 'report_streetlight') {
+        if (txtArea) txtArea.value = `Multiple streetlights completely dark along main market stretch. High risk of accidents and safety hazard after sunset in Ward 7 (${currentCityName}).`;
+        if (hintSelect) hintSelect.value = 'broken_streetlight';
+      } else if (actionKey === 'report_unlicensed' || actionKey === 'report_encroachment') {
+        if (txtArea) txtArea.value = `Unauthorized commercial encroachment blocking public pedestrian walkway and drain access without valid municipal sanction in Ward 2 (${currentCityName}).`;
+        if (hintSelect) hintSelect.value = '';
+      } else if (actionKey === 'record_correction') {
+        if (txtArea) txtArea.value = `Civil Registration System (CRS) record correction requested for Birth Certificate docket. Need correction in spelling as per Aadhaar record.`;
+        if (hintSelect) hintSelect.value = '';
+      } else if (actionKey === 'apply_mutation') {
+        if (txtArea) txtArea.value = `Property mutation / ownership change endorsement requested for registered property under ${currentCorpCode} jurisdiction.`;
+        if (hintSelect) hintSelect.value = '';
+      }
+      if (txtArea) txtArea.focus();
+      if (typeof showStickerToast === 'function') {
+        showStickerToast('Complaint details pre-filled. Review and submit!', 'info');
+      }
+    });
+  } else if (actionKey === 'auto_renew') {
+    const licNum = `TL-REN-${currentCorpCode}-${Math.floor(10000 + Math.random() * 90000)}`;
+    outEl.innerHTML = `
+      <div class="service-result-box" style="background: #fff7ed;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <strong style="color: #9a3412; font-family: var(--font-display); font-size: 0.95rem;">⚡ Trade License Auto-Renewed</strong>
+          <span class="badge" style="background: var(--mustard); color: var(--ink);">FY 2026-27</span>
+        </div>
+        <div>Renewal Endorsement: <code style="font-weight: 900; color: #c2410c;">${licNum}</code></div>
+        <p style="font-size: 0.78rem; color: var(--text-muted); margin: 4px 0;">
+          Commercial Establishment: <strong>Active Trade Unit</strong> &bull; Validity Extended till <strong>31st March 2027</strong>.
+        </p>
+        <button class="btn-primary" style="margin-top: 8px; font-size: 0.76rem; padding: 6px 12px;" onclick="closeServiceModal(); if(typeof showStickerToast==='function') showStickerToast('License Renewal Slip ${licNum} ready.', 'success');">
+          Download Validated Permit &rarr;
+        </button>
+      </div>
+    `;
+  } else if (actionKey === 'schedule_cd') {
+    const bookingCode = `CDW-${currentCorpCode}-${Math.floor(1000 + Math.random() * 9000)}`;
+    outEl.innerHTML = `
+      <div class="service-result-box">
+        <strong style="color: var(--ink); font-family: var(--font-display); font-size: 0.92rem;">📦 C&D Waste Pickup Scheduled</strong>
+        <p style="margin: 4px 0; font-size: 0.78rem; color: var(--text-muted);">
+          Booking Slot Token: <code style="font-weight: 900; color: var(--tomato);">${bookingCode}</code>.
+          A designated hydraulic tipper will arrive within <strong>24 Hours</strong> at your registered address.
+        </p>
+        <button class="btn-primary" style="margin-top: 8px; font-size: 0.76rem; padding: 6px 12px;" onclick="closeServiceModal(); if(typeof showStickerToast==='function') showStickerToast('C&D Pickup ${bookingCode} booked.', 'success');">
+          Acknowledge & Close
+        </button>
+      </div>
+    `;
+  } else if (actionKey === 'book_hall' || actionKey === 'park_permit') {
+    const slotCode = `BKG-${currentCorpCode}-${Math.floor(10000 + Math.random() * 90000)}`;
+    outEl.innerHTML = `
+      <div class="service-result-box" style="background: #f0fdf4;">
+        <strong style="color: #166534; font-family: var(--font-display); font-size: 0.92rem;">🎉 Slot Availability Confirmed</strong>
+        <p style="margin: 4px 0; font-size: 0.78rem; color: var(--text-muted);">
+          Provisional Reservation Pass: <code style="font-weight: 900; color: #15803d;">${slotCode}</code>.
+          Zero booking fees applicable for citizen welfare programs. Electronic permit synced with DigiLocker.
+        </p>
+        <button class="btn-primary" style="margin-top: 8px; font-size: 0.76rem; padding: 6px 12px; background: #16a34a;" onclick="closeServiceModal(); if(typeof showStickerToast==='function') showStickerToast('Provisional venue booking confirmed.', 'success');">
+          Download Venue Gate Pass &rarr;
+        </button>
+      </div>
+    `;
+  } else {
+    outEl.innerHTML = `
+      <div class="service-result-box">
+        <strong style="color: var(--ink); font-family: var(--font-display);">ℹ️ Service Information Verified</strong>
+        <p style="margin: 4px 0; font-size: 0.78rem; color: var(--text-muted);">
+          This service is operating normally under ${currentCorpCode} digital portal. All submissions are timestamped with statutory citizen charter turnaround.
+        </p>
+        <button class="btn-primary" style="margin-top: 8px; font-size: 0.76rem; padding: 6px 12px;" onclick="closeServiceModal();">
+          Understood
+        </button>
+      </div>
+    `;
+  }
+}
+
+// Official Transparency, Policies & National Missions Modal
+const POLICY_INFO_CONFIG = {
+  rti: {
+    title: "Right to Information (RTI Act 2005)",
+    icon: "⚖️",
+    badge: "STATUTORY CITIZEN RIGHT • 30-DAY MANDATE",
+    subtitle: "Public Authorities Transparency & Citizen Information Portal",
+    content: `
+      <p style="margin-bottom: 0.75rem;">
+        Under the <strong>Right to Information Act, 2005</strong>, every citizen of India is entitled to request information from any municipal corporation, urban local body, or public department.
+      </p>
+      <div style="background: var(--paper-2); border: 2px solid var(--ink); border-radius: var(--radius-sm); padding: 10px; margin-bottom: 0.75rem;">
+        <div style="font-weight: 900; font-family: var(--font-display); font-size: 0.84rem; margin-bottom: 4px;">Key Statutory Provisions:</div>
+        <ul style="padding-left: 20px; font-size: 0.8rem; line-height: 1.5; color: var(--ink);">
+          <li><strong>Mandatory 30-Day Response:</strong> Public Information Officers (PIOs) must provide information within 30 days of application receipt.</li>
+          <li><strong>Life & Liberty:</strong> Information concerning life and liberty must be furnished within 48 hours.</li>
+          <li><strong>Standard Statutory Fee:</strong> ₹10 application fee via IPO, Court Fee Stamp, or UPI. Citizens below poverty line (BPL) are 100% exempt.</li>
+          <li><strong>First Appellate Authority:</strong> If dissatisfied or unreplied within 30 days, citizens can file an appeal with the Zonal Joint Commissioner.</li>
+        </ul>
+      </div>
+      <p style="font-size: 0.78rem; color: var(--text-muted);">
+        💡 Grievances lodged on SamAashwas are automatically logged with audit timestamps, providing statutory proof of receipt for RTI and Ombudsman verification.
+      </p>
+    `
+  },
+  charter: {
+    title: "Statutory Citizen Charter & SLA Turnaround",
+    icon: "⏱️",
+    badge: "PUBLIC SERVICE GUARANTEE ACT",
+    subtitle: "Binding SLAs, Escalation Timelines & Compensation Guarantees",
+    content: `
+      <p style="margin-bottom: 0.75rem;">
+        SamAashwas enforces the <strong>Public Service Guarantee Act</strong> with automated countdown timers and democratic Friday Jan Sunwai docketing for breached tickets.
+      </p>
+      <div style="overflow-x: auto; margin-bottom: 0.75rem;">
+        <table style="width: 100%; border-collapse: collapse; font-size: 0.78rem; border: 2px solid var(--ink);">
+          <thead>
+            <tr style="background: var(--paper-2); text-align: left; border-bottom: 2px solid var(--ink);">
+              <th style="padding: 6px 10px; border-right: 1px solid var(--ink);">Civic Service / Grievance Category</th>
+              <th style="padding: 6px 10px; border-right: 1px solid var(--ink);">Statutory SLA</th>
+              <th style="padding: 6px 10px;">Escalation Level</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr style="border-bottom: 1px solid var(--ink);">
+              <td style="padding: 6px 10px; border-right: 1px solid var(--ink);">Garbage Dump / Dhalao Overflow</td>
+              <td style="padding: 6px 10px; border-right: 1px solid var(--ink); font-weight: 800; color: #15803d;">12 Hours</td>
+              <td style="padding: 6px 10px;">Chief Sanitary Inspector</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--ink);">
+              <td style="padding: 6px 10px; border-right: 1px solid var(--ink);">Sewer Overflow / Water Contamination</td>
+              <td style="padding: 6px 10px; border-right: 1px solid var(--ink); font-weight: 800; color: #b91c1c;">24 Hours</td>
+              <td style="padding: 6px 10px;">Executive Engineer (Water)</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--ink);">
+              <td style="padding: 6px 10px; border-right: 1px solid var(--ink);">Failed Streetlight / Dark Spot</td>
+              <td style="padding: 6px 10px; border-right: 1px solid var(--ink); font-weight: 800; color: #b45309;">24 Hours</td>
+              <td style="padding: 6px 10px;">Assistant Engineer (Elec)</td>
+            </tr>
+            <tr style="border-bottom: 1px solid var(--ink);">
+              <td style="padding: 6px 10px; border-right: 1px solid var(--ink);">Road Pothole Patch Repair</td>
+              <td style="padding: 6px 10px; border-right: 1px solid var(--ink); font-weight: 800; color: #b45309;">48 Hours</td>
+              <td style="padding: 6px 10px;">Junior Engineer (Roads)</td>
+            </tr>
+            <tr>
+              <td style="padding: 6px 10px; border-right: 1px solid var(--ink);">Vital Registration (Birth/Death CRS)</td>
+              <td style="padding: 6px 10px; border-right: 1px solid var(--ink); font-weight: 800; color: #1e40af;">7 Days</td>
+              <td style="padding: 6px 10px;">Registrar of Births & Deaths</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size: 0.78rem; color: var(--text-muted);">
+        Tickets exceeding the SLA threshold are automatically forwarded to the <strong>Ombudsman</strong> and listed on the weekly public Jan Sunwai docket.
+      </p>
+    `
+  },
+  sbm: {
+    title: "Swachh Bharat Mission (SBM-Urban 2.0)",
+    icon: "🧹",
+    badge: "MINISTRY OF HOUSING & URBAN AFFAIRS",
+    subtitle: "Garbage-Free Indian Cities • 100% Scientific Waste Processing",
+    content: `
+      <p style="margin-bottom: 0.75rem;">
+        <strong>Swachh Bharat Mission (Urban 2.0)</strong> focuses on achieving complete garbage-free status across all Indian statutory towns and metropolitan corporations.
+      </p>
+      <div style="background: var(--paper-2); border: 2px solid var(--ink); border-radius: var(--radius-sm); padding: 10px; margin-bottom: 0.75rem;">
+        <div style="font-weight: 900; font-family: var(--font-display); font-size: 0.84rem; margin-bottom: 4px;">Mission Pillars:</div>
+        <ul style="padding-left: 20px; font-size: 0.8rem; line-height: 1.5; color: var(--ink);">
+          <li><strong>3-Way Segregation at Source:</strong> Wet (biodegradable), Dry (recyclable), and Domestic Hazardous waste.</li>
+          <li><strong>Dumpsite Remediation:</strong> Bioremediation and bio-mining of legacy waste mountains across all participating cities.</li>
+          <li><strong>Used Water Management:</strong> Ensuring 100% safe containment, transport, and treatment of sewage.</li>
+          <li><strong>Swachhata Survekshan:</strong> Annual citizen assessment ranking wards and municipal corporations on cleanliness.</li>
+        </ul>
+      </div>
+    `
+  },
+  amrut: {
+    title: "AMRUT 2.0 & Jal Jeevan Urban Mission",
+    icon: "💧",
+    badge: "MINISTRY OF JAL SHAKTI & MOHUA",
+    subtitle: "Universal Water Security & Smart Water Infrastructure",
+    content: `
+      <p style="margin-bottom: 0.75rem;">
+        The <strong>Atal Mission for Rejuvenation and Urban Transformation (AMRUT 2.0)</strong> aims to provide 100% universal coverage of potable piped water supply and sewerage connections in urban India.
+      </p>
+      <div style="background: var(--paper-2); border: 2px solid var(--ink); border-radius: var(--radius-sm); padding: 10px; margin-bottom: 0.75rem;">
+        <ul style="padding-left: 20px; font-size: 0.8rem; line-height: 1.5; color: var(--ink);">
+          <li><strong>24x7 Continuous Water Pressure:</strong> Converting intermittent supply into drink-from-tap grids.</li>
+          <li><strong>Treated Wastewater Recycling:</strong> Reusing at least 20% of treated municipal sewage for public gardens and industry.</li>
+          <li><strong>Rejuvenation of Urban Water Bodies:</strong> Revitalizing lakes, baolis, and wetlands for groundwater recharge.</li>
+        </ul>
+      </div>
+    `
+  },
+  ncap: {
+    title: "National Clean Air Programme (NCAP)",
+    icon: "🍃",
+    badge: "MOEFCC & CENTRAL POLLUTION CONTROL BOARD",
+    subtitle: "Targeted 40% Reduction in PM2.5 and PM10 Urban Concentrations",
+    content: `
+      <p style="margin-bottom: 0.75rem;">
+        <strong>NCAP</strong> is India's flagship long-term strategy for comprehensive air quality monitoring and pollution mitigation across non-attainment cities.
+      </p>
+      <div style="background: var(--paper-2); border: 2px solid var(--ink); border-radius: var(--radius-sm); padding: 10px; margin-bottom: 0.75rem;">
+        <ul style="padding-left: 20px; font-size: 0.8rem; line-height: 1.5; color: var(--ink);">
+          <li><strong>Anti-Smog Guns & Mist Sprinklers:</strong> High-altitude water misting at busy intersections and major transit corridors.</li>
+          <li><strong>Mechanical Street Sweeping:</strong> Heavy vacuum trucks preventing fine road dust resuspension.</li>
+          <li><strong>Strict C&D Dust Compliance:</strong> Mandatory green netting and on-site water misting at all construction projects.</li>
+        </ul>
+      </div>
+    `
+  },
+  smart_cities: {
+    title: "Smart Cities Mission & Digital Urban Grid",
+    icon: "🏙️",
+    badge: "INTEGRATED COMMAND & CONTROL CENTERS (ICCC)",
+    subtitle: "Data-Driven Urban Governance & Automated AI Incident Routing",
+    content: `
+      <p style="margin-bottom: 0.75rem;">
+        The <strong>Smart Cities Mission</strong> equips Indian metropolitan corporations with Integrated Command and Control Centers (ICCCs) acting as the city's brain and nervous system.
+      </p>
+      <div style="background: var(--paper-2); border: 2px solid var(--ink); border-radius: var(--radius-sm); padding: 10px; margin-bottom: 0.75rem;">
+        <ul style="padding-left: 20px; font-size: 0.8rem; line-height: 1.5; color: var(--ink);">
+          <li><strong>Spatio-Temporal Deduplication:</strong> SamAashwas links with ICCC GIS platforms to aggregate redundant neighborhood complaints into single master incidents.</li>
+          <li><strong>Predictive Maintenance:</strong> Combining Open-Meteo rainfall forecasts with historical ward density to alert pre-monsoon cleaning squads.</li>
+          <li><strong>SCADA Water & Power Sensors:</strong> Real-time alerts on distribution pipeline pressure drops and transformer loads.</li>
+        </ul>
+      </div>
+    `
+  },
+  ndma: {
+    title: "National Disaster Management Authority (NDMA)",
+    icon: "🚨",
+    badge: "24x7 DISASTER & MONSOON PREPAREDNESS",
+    subtitle: "Urban Flood Mitigation, Pre-Monsoon Protocols & Helplines",
+    content: `
+      <p style="margin-bottom: 0.75rem;">
+        <strong>NDMA</strong> provides binding guidelines for urban flooding, monsoon desilting, and emergency disaster response across municipal corporations.
+      </p>
+      <div style="background: var(--paper-2); border: 2px solid var(--ink); border-radius: var(--radius-sm); padding: 10px; margin-bottom: 0.75rem;">
+        <div style="font-weight: 900; font-family: var(--font-display); font-size: 0.84rem; margin-bottom: 4px;">National Emergency Helplines:</div>
+        <ul style="padding-left: 20px; font-size: 0.8rem; line-height: 1.5; color: var(--ink);">
+          <li><strong>112:</strong> National Single Emergency Response Support System (ERSS)</li>
+          <li><strong>1070 / 1077:</strong> State & District Disaster Control Room</li>
+          <li><strong>1916:</strong> Municipal Waterlogging & Drain Breach Helpline</li>
+          <li><strong>1912:</strong> Live Wire & Transformer Fire Hazard Line</li>
+        </ul>
+      </div>
+    `
+  }
+};
+
+function openInformationModal(infoKey) {
+  const cfg = POLICY_INFO_CONFIG[infoKey];
+  if (!cfg) {
+    if (typeof showStickerToast === 'function') {
+      showStickerToast('Information docket loaded', 'info');
+    }
+    return;
+  }
+
+  const modal = document.getElementById('info-modal');
+  const titleEl = document.getElementById('info-modal-title');
+  const badgeEl = document.getElementById('info-modal-badge');
+  const subtitleEl = document.getElementById('info-modal-subtitle');
+  const iconEl = document.getElementById('info-modal-icon');
+  const bodyEl = document.getElementById('info-modal-body');
+
+  if (titleEl) titleEl.innerText = cfg.title;
+  if (badgeEl) badgeEl.innerText = cfg.badge;
+  if (subtitleEl) subtitleEl.innerText = cfg.subtitle;
+  if (iconEl) iconEl.innerText = cfg.icon;
+
+  if (bodyEl) {
+    bodyEl.innerHTML = `
+      ${cfg.content}
+      <div style="margin-top: 1.25rem; display: flex; justify-content: flex-end; gap: 8px;">
+        <button class="btn-primary" style="font-size: 0.8rem; padding: 8px 16px;" onclick="closeInformationModal()">
+          Acknowledge & Close
+        </button>
+      </div>
+    `;
+  }
+
+  if (modal) modal.style.display = 'flex';
+}
+
+function closeInformationModal(event = null) {
+  if (event && event.target !== document.getElementById('info-modal')) return;
+  const modal = document.getElementById('info-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+// Backward-compatible alias
+function openServiceInfo(serviceKey) {
+  openServiceModal(serviceKey);
 }
 
 // Accessibility Controls: Font Resizer
@@ -1786,6 +2315,7 @@ window.sendMobileOTP = sendMobileOTP;
 window.autoFillDemoOTP = autoFillDemoOTP;
 window.verifyMobileOTP = verifyMobileOTP;
 window.logoutCitizen = logoutCitizen;
+window.requireLogin = requireLogin;
 window.handleReportIssueClick = handleReportIssueClick;
 window.handleGrievanceTabClick = handleGrievanceTabClick;
 window.filterGallery = filterGallery;
@@ -1814,9 +2344,15 @@ window.setLocationCoords = setLocationCoords;
 window.handleCitizenSubmit = handleCitizenSubmit;
 window.simulateAgentScenario = simulateAgentScenario;
 window.loadAgentStatus = loadAgentStatus;
+window.openServiceModal = openServiceModal;
+window.closeServiceModal = closeServiceModal;
+window.executeServiceAction = executeServiceAction;
+window.openInformationModal = openInformationModal;
+window.closeInformationModal = closeInformationModal;
 window.openServiceInfo = openServiceInfo;
 window.changeFontSize = changeFontSize;
 window.toggleHighContrast = toggleHighContrast;
 window.toggleSunlightMode = toggleSunlightMode;
 window.toggleLiteMode = toggleLiteMode;
 window.onCommandCityChange = onCommandCityChange;
+
