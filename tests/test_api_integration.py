@@ -172,6 +172,7 @@ def test_signature_interactive_features_present_in_index():
     assert "js/ivr_simulator.js" in html
     assert "js/contractor_scorecard.js" in html
     assert "js/offline_pwa_sync.js" in html
+    assert "js/realtime_client.js" in html
     # Canvases & Interactive Panels
     assert "vision-diagnostic-canvas" in html
     assert "voice-oscilloscope-canvas" in html
@@ -182,6 +183,10 @@ def test_signature_interactive_features_present_in_index():
     assert "homography-audit-modal" in html
     assert "ivr-phone-modal" in html
     assert "homography-canvas" in html
+    assert "realtime-wire-drawer" in html
+    assert "realtime-status-pill" in html
+    assert "live-ist-clock" in html
+    assert "national-tricolor-stripe" in html
 
 def test_vision_diagnostics_endpoint():
     # Test authentic pothole detection

@@ -268,6 +268,19 @@ function initAuth() {
   } catch (e) {
     console.warn('Error reading saved session:', e);
   }
+
+  // Cross-tab real-time authentication synchronization
+  window.addEventListener('storage', (e) => {
+    if (e.key === 'civicsense_auth') {
+      try {
+        currentUser = e.newValue ? JSON.parse(e.newValue) : null;
+        renderAuthHeader();
+        syncFormWithUser();
+        updateRewardsProfile();
+      } catch (err) {}
+    }
+  });
+
   renderAuthHeader();
   syncFormWithUser();
   updateRewardsProfile();
@@ -463,6 +476,9 @@ function setAuthenticatedUser(token, user) {
   renderAuthHeader();
   syncFormWithUser();
   updateRewardsProfile();
+  if (typeof showModernToast === 'function') {
+    showModernToast(`Verified session active for ${user.name} (${user.role_title || user.role})`, 'success');
+  }
 }
 
 function executePendingAction() {
@@ -483,14 +499,18 @@ function syncFormWithUser() {
 }
 
 function updateRewardsProfile() {
+  const nameEl = document.getElementById('reward-user-name');
+  const rankEl = document.getElementById('reward-user-rank');
+  const karmaEl = document.getElementById('reward-karma-points');
   if (currentUser && currentUser.user) {
     const u = currentUser.user;
-    const nameEl = document.getElementById('reward-user-name');
-    const rankEl = document.getElementById('reward-user-rank');
-    const karmaEl = document.getElementById('reward-karma-points');
     if (nameEl) nameEl.innerText = u.name;
     if (rankEl) rankEl.innerText = `${u.role_title || u.role} • ${u.badge || 'Active Citizen'}`;
     if (karmaEl) karmaEl.innerText = u.karma_points || 850;
+  } else {
+    if (nameEl) nameEl.innerText = 'Guest Citizen';
+    if (rankEl) rankEl.innerText = 'Unverified • Login to Earn Points';
+    if (karmaEl) karmaEl.innerText = '0';
   }
 }
 
@@ -508,14 +528,17 @@ async function logoutCitizen() {
   currentUser = null;
   localStorage.removeItem('civicsense_auth');
   renderAuthHeader();
+  updateRewardsProfile();
 
   const nameInput = document.getElementById('citizen-name');
   const phoneInput = document.getElementById('citizen-phone');
   if (nameInput) nameInput.value = 'Citizen';
   if (phoneInput) phoneInput.value = '9876543210';
 
-  if (typeof showStickerToast === 'function') {
-    showStickerToast('Logged out successfully. Login anytime to file grievances.', 'info');
+  if (typeof showModernToast === 'function') {
+    showModernToast('Logged out of citizen session. Login anytime to file grievances.', 'info');
+  } else if (typeof showStickerToast === 'function') {
+    showStickerToast('Logged out successfully.', 'info');
   }
 }
 

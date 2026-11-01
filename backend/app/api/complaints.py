@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 from ..models.schemas import ComplaintCreateRequest, ComplaintResponse, VoiceNoteComplaintRequest, ChannelEnum
 from ..db.database import db
 from ..core.vision_engine import vision_engine
+from ..core.realtime import realtime_hub
 from .auth import get_current_user_from_token, is_privileged_user, mask_phone, mask_name
 
 class VisionDiagnosticRequest(BaseModel):
@@ -43,7 +44,12 @@ async def submit_complaint(payload: ComplaintCreateRequest, authorization: Optio
                 payload.citizen_phone = user["phone"]
 
         complaint = db.submit_complaint(payload)
-        return complaint.to_dict()
+        c_dict = complaint.to_dict()
+        try:
+            await realtime_hub.broadcast("NEW_GRIEVANCE_LODGED", c_dict)
+        except Exception:
+            pass
+        return c_dict
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to process complaint: {str(e)}")
 
@@ -71,7 +77,12 @@ async def submit_voice_grievance(payload: VoiceNoteComplaintRequest, authorizati
             audio_transcript=f"[{payload.spoken_language}] {payload.audio_transcript}"
         )
         complaint = db.submit_complaint(complaint_req)
-        return complaint.to_dict()
+        c_dict = complaint.to_dict()
+        try:
+            await realtime_hub.broadcast("NEW_GRIEVANCE_LODGED", c_dict)
+        except Exception:
+            pass
+        return c_dict
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to process voice grievance: {str(e)}")
 

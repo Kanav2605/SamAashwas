@@ -17,6 +17,13 @@
 </head>
 <body class="skin-tomato-toast" data-motion="normal">
 
+  <!-- National Tricolor Sovereign Hairline (3px Solid Colors - No Gradients) -->
+  <div class="national-tricolor-stripe">
+    <div class="tricolor-saffron"></div>
+    <div class="tricolor-white"></div>
+    <div class="tricolor-green"></div>
+  </div>
+
   <!-- Persistent Academic Prototype Banner (Rule 4 Compliance) -->
   <div class="prototype-banner">
     <div class="prototype-banner-text">
@@ -25,39 +32,31 @@
     </div>
   </div>
 
-  <!-- Utility Bar: Skin, Motion, Font, and Sunlight Mode Controls -->
+  <!-- Real-Time Utility Topbar: Live Stream Status, Live Clock, Skins & Helplines -->
   <div class="utility-topbar">
-    <div style="display: flex; align-items: center; gap: 8px;">
-      <span class="badge" style="background: var(--mustard); font-size: 0.74rem;">SamAashwas v2</span>
-      <span style="font-size: 0.76rem; font-weight: 700; color: var(--text-muted);">Municipal Grievance Intelligence &amp; Care</span>
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <span class="badge" style="background: var(--ink); color: white; font-size: 0.74rem; border-radius: 4px;">SamAashwas Real-Time</span>
+      <span id="realtime-status-pill" onclick="toggleRealtimeWireDrawer()" style="cursor: pointer;" title="Click to view Live Real-Time Stream Wire">
+        <span class="live-dot-pulse"></span> <strong style="font-weight: 800;">🟢 LIVE</strong> <span class="latency-tag">12ms</span>
+      </span>
+      <span id="live-ist-clock" style="font-family: var(--font-mono); font-size: 0.74rem; background: #0f172a; color: #f8fafc; padding: 2px 8px; border-radius: 4px; font-weight: 600;">16:35:00 IST</span>
     </div>
     <div class="topbar-accessibility">
-      <!-- 4 Light Skins (Section 6.2) -->
-      <span>Skin:</span>
-      <button class="skin-btn active" data-skin="tomato-toast" onclick="applySkin('tomato-toast')" title="Tomato Toast Skin">🍅 Tomato</button>
-      <button class="skin-btn" data-skin="mint-gelato" onclick="applySkin('mint-gelato')" title="Mint Gelato Skin">🍦 Mint</button>
-      <button class="skin-btn" data-skin="bubblegum-pop" onclick="applySkin('bubblegum-pop')" title="Bubblegum Pop Skin">🍬 Bubblegum</button>
-      <button class="skin-btn" data-skin="mustard-mayhem" onclick="applySkin('mustard-mayhem')" title="Mustard Mayhem Skin">🥨 Mustard</button>
+      <!-- Four Executive Civic Skins -->
+      <span>Theme:</span>
+      <button class="skin-btn active" data-skin="tomato-toast" onclick="applySkin('tomato-toast')" title="Sovereign Saffron">🇮🇳 Saffron</button>
+      <button class="skin-btn" data-skin="mint-gelato" onclick="applySkin('mint-gelato')" title="Emerald Eco Smart City">🌿 Emerald</button>
+      <button class="skin-btn" data-skin="bubblegum-pop" onclick="applySkin('bubblegum-pop')" title="Royal Civic Sapphire">🔷 Sapphire</button>
+      <button class="skin-btn" data-skin="mustard-mayhem" onclick="applySkin('mustard-mayhem')" title="Amber Rapid Response">⚡ Amber</button>
       <span style="opacity: 0.4;">|</span>
+      <!-- Real-Time Wire Feed Drawer Trigger -->
+      <button class="font-resize-btn" onclick="toggleRealtimeWireDrawer()" style="background: #0f172a; color: #ffffff; border: 1px solid #334155; font-weight: 800;" title="Open Real-Time Activity Feed Drawer">⚡ Live Wire</button>
       <!-- Web Audio Synthesizer Sound Feedback -->
-      <button class="btn-sound-toggle active" id="btn-sound-toggle" onclick="toggleCivicAudio()" title="Toggle Web Audio tactile sound effects">🔊 Sound: ON</button>
+      <button class="btn-sound-toggle active" id="btn-sound-toggle" onclick="toggleCivicAudio()" title="Toggle Web Audio tactile sound effects">🔊 Audio</button>
       <span style="opacity: 0.4;">|</span>
-      <!-- Motion Settings (Section 6.7) -->
-      <span>Motion:</span>
-      <button class="motion-btn" data-motion="chaos" onclick="applyMotion('chaos')" title="Chaos Motion (22 Objects)">Chaos</button>
-      <button class="motion-btn active" data-motion="normal" onclick="applyMotion('normal')" title="Normal Motion (14 Objects)">Normal</button>
-      <button class="motion-btn" data-motion="calm" onclick="applyMotion('calm')" title="Calm Motion (7 Objects)">Calm</button>
-      <button class="motion-btn" data-motion="off" onclick="applyMotion('off')" title="Motion Off (0 Objects)">Off</button>
-      <span style="opacity: 0.4;">|</span>
-      <!-- Font Size Setting (Section 6.3) -->
-      <span>Text:</span>
-      <button class="font-choice-btn" data-size="S" onclick="setFontSizeChoice('S')" title="Small Text">S</button>
-      <button class="font-choice-btn active" data-size="M" onclick="setFontSizeChoice('M')" title="Medium Text">M</button>
-      <button class="font-choice-btn" data-size="L" onclick="setFontSizeChoice('L')" title="Large Text">L</button>
-      <span style="opacity: 0.4;">|</span>
-      <button class="font-resize-btn" onclick="toggleHighContrast()" title="Toggle High Contrast Sunlight Mode">☀️ Contrast</button>
-      <button class="font-resize-btn" onclick="openIVRModal()" title="Dial 1913 National Jan Sunwai IVR Helpline" style="background: var(--mustard); font-weight: 900;">📞 1913 IVR</button>
-      <button class="font-resize-btn" onclick="openShortcutsModal()" title="Keyboard Shortcuts Palette (?)">⌨️ Hotkeys (?)</button>
+      <!-- High-Priority Dialers & Hotkeys -->
+      <button class="font-resize-btn" onclick="openIVRModal()" title="Dial 1913 National Jan Sunwai IVR Helpline" style="background: var(--mustard); color: white; font-weight: 900;">📞 1913 IVR</button>
+      <button class="font-resize-btn" onclick="openShortcutsModal()" title="Keyboard Shortcuts Palette (?)">⌨️ (?)</button>
     </div>
   </div>
 
@@ -2518,9 +2517,29 @@
   <script src="js/rupee_ledger.js"></script>
   <script src="js/h3_hex_grid.js"></script>
   <script src="js/homography_inspector.js"></script>
+  <!-- Real-Time Activity Wire Sliding Drawer -->
+  <div id="realtime-wire-drawer" class="realtime-wire-drawer">
+    <div class="realtime-wire-header">
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <span class="live-dot-pulse"></span>
+        <strong style="font-size: 0.95rem; letter-spacing: -0.01em;">⚡ Real-Time Civic Wire</strong>
+      </div>
+      <button type="button" onclick="toggleRealtimeWireDrawer()" style="background: none; border: none; color: #94a3b8; font-size: 1.4rem; cursor: pointer; line-height: 1;" title="Close Live Wire">×</button>
+    </div>
+    <div style="padding: 8px 12px; background: #f8fafc; border-bottom: 1px solid #e2e8f0; font-size: 0.74rem; color: #64748b; display: flex; justify-content: space-between;">
+      <span>Sub-50ms WebSocket Broadcast</span>
+      <span id="realtime-packet-count" style="font-weight: 700; color: #0f172a;">0 msgs</span>
+    </div>
+    <div id="realtime-wire-list" class="realtime-wire-list">
+      <div style="font-size: 0.8rem; color: #94a3b8; text-align: center; padding: 24px 12px;">Connecting to live civic wire stream...</div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
   <script src="js/ivr_simulator.js"></script>
   <script src="js/contractor_scorecard.js"></script>
   <script src="js/offline_pwa_sync.js"></script>
+  <script src="js/realtime_client.js"></script>
   <script src="js/sticker_theme.js"></script>
   <script src="js/translations.js"></script>
   <script src="js/map_view.js"></script>

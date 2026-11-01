@@ -4,6 +4,7 @@ import logging
 from typing import Optional, Dict, Any, List
 from fastapi import APIRouter, HTTPException, Header, Depends
 from pydantic import BaseModel, Field
+from ..core.realtime import realtime_hub
 
 logger = logging.getLogger(__name__)
 
@@ -240,6 +241,18 @@ async def login(payload: LoginRequest):
         user_data = dict(DEMO_PRESETS[preset_key])
         token = _create_session(user_data)
         logger.info(f"Citizen authenticated via preset: {user_data['name']} ({user_data['phone']})")
+        try:
+            await realtime_hub.broadcast("CITIZEN_PRESENCE_LOGIN", {
+                "user_id": user_data["id"],
+                "name": user_data["name"],
+                "city": user_data["city"],
+                "role": user_data["role"],
+                "avatar": user_data["avatar"],
+                "karma_points": user_data["karma_points"],
+                "badge": user_data["badge"]
+            })
+        except Exception:
+            pass
         return AuthResponse(
             status="SUCCESS",
             access_token=token,
@@ -318,6 +331,18 @@ async def verify_otp(payload: VerifyOTPRequest):
         del PENDING_OTPS[clean_phone]
 
     logger.info(f"Citizen OTP verified for {user_data['name']} ({clean_phone})")
+    try:
+        await realtime_hub.broadcast("CITIZEN_PRESENCE_LOGIN", {
+            "user_id": user_data["id"],
+            "name": user_data["name"],
+            "city": user_data["city"],
+            "role": user_data["role"],
+            "avatar": user_data["avatar"],
+            "karma_points": user_data["karma_points"],
+            "badge": user_data["badge"]
+        })
+    except Exception:
+        pass
     return AuthResponse(
         status="SUCCESS",
         access_token=token,
@@ -345,7 +370,14 @@ async def logout(authorization: Optional[str] = Header(None)):
     """
     Invalidates current citizen session.
     """
+    user_id = None
     if authorization:
         token = authorization[7:].strip() if authorization.startswith("Bearer ") else authorization.strip()
-        ACTIVE_SESSIONS.pop(token, None)
+        user = ACTIVE_SESSIONS.pop(token, None)
+        if user:
+            user_id = user.get("id")
+    try:
+        await realtime_hub.broadcast("CITIZEN_PRESENCE_LOGOUT", {"user_id": user_id, "status": "LOGGED_OUT"})
+    except Exception:
+        pass
     return {"status": "SUCCESS", "message": "Successfully logged out of SamAashwas"}

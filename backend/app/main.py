@@ -1,14 +1,17 @@
 import os
+import json
 import logging
-from fastapi import FastAPI
+import asyncio
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
 from .config import settings
-from .api import complaints, master_tickets, predictive, whatsapp, analytics, agents, cities, auth, dispatch, contractors
+from .api import complaints, master_tickets, predictive, whatsapp, analytics, agents, cities, auth, dispatch, contractors, stream
 from .db.seed_data import seed_database_and_export
 from .db.database import db
+from .core.realtime import realtime_hub
 from fastapi import HTTPException
 
 from contextlib import asynccontextmanager
@@ -20,8 +23,15 @@ logger = logging.getLogger("civicsense")
 async def lifespan(app: FastAPI):
     logger.info("Initializing CivicSense AI engine & seeding data...")
     seed_database_and_export()
-    logger.info("Initialization complete. Ready for citizen complaints.")
-    yield
+    # Start real-time background telemetry loop
+    telemetry_task = asyncio.create_task(realtime_hub.telemetry_background_loop())
+    logger.info("Initialization complete. Real-time engine & WebSocket stream active.")
+    try:
+        yield
+    finally:
+        realtime_hub.is_telemetry_running = False
+        telemetry_task.cancel()
+        logger.info("Real-time telemetry stream shut down cleanly.")
 
 app = FastAPI(
     title="CivicSense AI - SamAashwas API",
@@ -63,6 +73,31 @@ app.include_router(analytics.router, prefix=api_prefix)
 app.include_router(agents.router, prefix=api_prefix)
 app.include_router(dispatch.router, prefix=api_prefix)
 app.include_router(contractors.router, prefix=api_prefix)
+app.include_router(stream.router, prefix=api_prefix)
+
+@app.websocket("/ws/live")
+@app.websocket("/ws")
+async def root_websocket_endpoint(websocket: WebSocket):
+    """
+    Direct WebSocket connection on root /ws and /ws/live for instantaneous real-time streaming.
+    """
+    await realtime_hub.register_websocket(websocket)
+    try:
+        while True:
+            text = await websocket.receive_text()
+            try:
+                msg = json.loads(text)
+                if msg.get("action") == "PING":
+                    await websocket.send_text(json.dumps({
+                        "type": "PONG",
+                        "client_timestamp": msg.get("timestamp")
+                    }))
+            except Exception:
+                pass
+    except WebSocketDisconnect:
+        realtime_hub.unregister_websocket(websocket)
+    except Exception:
+        realtime_hub.unregister_websocket(websocket)
 
 @app.get(f"{api_prefix}/tracking/{{tracking_id}}", tags=["Tracking"])
 async def track_application(tracking_id: str):
