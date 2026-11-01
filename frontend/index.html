@@ -55,6 +55,7 @@
       <button class="btn-sound-toggle active" id="btn-sound-toggle" onclick="toggleCivicAudio()" title="Toggle Web Audio tactile sound effects">🔊 Audio</button>
       <span style="opacity: 0.4;">|</span>
       <!-- High-Priority Dialers & Hotkeys -->
+      <button class="font-resize-btn" onclick="openCommandPalette()" style="background: #2563EB; color: #ffffff; font-weight: 800; border: none; padding: 4px 10px;" title="Quick Jump Spotlight (Ctrl+K)">🔍 Quick Jump (Ctrl+K)</button>
       <button class="font-resize-btn" onclick="openIVRModal()" title="Dial 1913 National Jan Sunwai IVR Helpline" style="background: var(--mustard); color: white; font-weight: 900;">📞 1913 IVR</button>
       <button class="font-resize-btn" onclick="openShortcutsModal()" title="Keyboard Shortcuts Palette (?)">⌨️ (?)</button>
     </div>
@@ -199,21 +200,41 @@
       </div>
     </div>
 
-    <!-- Desktop Navigation Tabs -->
-    <nav class="nav-tabs">
-      <button class="tab-btn active" data-tab="home-view" onclick="switchTab('home-view')" data-i18n="tab_home">🏛️ National Gateway</button>
-      <button class="tab-btn" data-tab="citizen-portal" onclick="handleGrievanceTabClick()" data-i18n="tab_citizen_portal">📝 4-Step Report Wizard</button>
-      <button class="tab-btn" data-tab="field-tasks-view" onclick="switchTab('field-tasks-view')">👷 Field Crew PWA</button>
-      <button class="tab-btn" data-tab="triage-view" onclick="switchTab('triage-view')">📥 Officer Triage</button>
-      <button class="tab-btn" data-tab="dispatch-view" onclick="switchTab('dispatch-view')">🚚 Dispatch Optimizer</button>
-      <button class="tab-btn" data-tab="transparency-view" onclick="switchTab('transparency-view')">📊 Ward Scorecards</button>
-      <button class="tab-btn" data-tab="command-center" onclick="switchTab('command-center')" data-i18n="tab_command_center">🗺️ Incident Map</button>
-      <button class="tab-btn" data-tab="gallery-view" onclick="switchTab('gallery-view')" data-i18n="tab_gallery">📸 Transformations</button>
-      <button class="tab-btn" data-tab="rewards-view" onclick="switchTab('rewards-view')" data-i18n="tab_rewards">🏆 Nagrik Rewards</button>
-      <button class="tab-btn" data-tab="predictive-view" onclick="switchTab('predictive-view')" data-i18n="tab_predictive_view">🌧️ Predictive Shield</button>
-      <button class="tab-btn" data-tab="jan-sunwai-view" onclick="switchTab('jan-sunwai-view')" data-i18n="tab_jan_sunwai">⚖️ Jan Sunwai</button>
-      <button class="tab-btn" data-tab="agent-view" onclick="switchTab('agent-view')" data-i18n="tab_agent_view">🤖 AI Deliberation</button>
-      <button class="tab-btn" data-tab="whatsapp-simulator" onclick="switchTab('whatsapp-simulator')" data-i18n="tab_whatsapp_bot">💬 WhatsApp</button>
+    <!-- WORKSPACE MODE ENCAPSULATION BAR: CITIZEN PORTAL VS OFFICER & ADMIN CONTROL -->
+    <div class="workspace-mode-bar" id="workspace-mode-bar">
+      <div class="workspace-brand-badge">
+        <span id="workspace-current-icon" style="font-size: 1.1rem;">🇮🇳</span>
+        <strong id="workspace-current-title" style="font-weight: 800; letter-spacing: -0.01em;">Citizen Services Portal</strong>
+        <span class="workspace-badge-tag" id="workspace-current-badge">Public Grievance Access</span>
+      </div>
+      <div class="workspace-mode-selector">
+        <button id="btn-mode-citizen" class="mode-pill active" onclick="setWorkspaceMode('citizen')" title="Switch to Citizen Public Portal">
+          <span>🇮🇳</span> <span>Citizen Portal</span>
+        </button>
+        <button id="btn-mode-admin" class="mode-pill admin-pill" onclick="setWorkspaceMode('admin')" title="Switch to Officer & Municipal Admin Control">
+          <span>🛡️</span> <span>Officer Command Grid</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Desktop Navigation Tabs (Encapsulated by Workspace Role) -->
+    <nav class="nav-tabs" id="nav-tabs-container">
+      <!-- Citizen Mode Tabs -->
+      <button class="tab-btn active" data-tab="home-view" data-role-access="citizen" onclick="switchTab('home-view')" data-i18n="tab_home">🏛️ National Gateway</button>
+      <button class="tab-btn" data-tab="citizen-portal" data-role-access="citizen" onclick="handleGrievanceTabClick()" data-i18n="tab_citizen_portal">📝 4-Step Report Wizard</button>
+      <button class="tab-btn" data-tab="command-center" data-role-access="both" onclick="switchTab('command-center')" data-i18n="tab_command_center">🗺️ Incident Map</button>
+      <button class="tab-btn" data-tab="jan-sunwai-view" data-role-access="citizen" onclick="switchTab('jan-sunwai-view')" data-i18n="tab_jan_sunwai">⚖️ Jan Sunwai</button>
+      <button class="tab-btn" data-tab="gallery-view" data-role-access="citizen" onclick="switchTab('gallery-view')" data-i18n="tab_gallery">📸 Transformations</button>
+      <button class="tab-btn" data-tab="rewards-view" data-role-access="citizen" onclick="switchTab('rewards-view')" data-i18n="tab_rewards">🏆 Nagrik Rewards</button>
+      <button class="tab-btn" data-tab="whatsapp-simulator" data-role-access="citizen" onclick="switchTab('whatsapp-simulator')" data-i18n="tab_whatsapp_bot">💬 WhatsApp</button>
+      <button class="tab-btn" data-tab="transparency-view" data-role-access="both" onclick="switchTab('transparency-view')">📊 Ward Scorecards</button>
+
+      <!-- Officer & Admin Command Tabs (Encapsulated for ULB Officers) -->
+      <button class="tab-btn" data-tab="triage-view" data-role-access="admin" onclick="switchTab('triage-view')">📥 Officer Triage</button>
+      <button class="tab-btn" data-tab="dispatch-view" data-role-access="admin" onclick="switchTab('dispatch-view')">🚚 Dispatch Optimizer</button>
+      <button class="tab-btn" data-tab="field-tasks-view" data-role-access="admin" onclick="switchTab('field-tasks-view')">👷 Field Crew PWA</button>
+      <button class="tab-btn" data-tab="predictive-view" data-role-access="admin" onclick="switchTab('predictive-view')" data-i18n="tab_predictive_view">🌧️ Predictive Shield</button>
+      <button class="tab-btn" data-tab="agent-view" data-role-access="admin" onclick="switchTab('agent-view')" data-i18n="tab_agent_view">🤖 AI Deliberation</button>
     </nav>
   </header>
 
@@ -2102,6 +2123,112 @@
         <div style="margin-top: 1rem; text-align: center; font-size: 0.7rem; color: var(--text-muted); font-weight: 700;">
           🔒 Secured under Digital Personal Data Protection (DPDP) Act 2023 &bull; Municipal Citizen Redressal Guarantee
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Municipal Officer & Admin Command Center Login -->
+  <div class="modal-overlay" id="admin-login-modal" onclick="closeAdminLoginModal(event)">
+    <div class="modal-content admin-modal-box" onclick="event.stopPropagation()">
+      <div class="admin-header-gold">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <div style="font-size: 2rem; background: #1E293B; border: 1px solid #D97706; border-radius: 10px; width: 48px; height: 48px; display: flex; align-items: center; justify-content: center;">🛡️</div>
+            <div>
+              <div style="font-size: 0.70rem; color: #F59E0B; font-weight: 900; letter-spacing: 0.08em; text-transform: uppercase;">
+                URBAN LOCAL BODY (ULB) COMMAND GRID
+              </div>
+              <h3 style="margin: 2px 0 0; font-size: 1.22rem; color: #FFFFFF; font-family: var(--font-display); font-weight: 800;">
+                Municipal Officer &amp; Admin Access
+              </h3>
+              <div style="font-size: 0.74rem; color: #94A3B8; font-weight: 600;">
+                Authorized personnel portal for Triage, AI Dispatch &amp; Predictive Risk.
+              </div>
+            </div>
+          </div>
+          <button onclick="closeAdminLoginModal()" style="background: none; border: none; color: #94A3B8; font-size: 1.8rem; font-weight: 800; cursor: pointer; line-height: 1;">&times;</button>
+        </div>
+      </div>
+
+      <div style="padding: 1.25rem 1.5rem;">
+        <!-- 1-Click Officer Presets -->
+        <div>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-size: 0.82rem; font-weight: 800; color: #0F172A; font-family: var(--font-display);">
+              ⚡ 1-Click Municipal Officer Profiles:
+            </span>
+            <span style="font-size: 0.70rem; color: #D97706; font-weight: 800;">Executive Grid</span>
+          </div>
+
+          <div class="admin-preset-grid">
+            <!-- Vikas Rao -->
+            <div class="admin-preset-card" onclick="loginAsAdminWithPreset('officer_vikas')">
+              <div style="font-size: 1.6rem;">👷🏽</div>
+              <div>
+                <div style="font-weight: 800; font-size: 0.84rem; color: #0F172A;">Er. Vikas Rao</div>
+                <div style="font-size: 0.72rem; color: #64748B;">Junior Engineer / SDO &bull; BBMP</div>
+                <div style="font-size: 0.68rem; color: #2563EB; font-weight: 700;">Indiranagar (Ward 1)</div>
+              </div>
+            </div>
+
+            <!-- Chief Commissioner -->
+            <div class="admin-preset-card" onclick="loginAsAdminWithPreset('admin')">
+              <div style="font-size: 1.6rem;">🛡️</div>
+              <div>
+                <div style="font-weight: 800; font-size: 0.84rem; color: #0F172A;">Chief Commissioner</div>
+                <div style="font-size: 0.72rem; color: #64748B;">Municipal Admin HQ</div>
+                <div style="font-size: 0.68rem; color: #D97706; font-weight: 700;">Supreme Access &bull; All Wards</div>
+              </div>
+            </div>
+
+            <!-- Arvind Saxena -->
+            <div class="admin-preset-card" onclick="loginAsAdminWithPreset('sdo_delhi')">
+              <div style="font-size: 1.6rem;">🏛️</div>
+              <div>
+                <div style="font-weight: 800; font-size: 0.84rem; color: #0F172A;">Er. Arvind Saxena</div>
+                <div style="font-size: 0.72rem; color: #64748B;">Zonal SE &bull; Delhi MCD</div>
+                <div style="font-size: 0.68rem; color: #2563EB; font-weight: 700;">Karol Bagh (Ward 83)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="login-divider" style="margin: 1.25rem 0;">
+          <span style="font-size: 0.72rem; color: #94A3B8; font-weight: 800;">OR MANUAL OFFICER CREDENTIALS</span>
+        </div>
+
+        <!-- Manual Admin Form -->
+        <div>
+          <div style="margin-bottom: 10px;">
+            <label style="font-size: 0.76rem; font-weight: 700; color: #334155; display: block; margin-bottom: 4px;">Officer ID or Govt Email</label>
+            <input type="text" id="admin-login-id" class="form-control" placeholder="e.g. officer_vikas or admin" value="admin" style="width: 100%;">
+          </div>
+          <div style="margin-bottom: 14px;">
+            <label style="font-size: 0.76rem; font-weight: 700; color: #334155; display: block; margin-bottom: 4px;">Security Passcode / Password</label>
+            <input type="password" id="admin-login-pass" class="form-control" placeholder="e.g. admin123" value="admin123" style="width: 100%;" onkeydown="if(event.key === 'Enter') submitAdminLoginForm()">
+          </div>
+          <button type="button" class="btn-primary" style="width: 100%; padding: 10px; background: #0F172A; color: #FFFFFF; font-weight: 800; font-size: 0.88rem; border-radius: 8px; border: 1px solid #334155;" onclick="submitAdminLoginForm()">
+            🔐 Sign In to Command Center &rarr;
+          </button>
+        </div>
+
+        <div style="margin-top: 1rem; text-align: center; font-size: 0.70rem; color: #94A3B8; font-weight: 600;">
+          Protected under Official Secrets &amp; Municipal Governance Protocols &bull; IP Logged
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Spotlight Command Palette (Ctrl + K / Cmd + K) -->
+  <div class="modal-overlay" id="command-palette-modal" onclick="closeCommandPalette(event)">
+    <div class="modal-content cmd-palette-box" onclick="event.stopPropagation()">
+      <div class="cmd-palette-input-wrap">
+        <span style="font-size: 1.2rem; color: #64748B;">🔍</span>
+        <input type="text" id="cmd-palette-input" class="cmd-palette-input" placeholder="Search tabs, emergency helplines, or actions... (e.g. Report, Map, 1913, Saffron)" oninput="filterCommandPalette()" onkeydown="handleCommandPaletteKey(event)">
+        <span class="cmd-palette-shortcut-badge">ESC to close</span>
+      </div>
+      <div class="cmd-palette-results" id="cmd-palette-results">
+        <!-- Injected dynamically by JS -->
       </div>
     </div>
   </div>

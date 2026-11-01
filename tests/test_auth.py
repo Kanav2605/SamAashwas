@@ -182,3 +182,55 @@ def test_voice_grievance_with_citizen_auth():
     assert data["citizen_name"] == "Priya Sharma"
     assert data["citizen_phone"] == "9811012002"
 
+def test_admin_login_and_presets():
+    # 1. Test Admin Presets Endpoint
+    res_presets = client.get("/api/v1/auth/admin-presets")
+    assert res_presets.status_code == 200
+    presets = res_presets.json()
+    assert len(presets) >= 3
+    preset_ids = [p["preset_id"] for p in presets]
+    assert "admin" in preset_ids
+    assert "officer_vikas" in preset_ids
+
+    # 2. Test Admin Login with valid credentials
+    res_admin = client.post("/api/v1/auth/admin-login", json={"officer_id": "officer_vikas", "password": "officer2026"})
+    assert res_admin.status_code == 200
+    data = res_admin.json()
+    assert data["status"] == "SUCCESS"
+    assert data["user"]["is_admin"] is True
+    assert data["user"]["name"] == "Er. Vikas Rao"
+    assert "access_token" in data
+
+    # 3. Test Me endpoint returns admin user
+    token = data["access_token"]
+    res_me = client.get("/api/v1/auth/me", headers={"Authorization": f"Bearer {token}"})
+    assert res_me.status_code == 200
+    me = res_me.json()
+    assert me["is_admin"] is True
+    assert me["role"] == "Ward Officer"
+
+def test_admin_login_invalid_credentials():
+    res_fail = client.post("/api/v1/auth/admin-login", json={"officer_id": "officer_vikas", "password": "wrongpassword"})
+    assert res_fail.status_code == 401
+
+    res_unknown = client.post("/api/v1/auth/admin-login", json={"officer_id": "nonexistent_officer", "password": "123"})
+    assert res_unknown.status_code == 401
+
+def test_cryptographic_jwt_token_validation():
+    from backend.app.api.auth import create_jwt_token, verify_jwt_token
+    payload = {"sub": "TEST-123", "name": "Test User", "is_admin": True}
+    tok = create_jwt_token(payload, expires_in_seconds=60)
+    assert tok.count('.') == 2
+
+    # Verify signature
+    claims = verify_jwt_token(tok)
+    assert claims is not None
+    assert claims["sub"] == "TEST-123"
+    assert claims["name"] == "Test User"
+    assert claims["is_admin"] is True
+
+    # Tampered token should fail verification
+    tampered = tok[:-4] + "ABCD"
+    assert verify_jwt_token(tampered) is None
+
+

@@ -476,6 +476,10 @@ function setAuthenticatedUser(token, user) {
   renderAuthHeader();
   syncFormWithUser();
   updateRewardsProfile();
+  if (user && user.is_admin) {
+    localStorage.setItem('civicsense_workspace_mode', 'admin');
+    setWorkspaceMode('admin', false);
+  }
   if (typeof showModernToast === 'function') {
     showModernToast(`Verified session active for ${user.name} (${user.role_title || user.role})`, 'success');
   }
@@ -527,6 +531,8 @@ async function logoutCitizen() {
   }
   currentUser = null;
   localStorage.removeItem('civicsense_auth');
+  localStorage.setItem('civicsense_workspace_mode', 'citizen');
+  setWorkspaceMode('citizen', false);
   renderAuthHeader();
   updateRewardsProfile();
 
@@ -536,7 +542,7 @@ async function logoutCitizen() {
   if (phoneInput) phoneInput.value = '9876543210';
 
   if (typeof showModernToast === 'function') {
-    showModernToast('Logged out of citizen session. Login anytime to file grievances.', 'info');
+    showModernToast('Logged out of session. Login anytime to file grievances.', 'info');
   } else if (typeof showStickerToast === 'function') {
     showStickerToast('Logged out successfully.', 'info');
   }
@@ -549,6 +555,297 @@ function requireLogin(callback) {
     openLoginModal(callback);
   }
 }
+
+// ==========================================================================
+// WORKSPACE ENCAPSULATION CONTROLLER (Citizen Portal vs Officer Admin Grid)
+// ==========================================================================
+
+let currentWorkspaceMode = 'citizen';
+
+function setWorkspaceMode(mode, triggerSound = true) {
+  if (mode === 'admin') {
+    // Encapsulation Guard: Check if user is logged in as Officer/Admin
+    if (!currentUser || !currentUser.user || !currentUser.user.is_admin) {
+      if (triggerSound && window.civicAudio && typeof window.civicAudio.playErrorBuzz === 'function') {
+        window.civicAudio.playErrorBuzz();
+      }
+      openAdminLoginModal();
+      return;
+    }
+  }
+
+  currentWorkspaceMode = mode;
+  document.body.setAttribute('data-workspace', mode);
+  localStorage.setItem('civicsense_workspace_mode', mode);
+
+  const btnCitizen = document.getElementById('btn-mode-citizen');
+  const btnAdmin = document.getElementById('btn-mode-admin');
+  const iconEl = document.getElementById('workspace-current-icon');
+  const titleEl = document.getElementById('workspace-current-title');
+  const badgeEl = document.getElementById('workspace-current-badge');
+
+  if (mode === 'admin') {
+    if (btnCitizen) btnCitizen.classList.remove('active');
+    if (btnAdmin) btnAdmin.classList.add('active');
+    if (iconEl) iconEl.innerText = '🛡️';
+    if (titleEl) titleEl.innerText = 'Municipal Officer & Admin Command Grid';
+    if (badgeEl) {
+      badgeEl.innerText = 'Executive Access';
+      badgeEl.style.color = '#F59E0B';
+      badgeEl.style.borderColor = '#D97706';
+    }
+    const activeTab = document.querySelector('.view-container.active');
+    if (activeTab && (activeTab.id === 'home-view' || activeTab.id === 'citizen-portal')) {
+      switchTab('triage-view');
+    }
+  } else {
+    if (btnCitizen) btnCitizen.classList.add('active');
+    if (btnAdmin) btnAdmin.classList.remove('active');
+    if (iconEl) iconEl.innerText = '🇮🇳';
+    if (titleEl) titleEl.innerText = 'Citizen Services Portal';
+    if (badgeEl) {
+      badgeEl.innerText = 'Public Grievance Access';
+      badgeEl.style.color = '#94A3B8';
+      badgeEl.style.borderColor = '#334155';
+    }
+    const activeTab = document.querySelector('.view-container.active');
+    if (activeTab && (activeTab.id === 'triage-view' || activeTab.id === 'dispatch-view' || activeTab.id === 'field-tasks-view' || activeTab.id === 'predictive-view' || activeTab.id === 'agent-view')) {
+      switchTab('home-view');
+    }
+  }
+
+  if (triggerSound && window.civicAudio && typeof window.civicAudio.playModeSwitch === 'function') {
+    window.civicAudio.playModeSwitch();
+  }
+}
+
+function openAdminLoginModal() {
+  const modal = document.getElementById('admin-login-modal');
+  if (modal) {
+    modal.style.display = 'flex';
+    if (window.civicAudio && typeof window.civicAudio.playClick === 'function') {
+      window.civicAudio.playClick();
+    }
+  }
+}
+
+function closeAdminLoginModal(event = null) {
+  if (event && event.target !== document.getElementById('admin-login-modal')) return;
+  const modal = document.getElementById('admin-login-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+async function loginAsAdminWithPreset(officerId) {
+  const passwordMap = {
+    'officer_vikas': 'officer2026',
+    'admin': 'admin123',
+    'sdo_delhi': 'mcd2026'
+  };
+  const password = passwordMap[officerId] || 'admin123';
+  await doAdminLogin(officerId, password);
+}
+
+async function submitAdminLoginForm() {
+  const idInput = document.getElementById('admin-login-id');
+  const passInput = document.getElementById('admin-login-pass');
+  if (!idInput || !passInput) return;
+  const officerId = idInput.value.trim();
+  const password = passInput.value.trim();
+  if (!officerId || !password) {
+    if (window.civicAudio && typeof window.civicAudio.playErrorBuzz === 'function') {
+      window.civicAudio.playErrorBuzz();
+    }
+    if (typeof showModernToast === 'function') {
+      showModernToast('Please enter Officer ID and Password', 'warning');
+    }
+    return;
+  }
+  await doAdminLogin(officerId, password);
+}
+
+async function doAdminLogin(officerId, password) {
+  try {
+    const res = await fetch('/api/v1/auth/admin-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ officer_id: officerId, password: password })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'Invalid Officer Credentials');
+    }
+    const data = await res.json();
+    setAuthenticatedUser(data.access_token, data.user);
+    closeAdminLoginModal();
+    setWorkspaceMode('admin', false);
+    switchTab('triage-view');
+    if (window.civicAudio && typeof window.civicAudio.playOtpSuccess === 'function') {
+      window.civicAudio.playOtpSuccess();
+    }
+    if (typeof showModernToast === 'function') {
+      showModernToast(`🛡️ Executive Access Granted: ${data.user.name} (${data.user.role_title})`, 'success');
+    }
+  } catch (err) {
+    if (window.civicAudio && typeof window.civicAudio.playErrorBuzz === 'function') {
+      window.civicAudio.playErrorBuzz();
+    }
+    if (typeof showModernToast === 'function') {
+      showModernToast(`Authentication Failed: ${err.message}`, 'error');
+    }
+  }
+}
+
+// ==========================================================================
+// SPOTLIGHT COMMAND PALETTE CONTROLLER (Ctrl + K / Cmd + K)
+// ==========================================================================
+
+const COMMAND_PALETTE_ITEMS = [
+  // Navigation - Citizen
+  { id: 'home', title: '🏛️ Home: National Municipal Gateway', category: 'Citizen Views', action: () => switchTab('home-view'), keywords: 'home gateway main portal' },
+  { id: 'report', title: '📝 4-Step Grievance Report Wizard', category: 'Citizen Views', action: () => switchTab('citizen-portal'), keywords: 'report complaint lodge pothole garbage streetlight' },
+  { id: 'map', title: '🗺️ Interactive Incident & Fleet Map', category: 'Shared Views', action: () => switchTab('command-center'), keywords: 'map incident fleet squad gis live' },
+  { id: 'jan-sunwai', title: '⚖️ Jan Sunwai: Public Grievance Docket', category: 'Citizen Views', action: () => switchTab('jan-sunwai-view'), keywords: 'jan sunwai corporator mla ombudsman hearing' },
+  { id: 'gallery', title: '📸 Clean City Transformation Gallery', category: 'Citizen Views', action: () => switchTab('gallery-view'), keywords: 'gallery before after transformations proof' },
+  { id: 'rewards', title: '🏆 Swachh Nagrik Rewards & Karma', category: 'Citizen Views', action: () => switchTab('rewards-view'), keywords: 'rewards karma points badges swachh nagrik' },
+  { id: 'whatsapp', title: '💬 WhatsApp AI Civic Assistant', category: 'Citizen Views', action: () => switchTab('whatsapp-simulator'), keywords: 'whatsapp bot chat assistant vernacular' },
+  { id: 'transparency', title: '📊 Ward Governance Scorecards & Rupee Ledger', category: 'Shared Views', action: () => switchTab('transparency-view'), keywords: 'transparency scorecards contractor budget ledger' },
+
+  // Navigation - Officer Admin
+  { id: 'triage', title: '📥 Officer Triage & Complaint Verification Queue', category: 'Officer Admin', action: () => { if (currentWorkspaceMode !== 'admin') setWorkspaceMode('admin'); switchTab('triage-view'); }, keywords: 'triage officer review tickets verify' },
+  { id: 'dispatch', title: '🚚 AI Dispatch & Fleet Route Optimizer', category: 'Officer Admin', action: () => { if (currentWorkspaceMode !== 'admin') setWorkspaceMode('admin'); switchTab('dispatch-view'); }, keywords: 'dispatch fleet route squad engineer' },
+  { id: 'field', title: '👷 Field Crew Work Orders & PWA', category: 'Officer Admin', action: () => { if (currentWorkspaceMode !== 'admin') setWorkspaceMode('admin'); switchTab('field-tasks-view'); }, keywords: 'field crew tasks pwa offline' },
+  { id: 'risk', title: '🌧️ Predictive Monsoon & Flood Hazard Shield', category: 'Officer Admin', action: () => { if (currentWorkspaceMode !== 'admin') setWorkspaceMode('admin'); switchTab('predictive-view'); }, keywords: 'predictive monsoon risk rain flood shield' },
+  { id: 'agents', title: '🤖 Multi-Agent AI Deliberation Engine', category: 'Officer Admin', action: () => { if (currentWorkspaceMode !== 'admin') setWorkspaceMode('admin'); switchTab('agent-view'); }, keywords: 'ai agents deliberation clustering deduplication' },
+
+  // Workspace Modes
+  { id: 'mode-citizen', title: '🇮🇳 Switch to Citizen Services Portal', category: 'Workspace Mode', action: () => setWorkspaceMode('citizen'), keywords: 'citizen public mode switch' },
+  { id: 'mode-admin', title: '🛡️ Switch to Officer & Admin Command Grid', category: 'Workspace Mode', action: () => setWorkspaceMode('admin'), keywords: 'officer admin executive command mode switch' },
+
+  // Hotlines & Actions
+  { id: 'ivr-1913', title: '📞 Dial 1913 National Jan Sunwai IVR Helpline', category: 'Helplines', action: () => openIVRModal(), keywords: '1913 ivr phone call dialect bhashini' },
+  { id: 'call-112', title: '🚨 Emergency Police & Ambulance (112)', category: 'Helplines', action: () => { window.location.href = 'tel:112'; }, keywords: '112 emergency police ambulance' },
+  { id: 'call-1916', title: '🚰 Water Board Helpline (1916)', category: 'Helplines', action: () => { window.location.href = 'tel:1916'; }, keywords: '1916 water pipeline leak sewage' },
+  { id: 'call-1912', title: '⚡ Electricity Faults Helpline (1912)', category: 'Helplines', action: () => { window.location.href = 'tel:1912'; }, keywords: '1912 electricity power transformer fault' },
+
+  // Accessibility & Themes
+  { id: 'toggle-sound', title: '🔊 Toggle Tactile Web Audio Synthesizer', category: 'Settings', action: () => toggleCivicAudio(), keywords: 'sound audio mute effects' },
+  { id: 'theme-saffron', title: '🇮🇳 Theme: Sovereign Saffron', category: 'Themes', action: () => applySkin('tomato-toast'), keywords: 'theme saffron orange sovereign' },
+  { id: 'theme-emerald', title: '🌿 Theme: Emerald Eco Smart City', category: 'Themes', action: () => applySkin('mint-gelato'), keywords: 'theme emerald green eco' },
+  { id: 'theme-sapphire', title: '🔷 Theme: Royal Civic Sapphire', category: 'Themes', action: () => applySkin('bubblegum-pop'), keywords: 'theme sapphire blue royal' },
+  { id: 'theme-amber', title: '⚡ Theme: Amber Rapid Response', category: 'Themes', action: () => applySkin('mustard-mayhem'), keywords: 'theme amber yellow response' }
+];
+
+let selectedCommandIndex = 0;
+let filteredCommands = [...COMMAND_PALETTE_ITEMS];
+
+function openCommandPalette() {
+  const modal = document.getElementById('command-palette-modal');
+  const input = document.getElementById('cmd-palette-input');
+  if (modal) {
+    modal.style.display = 'flex';
+    if (input) {
+      input.value = '';
+      input.focus();
+    }
+    filterCommandPalette();
+    if (window.civicAudio && typeof window.civicAudio.playCommandPaletteOpen === 'function') {
+      window.civicAudio.playCommandPaletteOpen();
+    }
+  }
+}
+
+function closeCommandPalette(event = null) {
+  if (event && event.target !== document.getElementById('command-palette-modal')) return;
+  const modal = document.getElementById('command-palette-modal');
+  if (modal) modal.style.display = 'none';
+}
+
+function filterCommandPalette() {
+  const input = document.getElementById('cmd-palette-input');
+  const query = input ? input.value.trim().toLowerCase() : '';
+  const resultsEl = document.getElementById('cmd-palette-results');
+  if (!resultsEl) return;
+
+  if (!query) {
+    filteredCommands = [...COMMAND_PALETTE_ITEMS];
+  } else {
+    filteredCommands = COMMAND_PALETTE_ITEMS.filter(item =>
+      item.title.toLowerCase().includes(query) ||
+      item.category.toLowerCase().includes(query) ||
+      item.keywords.toLowerCase().includes(query)
+    );
+  }
+
+  selectedCommandIndex = 0;
+  renderCommandPaletteResults();
+}
+
+function renderCommandPaletteResults() {
+  const resultsEl = document.getElementById('cmd-palette-results');
+  if (!resultsEl) return;
+
+  if (filteredCommands.length === 0) {
+    resultsEl.innerHTML = `<div style="padding: 24px; text-align: center; color: #94A3B8; font-size: 0.88rem;">No matching actions found. Try "Report", "Map", "Triage", "1913", or "Sound".</div>`;
+    return;
+  }
+
+  let html = '';
+  let currentCat = '';
+  filteredCommands.forEach((cmd, idx) => {
+    if (cmd.category !== currentCat) {
+      currentCat = cmd.category;
+      html += `<div class="cmd-palette-group-title">${currentCat}</div>`;
+    }
+    const isSelected = idx === selectedCommandIndex;
+    html += `
+      <div class="cmd-palette-item ${isSelected ? 'selected' : ''}" onclick="executeCommand(${idx})" onmouseenter="selectedCommandIndex = ${idx}; renderCommandPaletteResults();">
+        <span>${cmd.title}</span>
+        <span class="cmd-palette-shortcut-badge">↵ Jump</span>
+      </div>
+    `;
+  });
+  resultsEl.innerHTML = html;
+}
+
+function handleCommandPaletteKey(e) {
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    selectedCommandIndex = (selectedCommandIndex + 1) % filteredCommands.length;
+    renderCommandPaletteResults();
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    selectedCommandIndex = (selectedCommandIndex - 1 + filteredCommands.length) % filteredCommands.length;
+    renderCommandPaletteResults();
+  } else if (e.key === 'Enter') {
+    e.preventDefault();
+    executeCommand(selectedCommandIndex);
+  } else if (e.key === 'Escape') {
+    closeCommandPalette();
+  }
+}
+
+function executeCommand(index) {
+  const cmd = filteredCommands[index];
+  if (cmd && typeof cmd.action === 'function') {
+    closeCommandPalette();
+    cmd.action();
+    if (window.civicAudio && typeof window.civicAudio.playClick === 'function') {
+      window.civicAudio.playClick();
+    }
+  }
+}
+
+window.addEventListener('keydown', (e) => {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+    e.preventDefault();
+    openCommandPalette();
+  }
+  if (e.key === 'Escape') {
+    closeCommandPalette();
+    closeAdminLoginModal();
+    closeLoginModal();
+  }
+});
 
 function handleReportIssueClick() {
   switchTab('citizen-portal');
@@ -576,6 +873,8 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   initAuth();
+  const savedMode = localStorage.getItem('civicsense_workspace_mode') || 'citizen';
+  setWorkspaceMode(savedMode, false);
   initMap();
   animateHeroCounters();
   loadKPIStats();

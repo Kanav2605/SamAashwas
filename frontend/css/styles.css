@@ -4199,3 +4199,238 @@ tr:nth-child(odd) td {
   0% { background: #FEF3C7; }
   100% { background: transparent; }
 }
+
+/* ==========================================================================
+   WORKSPACE ENCAPSULATION: CITIZEN PORTAL VS OFFICER & ADMIN CONTROL
+   ========================================================================== */
+.workspace-mode-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 18px;
+  background: #0F172A;
+  color: #F8FAFC;
+  border-bottom: 1px solid #1E293B;
+  font-size: 0.82rem;
+  z-index: 100;
+}
+
+.workspace-brand-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.workspace-badge-tag {
+  background: #1E293B;
+  color: #94A3B8;
+  font-size: 0.70rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 2px 8px;
+  border-radius: 4px;
+  border: 1px solid #334155;
+}
+
+.workspace-mode-selector {
+  display: inline-flex;
+  background: #1E293B;
+  border-radius: 8px;
+  padding: 3px;
+  gap: 4px;
+  border: 1px solid #334155;
+}
+
+.mode-pill {
+  background: transparent;
+  color: #94A3B8;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 14px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  font-family: var(--font-display);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.mode-pill:hover {
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.mode-pill.active {
+  background: #2563EB;
+  color: #FFFFFF;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.mode-pill.admin-pill.active {
+  background: #D97706 !important;
+  color: #FFFFFF !important;
+}
+
+/* ENCAPSULATION RULES: Filter tabs strictly according to active workspace */
+body[data-workspace="citizen"] .tab-btn[data-role-access="admin"] {
+  display: none !important;
+}
+
+body[data-workspace="admin"] .tab-btn[data-role-access="citizen"] {
+  display: none !important;
+}
+
+body[data-workspace="admin"] .tab-btn[data-role-access="both"],
+body[data-workspace="citizen"] .tab-btn[data-role-access="both"] {
+  display: inline-flex !important;
+}
+
+/* Officer Mode Executive Theme Header Adjustments */
+body[data-workspace="admin"] .mcd-branding-header {
+  background: #0B1120 !important;
+  border-bottom: 2px solid #D97706;
+}
+
+body[data-workspace="admin"] .mcd-title-en {
+  color: #F8FAFC !important;
+}
+
+body[data-workspace="admin"] .mcd-title-hi {
+  color: #F59E0B !important;
+}
+
+body[data-workspace="admin"] .mcd-subtitle {
+  color: #94A3B8 !important;
+}
+
+/* ==========================================================================
+   OFFICER & ADMIN COMMAND LOGIN MODAL
+   ========================================================================== */
+.admin-modal-box {
+  background: #FFFFFF;
+  border: 1px solid #CBD5E1;
+  border-radius: 14px;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.25);
+  max-width: 520px;
+  width: 95%;
+  overflow: hidden;
+  animation: modalPopIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-header-gold {
+  background: #0F172A;
+  color: #FFFFFF;
+  padding: 1.25rem 1.5rem;
+  border-bottom: 3px solid #D97706;
+}
+
+.admin-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.admin-preset-card {
+  background: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 8px;
+  padding: 10px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.15s ease;
+}
+
+.admin-preset-card:hover {
+  background: #EFF6FF;
+  border-color: #3B82F6;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.12);
+}
+
+.admin-preset-card.active-officer {
+  border-color: #D97706;
+  background: #FFFBEB;
+}
+
+/* ==========================================================================
+   COMMAND PALETTE SPOTLIGHT MODAL (Ctrl + K)
+   ========================================================================== */
+.cmd-palette-box {
+  background: #FFFFFF;
+  border: 1px solid #E2E8F0;
+  border-radius: 12px;
+  box-shadow: 0 25px 60px rgba(15, 23, 42, 0.3);
+  max-width: 620px;
+  width: 92%;
+  overflow: hidden;
+  animation: modalPopIn 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.cmd-palette-input-wrap {
+  display: flex;
+  align-items: center;
+  padding: 14px 18px;
+  border-bottom: 1px solid #E2E8F0;
+  gap: 12px;
+  background: #F8FAFC;
+}
+
+.cmd-palette-input {
+  border: none;
+  background: transparent;
+  font-size: 1.05rem;
+  font-family: var(--font-body);
+  font-weight: 600;
+  color: #0F172A;
+  outline: none;
+  flex: 1;
+}
+
+.cmd-palette-results {
+  max-height: 380px;
+  overflow-y: auto;
+  padding: 8px;
+}
+
+.cmd-palette-group-title {
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #94A3B8;
+  padding: 8px 12px 4px;
+}
+
+.cmd-palette-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.12s ease;
+  color: #1E293B;
+  font-weight: 600;
+  font-size: 0.88rem;
+}
+
+.cmd-palette-item:hover,
+.cmd-palette-item.selected {
+  background: #EFF6FF;
+  color: #2563EB;
+}
+
+.cmd-palette-shortcut-badge {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  background: #E2E8F0;
+  color: #475569;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+

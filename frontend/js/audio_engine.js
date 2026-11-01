@@ -206,6 +206,159 @@ class CivicAudioEngine {
       osc.stop(now + 0.1);
     } catch (e) {}
   }
+
+  // 7. Executive Command / Mode Switch (Dual Resonance Harmonic Pulse)
+  playModeSwitch() {
+    if (!this.enabled) return;
+    try {
+      this._initContext();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+
+      // Two-step harmonic glide (440Hz -> 880Hz)
+      const freqs = [440, 660, 880];
+      freqs.forEach((freq, idx) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        const start = now + idx * 0.05;
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, start);
+        gain.gain.setValueAtTime(0.001, start);
+        gain.gain.linearRampToValueAtTime(0.18, start + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.001, start + 0.15);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(start);
+        osc.stop(start + 0.16);
+      });
+    } catch (e) {}
+  }
+
+  // 8. Command Palette Spotlight Open Chime
+  playCommandPaletteOpen() {
+    if (!this.enabled) return;
+    try {
+      this._initContext();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(800, now);
+      osc.frequency.exponentialRampToValueAtTime(1200, now + 0.06);
+
+      gain.gain.setValueAtTime(0.12, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.08);
+    } catch (e) {}
+  }
+
+  // 9. OTP Verified & Access Granted (3-Step Ascending Fanfare)
+  playOtpSuccess() {
+    if (!this.enabled) return;
+    try {
+      this._initContext();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+      const notes = [659.25, 830.61, 987.77]; // E5, G#5, B5
+      notes.forEach((freq, i) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        const start = now + i * 0.06;
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, start);
+
+        gain.gain.setValueAtTime(0.001, start);
+        gain.gain.linearRampToValueAtTime(0.18, start + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.001, start + 0.22);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(start);
+        osc.stop(start + 0.23);
+      });
+    } catch (e) {}
+  }
+
+  // 10. Polite Form Error Buzz
+  playErrorBuzz() {
+    if (!this.enabled) return;
+    try {
+      this._initContext();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+      [140, 210].forEach((freq) => {
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(freq, now);
+
+        gain.gain.setValueAtTime(0.1, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.13);
+      });
+    } catch (e) {}
+  }
+
+  // 11. Real-Time Drawer Smooth Whoosh
+  playDrawerSlide() {
+    if (!this.enabled) return;
+    try {
+      this._initContext();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(180, now);
+      osc.frequency.exponentialRampToValueAtTime(320, now + 0.1);
+
+      gain.gain.setValueAtTime(0.08, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.1);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.11);
+    } catch (e) {}
+  }
+
+  // 12. Real-Time Telemetry Tick
+  playTelemetryBlip() {
+    if (!this.enabled) return;
+    try {
+      this._initContext();
+      if (!this.ctx) return;
+      const now = this.ctx.currentTime;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(1050, now);
+
+      gain.gain.setValueAtTime(0.04, now);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.03);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(now);
+      osc.stop(now + 0.035);
+    } catch (e) {}
+  }
 }
 
 // Global singleton instance
