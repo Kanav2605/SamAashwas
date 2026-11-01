@@ -568,6 +568,7 @@ document.addEventListener('DOMContentLoaded', () => {
   handleHashRouting();
   updateCityWeatherAQI('bengaluru');
   if (typeof loadRupeeLedger === 'function') loadRupeeLedger();
+  if (typeof loadContractorScorecards === 'function') loadContractorScorecards();
   if (typeof initVisionCanvas === 'function') initVisionCanvas();
   if (typeof initOscilloscope === 'function') initOscilloscope('voice-oscilloscope-canvas');
   if (window.civicAudio && typeof window.civicAudio.updateSoundButtonUI === 'function') {
@@ -764,6 +765,7 @@ function switchTab(tabId) {
   if (tabId === 'transparency-view') {
     loadTransparencyData();
     if (typeof loadRupeeLedger === 'function') loadRupeeLedger();
+    if (typeof loadContractorScorecards === 'function') loadContractorScorecards();
   }
   if (tabId === 'citizen-portal') {
     checkForNearbyDeflection();

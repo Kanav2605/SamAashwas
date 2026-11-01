@@ -167,6 +167,11 @@ def test_signature_interactive_features_present_in_index():
     assert "js/vision_canvas.js" in html
     assert "js/fleet_simulation.js" in html
     assert "js/rupee_ledger.js" in html
+    assert "js/homography_inspector.js" in html
+    assert "js/h3_hex_grid.js" in html
+    assert "js/ivr_simulator.js" in html
+    assert "js/contractor_scorecard.js" in html
+    assert "js/offline_pwa_sync.js" in html
     # Canvases & Interactive Panels
     assert "vision-diagnostic-canvas" in html
     assert "voice-oscilloscope-canvas" in html
@@ -174,6 +179,9 @@ def test_signature_interactive_features_present_in_index():
     assert "btn-toggle-simulation" in html
     assert "rupee-transparency-ledger" in html
     assert "tax-calculator-input" in html
+    assert "homography-audit-modal" in html
+    assert "ivr-phone-modal" in html
+    assert "homography-canvas" in html
 
 def test_vision_diagnostics_endpoint():
     # Test authentic pothole detection
@@ -225,5 +233,106 @@ def test_rupee_transparency_ledger_endpoint():
     assert "₹" in data["taxpayer_savings_formatted"]
     assert len(data["schedule_of_rates"]) >= 5
     assert len(data["property_tax_distribution"]) >= 5
+
+def test_contractor_scorecards_endpoint():
+    res = client.get("/api/v1/contractors/scorecards")
+    assert res.status_code == 200
+    data = res.json()
+    assert isinstance(data, list)
+    assert len(data) >= 4
+    c1 = data[0]
+    assert "contractor_id" in c1
+    assert "name" in c1
+    assert "sla_compliance_pct" in c1
+    assert "recurrence_failure_rate_pct" in c1
+    assert "performance_grade" in c1
+    assert "penalties_levied_inr" in c1
+
+    # Filter by city
+    res_city = client.get("/api/v1/contractors/scorecards?city=Bengaluru")
+    assert res_city.status_code == 200
+    data_city = res_city.json()
+    assert isinstance(data_city, list)
+    assert len(data_city) >= 1
+    assert data_city[0]["city"] == "Bengaluru"
+
+def test_homography_verification_endpoint():
+    # Test genuine repair verification
+    res_valid = client.post("/api/v1/contractors/verify-resolution", json={
+        "complaint_id": "CMP-BLR-001",
+        "original_image_tag": "sample_pothole",
+        "resolution_image_tag": "sample_repaired_asphalt",
+        "original_lat": 12.9716,
+        "original_lon": 77.5946,
+        "resolution_lat": 12.9716,
+        "resolution_lon": 77.5946,
+        "resolution_notes": "Bituminous cold-mix patching completed."
+    })
+    assert res_valid.status_code == 200
+    data_valid = res_valid.json()
+    assert data_valid["is_authentic_resolution"] is True
+    assert data_valid["homography_match_score"] >= 0.70
+    assert data_valid["status_verdict"] == "VERIFIED_GENUINE_REPAIR"
+    assert data_valid["contractor_accountability"]["penalty_levied_inr"] == 0
+    assert len(data_valid["landmark_alignment_points"]) >= 3
+
+    # Test false-closure detection (shoes/office desk photo)
+    res_fake = client.post("/api/v1/contractors/verify-resolution", json={
+        "complaint_id": "CMP-BLR-001",
+        "original_image_tag": "sample_pothole",
+        "resolution_image_tag": "sample_shoes_desk",
+        "original_lat": 12.9716,
+        "original_lon": 77.5946,
+        "resolution_lat": 12.9734,
+        "resolution_lon": 77.5946,
+        "resolution_notes": "Fake indoor photo."
+    })
+    assert res_fake.status_code == 200
+    data_fake = res_fake.json()
+    assert data_fake["is_authentic_resolution"] is False
+    assert data_fake["status_verdict"] == "FALSE_CLOSURE_PREVENTED"
+    assert "Clause 14B" in data_fake["contractor_accountability"]["statutory_clause"]
+    assert data_fake["contractor_accountability"]["penalty_levied_inr"] > 0
+
+def test_citizen_signoff_endpoint():
+    # Test citizen satisfaction approval
+    res_appr = client.post("/api/v1/contractors/citizen-signoff", json={
+        "complaint_id": "CMP-BLR-001",
+        "is_satisfied": True,
+        "feedback_notes": "Road looks great now!",
+        "citizen_phone": "9876543210"
+    })
+    assert res_appr.status_code == 200
+    data_appr = res_appr.json()
+    assert data_appr["status"] == "RESOLVED_VERIFIED"
+    assert data_appr["karma_points_awarded"] > 0
+    assert data_appr["certificate_eligible"] is True
+
+    # Test citizen escalation / rejection
+    res_esc = client.post("/api/v1/contractors/citizen-signoff", json={
+        "complaint_id": "CMP-BLR-001",
+        "is_satisfied": False,
+        "feedback_notes": "Pothole is still completely open and filled with water!",
+        "citizen_phone": "9876543210"
+    })
+    assert res_esc.status_code == 200
+    data_esc = res_esc.json()
+    assert data_esc["status"] == "ESCALATED_TO_JAN_SUNWAI"
+    assert data_esc["penalty_notice_issued"] is True
+
+def test_h3_hex_cells_endpoint():
+    res = client.get("/api/v1/contractors/h3-cells?city=bengaluru")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["city"] == "Bengaluru"
+    assert "total_hex_cells" in data
+    assert len(data["cells"]) > 0
+    cell0 = data["cells"][0]
+    assert cell0["h3_index"].startswith("89")
+    assert len(cell0["boundary"]) == 6  # 6 hexagon vertices
+    assert "incident_count" in cell0
+    assert "critical_count" in cell0
+
+
 
 

@@ -56,6 +56,7 @@
       <button class="font-choice-btn" data-size="L" onclick="setFontSizeChoice('L')" title="Large Text">L</button>
       <span style="opacity: 0.4;">|</span>
       <button class="font-resize-btn" onclick="toggleHighContrast()" title="Toggle High Contrast Sunlight Mode">☀️ Contrast</button>
+      <button class="font-resize-btn" onclick="openIVRModal()" title="Dial 1913 National Jan Sunwai IVR Helpline" style="background: var(--mustard); font-weight: 900;">📞 1913 IVR</button>
       <button class="font-resize-btn" onclick="openShortcutsModal()" title="Keyboard Shortcuts Palette (?)">⌨️ Hotkeys (?)</button>
     </div>
   </div>
@@ -712,6 +713,7 @@
           <div class="map-floating-controls">
             <button class="map-control-btn" onclick="resetMapView()" title="Reset to City Center">🎯 Center Map</button>
             <button class="map-control-btn" id="btn-toggle-clusters" onclick="toggleSpatialClusters()" title="Toggle 300m Spatial Clustering Gate Perimeter Rings">🔵 Toggle 300m Rings</button>
+            <button class="map-control-btn" id="btn-toggle-h3-grid" onclick="toggleH3HexGrid()" title="Uber H3 Resolution 9 Hexagonal Clustering Overlay">⬡ Uber H3 Hex Grid</button>
             <button class="map-control-btn" id="btn-toggle-simulation" onclick="toggleCitySimulation()" style="background: var(--mustard); color: var(--ink); font-weight: 900;" title="Live Digital Twin Fleet &amp; Crew Patrol Simulation">🚜 Live City Simulation &amp; Squad Fleet</button>
           </div>
           <div id="lite-map-fallback">
@@ -1592,6 +1594,33 @@
         </div>
       </div>
 
+      <!-- Radical Offline-First PWA Sync Banner -->
+      <div id="offline-sync-banner" class="offline-sync-banner" style="display: none;">
+        <div>
+          <span>📴 <strong>Zero-Connectivity Field Mode Active:</strong> Operating out of local IndexedDB cache.</span>
+          <div style="font-size: 0.72rem; color: #57534e; margin-top: 2px;" id="offline-queue-count">
+            3 Updates Queued Locally in IndexedDB
+          </div>
+        </div>
+        <button class="btn-primary" onclick="toggleOfflineMode()" style="background: var(--mint); color: var(--ink); font-size: 0.74rem; padding: 4px 10px;">
+          ⚡ Sync Queued Updates
+        </button>
+      </div>
+
+      <!-- Action buttons for offline simulation & client edge AI -->
+      <div style="margin-bottom: 12px; display: flex; gap: 8px; flex-wrap: wrap;">
+        <button class="btn-secondary" id="btn-toggle-offline-mode" onclick="toggleOfflineMode()" style="font-size: 0.76rem;">
+          📴 Simulate Offline (Dead Zone)
+        </button>
+        <button class="btn-secondary" onclick="runEdgeCameraPreCheck()" style="font-size: 0.76rem;">
+          ⚡ Test Edge AI Camera Pre-Check (WASM)
+        </button>
+        <button class="btn-primary" onclick="openHomographyModal('CMP-BLR-001')" style="font-size: 0.76rem; background: var(--mustard); color: var(--ink);">
+          🔍 Run Homography &amp; False-Closure Audit
+        </button>
+      </div>
+      <div id="edge-ai-precheck-result" style="display: none; margin-bottom: 12px;"></div>
+
       <!-- Field Squad Stats Summary -->
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
         <div style="background: var(--paper-2); border: var(--border-ink); border-radius: var(--radius-sm); padding: 12px; box-shadow: var(--shadow-hard-sm);">
@@ -1876,6 +1905,49 @@
             </thead>
             <tbody id="ledger-sor-tbody">
               <!-- Rendered by rupee_ledger.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Municipal Contractor Accountability & Penalty League Table -->
+      <div style="margin-top: 1.5rem; background: var(--cream-white); border: var(--border-ink-thick); border-radius: var(--radius-md); box-shadow: var(--shadow-hard); padding: 1.25rem;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; margin-bottom: 0.75rem;">
+          <div>
+            <h3 style="font-size: 1.15rem; font-family: var(--font-display); font-weight: 900; color: var(--ink);">
+              🏗️ Municipal Contractor Accountability &amp; Public Penalty League Table
+            </h3>
+            <p style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600;">
+              Statutory 6-month defect liability monitoring, SLA compliance rankings, and escrow penalty deductions under Clause 14B.
+            </p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn-secondary" onclick="loadContractorScorecards()" style="font-size: 0.76rem; padding: 4px 10px;">
+              🔄 Refresh Scorecards
+            </button>
+            <button class="btn-primary" onclick="openHomographyModal('CMP-BLR-001')" style="font-size: 0.76rem; background: var(--mustard); color: var(--ink);">
+              🔍 Run Homography Audit
+            </button>
+          </div>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="triage-table">
+            <thead>
+              <tr>
+                <th>Contractor &amp; Lead Engineer</th>
+                <th>Department</th>
+                <th>Assigned Wards</th>
+                <th>Contract Value</th>
+                <th>SLA Compliance</th>
+                <th>6-Month Defect %</th>
+                <th>Penalties Levied</th>
+                <th>Audit Grade</th>
+                <th>Visual Verification</th>
+              </tr>
+            </thead>
+            <tbody id="contractor-scorecard-tbody">
+              <!-- Rendered by contractor_scorecard.js -->
             </tbody>
           </table>
         </div>
@@ -2300,6 +2372,141 @@
     </div>
   </div>
 
+  <!-- Modal: Visual Homography & False-Closure Audit -->
+  <div class="modal-backdrop" id="homography-audit-modal" onclick="closeHomographyModal(event)">
+    <div class="homography-modal-box" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: var(--border-ink-thick); padding-bottom: 8px; margin-bottom: 12px;">
+        <div>
+          <div style="font-family: var(--font-display); font-weight: 900; font-size: 1.2rem; color: var(--ink);">
+            🔬 Visual Homography &amp; False-Closure Audit Engine
+          </div>
+          <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">
+            Computer Vision structural feature matching (ORB/SIFT tie-lines) • Two-Party Citizen Sign-Off Enforcement
+          </div>
+        </div>
+        <button class="btn-secondary" onclick="closeHomographyModal()" style="padding: 2px 8px; font-weight: 900;">✕</button>
+      </div>
+
+      <!-- Test Presets -->
+      <div style="display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; align-items: center;">
+        <span style="font-size: 0.74rem; font-weight: 800; color: var(--ink);">Simulate Closure Scenario:</span>
+        <button class="btn-primary" onclick="runHomographyAudit('CMP-BLR-001', 'sample_pothole', 'sample_repaired_asphalt', false)" style="font-size: 0.74rem; background: var(--mint); color: var(--ink);">
+          ✅ Genuine Pothole Asphalt Repair (In-Situ)
+        </button>
+        <button class="btn-primary" onclick="runHomographyAudit('CMP-BLR-001', 'sample_pothole', 'sample_shoes_desk', true)" style="font-size: 0.74rem; background: var(--tomato); color: var(--cream-white);">
+          🚨 Fraudulent False Closure (Shoes/Desk)
+        </button>
+        <span id="homography-status-pill" style="font-size: 0.74rem; font-weight: 800; color: var(--text-muted); margin-left: auto;"></span>
+      </div>
+
+      <!-- Dual Comparison Canvas -->
+      <canvas id="homography-canvas" width="700" height="240"></canvas>
+
+      <!-- Homography Metric Readouts -->
+      <div class="homography-metrics-grid">
+        <div class="vision-metric-box">
+          <div class="vision-metric-label">Homography Alignment Score</div>
+          <div class="vision-metric-val" id="homography-score-val" style="color: #059669;">94% Match (142 Points)</div>
+        </div>
+        <div class="vision-metric-box">
+          <div class="vision-metric-label">GPS Spatial Geofence Delta</div>
+          <div class="vision-metric-val" id="homography-delta-val">0.0m Delta (Passed &lt;50m)</div>
+        </div>
+        <div class="vision-metric-box">
+          <div class="vision-metric-label">Audit Engine Verdict</div>
+          <div class="vision-metric-val" id="homography-audit-badge" style="font-size: 0.8rem;">
+            <span style="background: var(--mint); color: var(--ink); border: 2px solid var(--ink); padding: 4px 10px; border-radius: var(--radius-pill); font-weight: 900;">✅ HOMOGRAPHY VERIFIED</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Statutory Penalty & Contractor Accountability Readout -->
+      <div id="homography-penalty-info" style="margin-bottom: 14px;">
+        <!-- Rendered dynamically -->
+      </div>
+
+      <!-- Two-Party Citizen Resolution Sign-off Banner -->
+      <div style="background: var(--paper-2); border: var(--border-ink-thick); border-radius: var(--radius-sm); padding: 12px; box-shadow: 2px 2px 0 var(--ink);">
+        <div style="font-weight: 900; font-family: var(--font-display); font-size: 0.95rem; color: var(--ink); margin-bottom: 4px;">
+          ✍️ Mandatory Two-Party Citizen Sign-Off:
+        </div>
+        <p style="font-size: 0.76rem; color: var(--text-muted); font-weight: 600; margin-bottom: 8px;">
+          Under the Democratic Civic Charter, a ticket cannot be marked "Resolved" purely by an engineer. Does this resolution reflect actual ground conditions?
+        </p>
+        <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+          <button class="btn-primary" onclick="submitCitizenSignOff(true)" style="background: var(--mint); color: var(--ink); font-size: 0.82rem; padding: 6px 16px;">
+            👍 Citizen Confirms: Issue Fixed (+100 Karma)
+          </button>
+          <button class="btn-primary" onclick="submitCitizenSignOff(false)" style="background: var(--tomato); color: var(--cream-white); font-size: 0.82rem; padding: 6px 16px;">
+            ❌ Citizen Rejects: Still Broken (Escalate to Jan Sunwai)
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Jan Sunwai 1913 Toll-Free Vernacular IVR Phone Gateway -->
+  <div class="modal-backdrop" id="ivr-phone-modal" onclick="closeIVRModal(event)">
+    <div class="ivr-phone-box" onclick="event.stopPropagation()">
+      <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--ink); padding-bottom: 8px; margin-bottom: 12px;">
+        <div style="font-family: var(--font-display); font-weight: 900; font-size: 1.05rem; color: var(--ink);">
+          📞 Toll-Free IVR 1913
+        </div>
+        <button class="btn-secondary" onclick="closeIVRModal()" style="padding: 2px 8px; font-weight: 900;">✕</button>
+      </div>
+
+      <div class="ivr-display-screen" id="ivr-number-display">1913</div>
+      <div id="ivr-call-status" style="font-size: 0.76rem; font-weight: 800; color: var(--ink); margin-bottom: 10px; min-height: 38px;">
+        National Jan Sunwai Municipal Helpline • 24/7 Multi-Dialect IVR
+      </div>
+
+      <!-- Keypad -->
+      <div class="ivr-keypad-grid" id="ivr-keypad-grid">
+        <button class="ivr-keypad-btn" onclick="pressKeypad('1')">1</button>
+        <button class="ivr-keypad-btn" onclick="pressKeypad('2')">2</button>
+        <button class="ivr-keypad-btn" onclick="pressKeypad('3')">3</button>
+        <button class="ivr-keypad-btn" onclick="pressKeypad('4')">4</button>
+        <button class="ivr-keypad-btn" onclick="pressKeypad('5')">5</button>
+        <button class="ivr-keypad-btn" onclick="pressKeypad('6')">6</button>
+        <button class="ivr-keypad-btn" onclick="pressKeypad('7')">7</button>
+        <button class="ivr-keypad-btn" onclick="pressKeypad('8')">8</button>
+        <button class="ivr-keypad-btn" onclick="pressKeypad('9')">9</button>
+        <button class="ivr-keypad-btn" onclick="pressKeypad('*')">*</button>
+        <button class="ivr-keypad-btn" onclick="pressKeypad('0')">0</button>
+        <button class="ivr-keypad-btn" onclick="pressKeypad('#')">#</button>
+      </div>
+
+      <div style="display: flex; gap: 8px; justify-content: center; margin-bottom: 12px;">
+        <button class="btn-primary" onclick="startIVRCall()" style="background: var(--mint); color: var(--ink); font-size: 0.88rem; padding: 8px 24px;">
+          📞 Call 1913
+        </button>
+        <button class="btn-secondary" onclick="clearKeypad()" style="font-size: 0.82rem; padding: 8px 14px;">
+          ⌫ Clear
+        </button>
+      </div>
+
+      <!-- Active Call Panel with Bhashini Dialect Simulation -->
+      <div id="ivr-active-call-panel" style="display: none; background: var(--cream-white); border: 2px solid var(--ink); border-radius: 8px; padding: 10px; text-align: left; margin-top: 10px;">
+        <div style="font-size: 0.74rem; font-weight: 800; color: var(--text-muted); margin-bottom: 4px;">
+          Simulate Spoken Grievance (Bhashini AI Speech Engine):
+        </div>
+        <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px;">
+          <button class="btn-secondary" style="font-size: 0.70rem; padding: 2px 8px;" onclick="simulateIVRSpeechSubmission('bhojpuri')">🗣️ Bhojpuri</button>
+          <button class="btn-secondary" style="font-size: 0.70rem; padding: 2px 8px;" onclick="simulateIVRSpeechSubmission('awadhi')">🗣️ Awadhi</button>
+          <button class="btn-secondary" style="font-size: 0.70rem; padding: 2px 8px;" onclick="simulateIVRSpeechSubmission('kannada')">🗣️ Kannada</button>
+          <button class="btn-secondary" style="font-size: 0.70rem; padding: 2px 8px;" onclick="simulateIVRSpeechSubmission('marathi')">🗣️ Marathi</button>
+          <button class="btn-secondary" style="font-size: 0.70rem; padding: 2px 8px;" onclick="simulateIVRSpeechSubmission('hindi')">🗣️ Hindi</button>
+        </div>
+        <div id="ivr-transcript-readout" style="font-size: 0.74rem; color: var(--ink); font-style: italic; min-height: 32px; border-top: 1px dashed var(--ink); padding-top: 6px;">
+          Select a regional dialect above to speak your grievance over the telephone.
+        </div>
+        <button class="btn-primary" onclick="hangupIVRCall()" style="background: var(--tomato); color: var(--cream-white); width: 100%; margin-top: 8px; font-size: 0.76rem; padding: 4px 8px;">
+          🔴 End Call
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script src="js/audio_engine.js"></script>
@@ -2309,6 +2516,11 @@
   <script src="js/vision_canvas.js"></script>
   <script src="js/fleet_simulation.js"></script>
   <script src="js/rupee_ledger.js"></script>
+  <script src="js/h3_hex_grid.js"></script>
+  <script src="js/homography_inspector.js"></script>
+  <script src="js/ivr_simulator.js"></script>
+  <script src="js/contractor_scorecard.js"></script>
+  <script src="js/offline_pwa_sync.js"></script>
   <script src="js/sticker_theme.js"></script>
   <script src="js/translations.js"></script>
   <script src="js/map_view.js"></script>

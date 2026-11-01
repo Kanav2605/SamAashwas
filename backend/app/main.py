@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
 from .config import settings
-from .api import complaints, master_tickets, predictive, whatsapp, analytics, agents, cities, auth, dispatch
+from .api import complaints, master_tickets, predictive, whatsapp, analytics, agents, cities, auth, dispatch, contractors
 from .db.seed_data import seed_database_and_export
 from .db.database import db
 from fastapi import HTTPException
@@ -62,6 +62,7 @@ app.include_router(whatsapp.router, prefix=api_prefix)
 app.include_router(analytics.router, prefix=api_prefix)
 app.include_router(agents.router, prefix=api_prefix)
 app.include_router(dispatch.router, prefix=api_prefix)
+app.include_router(contractors.router, prefix=api_prefix)
 
 @app.get(f"{api_prefix}/tracking/{{tracking_id}}", tags=["Tracking"])
 async def track_application(tracking_id: str):
