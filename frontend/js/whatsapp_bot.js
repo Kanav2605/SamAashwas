@@ -94,13 +94,35 @@ function sendWhatsAppVoice() {
 
   const sample = voiceSamplesByLang[activeLang] || voiceSamplesByLang['hg'];
   
+  // Animate oscilloscope in WhatsApp header
+  const waOsc = document.getElementById('wa-oscilloscope-canvas');
+  if (waOsc) {
+    waOsc.style.display = 'block';
+    if (typeof startOscilloscope === 'function') startOscilloscope('wa-oscilloscope-canvas');
+    setTimeout(() => {
+      if (typeof stopOscilloscope === 'function') stopOscilloscope('wa-oscilloscope-canvas');
+      waOsc.style.display = 'none';
+    }, 1800);
+  }
+
+  if (window.civicAudio && typeof window.civicAudio.playRisingTone === 'function') {
+    window.civicAudio.playRisingTone();
+  }
+
   const chatBody = document.getElementById('wa-chat-body');
   const userMsgEl = document.createElement('div');
   userMsgEl.className = 'wa-msg out';
-  userMsgEl.style.display = 'flex';
-  userMsgEl.style.alignItems = 'center';
-  userMsgEl.style.gap = '8px';
-  userMsgEl.innerHTML = `<span>▶️</span> <span>${sample}</span>`;
+  userMsgEl.style.padding = '8px 10px';
+  userMsgEl.innerHTML = `
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <div class="wa-play-btn" onclick="if(window.civicAudio) window.civicAudio.playClick()">▶</div>
+      <div style="flex: 1;">
+        <div class="wa-waveform-bar"><div class="wa-waveform-progress"></div></div>
+        <div style="font-size: 10px; color: #57534e; margin-top: 3px; font-weight: bold;">0:12 • Vernacular Voice Grievance</div>
+      </div>
+    </div>
+    <div style="font-size: 11px; margin-top: 5px; font-style: italic; color: #1c1917;">"${sample.replace(/🎙️ Voice Note \([0-9:]+\): '/, '').replace(/'$/, '')}"</div>
+  `;
   chatBody.appendChild(userMsgEl);
   chatBody.scrollTop = chatBody.scrollHeight;
 

@@ -712,6 +712,7 @@
           <div class="map-floating-controls">
             <button class="map-control-btn" onclick="resetMapView()" title="Reset to City Center">🎯 Center Map</button>
             <button class="map-control-btn" id="btn-toggle-clusters" onclick="toggleSpatialClusters()" title="Toggle 300m Spatial Clustering Gate Perimeter Rings">🔵 Toggle 300m Rings</button>
+            <button class="map-control-btn" id="btn-toggle-simulation" onclick="toggleCitySimulation()" style="background: var(--mustard); color: var(--ink); font-weight: 900;" title="Live Digital Twin Fleet &amp; Crew Patrol Simulation">🚜 Live City Simulation &amp; Squad Fleet</button>
           </div>
           <div id="lite-map-fallback">
             <div style="background: var(--paper-2); border: var(--border-ink-thick); border-radius: var(--radius-md); padding: 1.25rem; box-shadow: var(--shadow-hard);">
@@ -731,6 +732,41 @@
             <div data-i18n="map_legend_high">🟠 High Urgency (2-4 Citizen Reports)</div>
             <div data-i18n="map_legend_med">🟡 Moderate Urgency (1 Citizen Report)</div>
             <div data-i18n="map_legend_gate">⚫ 300m Spatial Clustering Gate Perimeter</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Live City Simulation & Digital Twin Fleet Telemetry Panel -->
+      <div id="fleet-telemetry-panel" class="fleet-telemetry-container" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+          <div style="font-family: var(--font-display); font-weight: 900; font-size: 1.05rem; color: var(--ink);">
+            🚜 Live City Digital Twin &amp; Field Squad Fleet Telemetry
+          </div>
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <span class="badge badge-low" style="background: var(--mint); color: var(--ink); font-weight: 900;">
+              🟢 3 SQUADS PATROLLING
+            </span>
+            <button class="btn-secondary" style="font-size: 0.74rem; padding: 3px 10px;" onclick="fetchAndRenderFleet()">
+              🔄 Sync Telemetry
+            </button>
+          </div>
+        </div>
+        <p style="font-size: 0.78rem; color: var(--text-muted); font-weight: 600; margin: 4px 0 10px 0;">
+          Simulated GPS positioning, fuel reserves, dynamic travel speeds, and priority master ticket routing along 2-opt paths.
+        </p>
+
+        <!-- Squad Cards Grid -->
+        <div class="fleet-squads-grid" id="fleet-squads-grid">
+          <!-- Rendered by fleet_simulation.js -->
+        </div>
+
+        <!-- Live Municipal Radio Dispatch Console -->
+        <div style="margin-top: 12px;">
+          <div style="font-size: 0.76rem; font-weight: 900; color: var(--ink); font-family: var(--font-display); margin-bottom: 4px;">
+            📻 Live Municipal VHF/UHF Dispatch Radio Console (Channel 4):
+          </div>
+          <div class="radio-chatter-console" id="radio-chatter-console">
+            <!-- Rendered by fleet_simulation.js -->
           </div>
         </div>
       </div>
@@ -1190,6 +1226,9 @@
                 <span id="voice-status-label" style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700;">Click mic or select quick vernacular sample below</span>
               </div>
 
+              <!-- Real-time Vernacular Audio Oscilloscope -->
+              <canvas id="voice-oscilloscope-canvas" class="oscilloscope-canvas-box" width="400" height="50"></canvas>
+
               <div style="margin-top: 8px;">
                 <div style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px;" data-i18n="voice_quick_samples">Quick Vernacular Sample Voice Inputs:</div>
                 <div class="sample-chips">
@@ -1321,15 +1360,91 @@
               </div>
             </div>
 
-            <div class="form-group">
-              <label data-i18n="label_photo">Upload Photographic Proof (Simulated Vision Verifier)</label>
-              <select id="form-image-hint" class="form-control">
-                <option value="" data-i18n="photo_none">No Image Attached</option>
-                <option value="pothole" data-i18n="photo_pothole" selected>Photo: Pothole / Broken Road (Verified Proof)</option>
-                <option value="sewage_overflow" data-i18n="photo_sewage">Photo: Sewer Overflow / Drain Block</option>
-                <option value="garbage_dump" data-i18n="photo_garbage">Photo: Garbage Dump / Trash Pile</option>
-                <option value="broken_streetlight" data-i18n="photo_streetlight">Photo: Broken Streetlight</option>
-                <option value="unrelated_or_spam" data-i18n="photo_spam">Photo: Random Selfie / Meme (Fraud Spam Test)</option>
+            <!-- Multimodal AI Vision Diagnostics Canvas Studio -->
+            <div class="vision-diagnostics-card">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <div style="font-size: 0.92rem; font-weight: 900; color: var(--ink); font-family: var(--font-display);">
+                  📸 Multimodal AI Vision Diagnostics Canvas &amp; Spam Shield
+                </div>
+                <div style="display: flex; gap: 6px; align-items: center;">
+                  <button type="button" class="btn-secondary" style="font-size: 0.74rem; padding: 3px 10px;" onclick="document.getElementById('vision-file-input').click()">
+                    📁 Upload Field Photo
+                  </button>
+                  <input type="file" id="vision-file-input" accept="image/*" style="display: none;" onchange="loadUserPhotoToCanvas(event)">
+                </div>
+              </div>
+
+              <!-- Interactive Preset Sample Buttons -->
+              <div class="vision-sample-chips">
+                <button type="button" class="vision-chip-btn active" data-sample="sample_pothole" onclick="loadVisionSample('sample_pothole')">
+                  🕳️ Pothole Crater (Grade 3)
+                </button>
+                <button type="button" class="vision-chip-btn" data-sample="sample_garbage" onclick="loadVisionSample('sample_garbage')">
+                  🗑️ Solid Waste Dump (1.8T)
+                </button>
+                <button type="button" class="vision-chip-btn" data-sample="sample_streetlight" onclick="loadVisionSample('sample_streetlight')">
+                  💡 Burnt LED Luminaire
+                </button>
+                <button type="button" class="vision-chip-btn" data-sample="sample_waterlog" onclick="loadVisionSample('sample_waterlog')">
+                  🌊 Waterlogged Underpass
+                </button>
+                <button type="button" class="vision-chip-btn" data-sample="sample_spam" onclick="loadVisionSample('sample_spam')" style="border-color: var(--tomato); color: var(--tomato);">
+                  🚫 Meme / Selfie (Spam Shield Test)
+                </button>
+              </div>
+
+              <!-- Interactive Canvas -->
+              <div class="vision-canvas-container">
+                <canvas id="vision-diagnostic-canvas" width="600" height="280"></canvas>
+              </div>
+
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 8px;">
+                <button type="button" class="btn-primary" onclick="runVisionScan()" style="font-size: 0.8rem; padding: 6px 14px; background: var(--mustard); color: var(--ink);">
+                  🔍 Run Multimodal AI Diagnostic Scan
+                </button>
+                <span id="vision-scan-status-pill" style="font-size: 0.76rem; font-weight: 800; color: var(--text-muted);">
+                  Live Canvas Ready • Click any sample chip or upload
+                </span>
+              </div>
+
+              <!-- Diagnostic Metrics Readout Grid -->
+              <div class="vision-metrics-grid">
+                <div class="vision-metric-box">
+                  <div class="vision-metric-label">Detected Infrastructure Class</div>
+                  <div class="vision-metric-val" id="vision-metric-class">Severe Road Pothole Crater</div>
+                </div>
+                <div class="vision-metric-box">
+                  <div class="vision-metric-label">AI Vision Confidence</div>
+                  <div class="vision-metric-val" id="vision-metric-confidence" style="color: #059669;">95% Confidence</div>
+                </div>
+                <div class="vision-metric-box">
+                  <div class="vision-metric-label">Severity &amp; Hazard Rating</div>
+                  <div class="vision-metric-val" id="vision-metric-hazard" style="color: var(--tomato);">HIGH HAZARD</div>
+                </div>
+                <div class="vision-metric-box">
+                  <div class="vision-metric-label">Spam &amp; Tamper Shield</div>
+                  <div class="vision-metric-val" id="vision-metric-shield" style="font-size: 0.78rem;">
+                    <span style="color: #059669; font-weight: 900;">🛡️ VERIFIED EVIDENCE</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Dynamic Repair Prescription -->
+              <div id="vision-prescription-box" style="margin-top: 10px; padding: 10px; background: var(--paper-2); border: var(--border-ink); border-radius: var(--radius-sm);">
+                <div style="font-size: 0.76rem; font-weight: 800; color: var(--ink);">
+                  🛠️ <strong>Recommended Repair Prescription:</strong> Bituminous cold-mix emulsion + rapid tack coat primer
+                  <br>
+                  📐 <strong>Estimated Repair Area:</strong> 2.4 sq.m (2 distress regions identified)
+                </div>
+              </div>
+
+              <!-- Hidden select for form submission sync -->
+              <select id="form-image-hint" style="display: none;">
+                <option value="pothole" selected>pothole</option>
+                <option value="garbage_dump">garbage_dump</option>
+                <option value="broken_streetlight">broken_streetlight</option>
+                <option value="waterlogging">waterlogging</option>
+                <option value="unrelated_or_spam">unrelated_or_spam</option>
               </select>
             </div>
 
@@ -1411,13 +1526,25 @@
 
       <div class="phone-mockup-wrapper">
         <div class="phone-mockup">
-          <div class="wa-header">
-            <div class="wa-avatar">🏛️</div>
-            <div>
-              <div style="font-size: 0.88rem; font-weight: bold;">SamAashwas Civic Bot</div>
-              <div style="font-size: 0.68rem; color: #8696a0;">National Municipal Grievance Helpline &bull; Verified Business</div>
+          <div class="wa-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <div class="wa-avatar">🏛️</div>
+              <div>
+                <div style="font-size: 0.88rem; font-weight: bold; display: flex; align-items: center; gap: 4px;">
+                  SamAashwas Civic Bot <span class="wa-verified-pill" title="Verified Official ULB Enterprise Bot">✓</span>
+                </div>
+                <div style="font-size: 0.68rem; color: #8696a0;">National Municipal Helpline • Online</div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 14px; color: #aebac1; font-size: 15px;">
+              <span title="Simulated Voice Call" style="cursor: pointer;" onclick="alert('📞 Calling SamAashwas Municipal Toll-Free 1913...')">📞</span>
+              <span title="Simulated Video Call" style="cursor: pointer;" onclick="alert('📹 Video Inspection Helpline Connecting...')">📹</span>
+              <span title="Search Chat" style="cursor: pointer;">🔍</span>
             </div>
           </div>
+
+          <!-- WhatsApp Voice Oscilloscope Canvas -->
+          <canvas id="wa-oscilloscope-canvas" class="oscilloscope-canvas-box" width="300" height="40" style="display: none; margin: 4px 10px;"></canvas>
 
           <div class="wa-chat-body" id="wa-chat-body">
             <div class="wa-msg in" data-i18n="wa_welcome">
@@ -1432,6 +1559,9 @@
             <button class="wa-chip" onclick="sendQuickWhatsApp('Streetlight kharab hai 4 din se, andhera hai')" data-i18n="quick_light">💡 Streetlight Kharab</button>
             <button class="wa-chip" onclick="sendQuickWhatsApp('Kachra gadi nahi aayi community bin overflowing')" data-i18n="quick_garbage">🧹 Kachra Dump</button>
             <button class="wa-chip" onclick="sendQuickWhatsApp('Sewer overflow ho raha hai dirty black water on road')" data-i18n="quick_water">💧 Paani / Sewer Leak</button>
+            <button class="wa-chip" onclick="sendQuickWhatsApp('📸 [Photo Evidence Attached: Pothole Crater Grade-3] Indiranagar 100ft road')" style="background: #e0f2fe; color: #0369a1;">📸 Photo Proof</button>
+            <button class="wa-chip" onclick="sendQuickWhatsApp('📍 [Live GPS Location Shared: 12.9716 N, 77.5946 E]')" style="background: #fef3c7; color: #92400e;">📍 Share GPS</button>
+            <button class="wa-chip" onclick="sendQuickWhatsApp('STATUS MST-BLR-001')" style="background: #ede9fe; color: #6d28d9;">📊 Track #MST-BLR-001</button>
           </div>
 
           <div class="wa-input-bar">
@@ -1658,6 +1788,97 @@
             <!-- Rendered dynamically -->
           </tbody>
         </table>
+      </div>
+
+      <!-- Public Rupee Tax Transparency & Municipal Expenditure Savings Ledger -->
+      <div class="rupee-ledger-container" id="rupee-transparency-ledger">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; margin-bottom: 1rem;">
+          <div>
+            <h3 style="font-size: 1.25rem; font-family: var(--font-display); font-weight: 900; color: var(--ink);">
+              💰 Public Rupee Tax Transparency &amp; Municipal Expenditure Ledger
+            </h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600;">
+              Every rupee accounted for: Direct citizen taxpayer savings via AI deduplication, Schedule of Rates (SoR), and Personal Tax ROI.
+            </p>
+          </div>
+          <button class="btn-secondary" onclick="loadRupeeLedger()" style="font-size: 0.76rem; padding: 4px 12px;">
+            🔄 Refresh Fiscal Ledger
+          </button>
+        </div>
+
+        <!-- Rupee Savings KPIs -->
+        <div class="rupee-kpi-grid">
+          <div class="rupee-kpi-card" style="border-left: 4px solid #059669;">
+            <div style="font-size: 0.72rem; font-weight: 800; color: var(--text-muted);">DIRECT TAXPAYER RUPEES SAVED</div>
+            <div style="font-size: 1.6rem; font-weight: 900; font-family: var(--font-display); color: #059669;" id="ledger-savings-amt">₹48,20,000</div>
+            <div style="font-size: 0.72rem; color: var(--ink); font-weight: 700;">Via Geo-Semantic Deduplication</div>
+          </div>
+          <div class="rupee-kpi-card" style="border-left: 4px solid var(--tomato);">
+            <div style="font-size: 0.72rem; font-weight: 800; color: var(--text-muted);">AVOIDED CREW DISPATCHES</div>
+            <div style="font-size: 1.6rem; font-weight: 900; font-family: var(--font-display); color: var(--tomato);" id="ledger-dispatches-val">342 Redundant Dispatches</div>
+            <div style="font-size: 0.72rem; color: var(--ink); font-weight: 700;">Zero Duplicate Fuel &amp; Labor</div>
+          </div>
+          <div class="rupee-kpi-card" style="border-left: 4px solid var(--mustard);">
+            <div style="font-size: 0.72rem; font-weight: 800; color: var(--text-muted);">FLEET DIESEL CONSERVED</div>
+            <div style="font-size: 1.6rem; font-weight: 900; font-family: var(--font-display); color: #b45309;" id="ledger-diesel-val">6,327 Liters Saved</div>
+            <div style="font-size: 0.72rem; color: var(--ink); font-weight: 700;">Green Municipal Fleet Protocol</div>
+          </div>
+          <div class="rupee-kpi-card" style="border-left: 4px solid #3B82F6;">
+            <div style="font-size: 0.72rem; font-weight: 800; color: var(--text-muted);">CARBON EMISSIONS AVERTED</div>
+            <div style="font-size: 1.6rem; font-weight: 900; font-family: var(--font-display); color: #2563eb;" id="ledger-co2-val">16,956 kg CO2 Averted</div>
+            <div style="font-size: 0.72rem; color: var(--ink); font-weight: 700;">Climate-Resilient Smart City</div>
+          </div>
+        </div>
+
+        <!-- Interactive Personal Property Tax Civic ROI Calculator -->
+        <div class="tax-roi-box">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+            <div>
+              <div style="font-size: 0.95rem; font-family: var(--font-display); font-weight: 900; color: var(--ink);">
+                🧮 "My Property Tax Civic ROI" Calculator
+              </div>
+              <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">
+                Enter your annual property tax to discover exactly how much road, sanitation, and streetlighting your rupees fund!
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 6px;">
+              <span style="font-weight: 900; font-family: var(--font-display);">₹</span>
+              <input type="number" id="tax-calculator-input" value="5000" step="500" min="500" style="width: 100px; padding: 4px 8px; border: 2px solid var(--ink); border-radius: 8px; font-weight: 900; font-family: var(--font-display); font-size: 0.95rem;" oninput="calculateTaxROI(this.value)">
+            </div>
+          </div>
+
+          <div class="tax-input-preset-group">
+            <span style="font-size: 0.72rem; font-weight: 800; color: var(--text-muted); align-self: center;">Quick Presets:</span>
+            <button type="button" class="tax-preset-btn" onclick="calculateTaxROI(2500)">₹2,500 (1-BHK)</button>
+            <button type="button" class="tax-preset-btn" onclick="calculateTaxROI(5000)">₹5,000 (2-BHK)</button>
+            <button type="button" class="tax-preset-btn" onclick="calculateTaxROI(10000)">₹10,000 (3-BHK)</button>
+            <button type="button" class="tax-preset-btn" onclick="calculateTaxROI(25000)">₹25,000 (Independent Villa)</button>
+          </div>
+
+          <div class="tax-breakdown-list" id="tax-roi-breakdown">
+            <!-- Rendered by rupee_ledger.js -->
+          </div>
+        </div>
+
+        <!-- Schedule of Rates Table -->
+        <div style="margin-top: 1.25rem;">
+          <h4 style="font-size: 0.95rem; font-family: var(--font-display); font-weight: 900; color: var(--ink); margin-bottom: 6px;">
+            📑 Official CPWD / ULB Schedule of Rates (Standard Unit Benchmarks 2026)
+          </h4>
+          <table class="triage-table">
+            <thead>
+              <tr>
+                <th>Municipal Service / Asset Repair</th>
+                <th>Standard Unit</th>
+                <th>Prescribed Rate (INR)</th>
+                <th>Auditing Authority</th>
+              </tr>
+            </thead>
+            <tbody id="ledger-sor-tbody">
+              <!-- Rendered by rupee_ledger.js -->
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </main>
@@ -2084,6 +2305,10 @@
   <script src="js/audio_engine.js"></script>
   <script src="js/celebration.js"></script>
   <script src="js/certificate_generator.js"></script>
+  <script src="js/oscilloscope.js"></script>
+  <script src="js/vision_canvas.js"></script>
+  <script src="js/fleet_simulation.js"></script>
+  <script src="js/rupee_ledger.js"></script>
   <script src="js/sticker_theme.js"></script>
   <script src="js/translations.js"></script>
   <script src="js/map_view.js"></script>

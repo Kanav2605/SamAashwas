@@ -567,6 +567,9 @@ document.addEventListener('DOMContentLoaded', () => {
   loadWardGovernanceData();
   handleHashRouting();
   updateCityWeatherAQI('bengaluru');
+  if (typeof loadRupeeLedger === 'function') loadRupeeLedger();
+  if (typeof initVisionCanvas === 'function') initVisionCanvas();
+  if (typeof initOscilloscope === 'function') initOscilloscope('voice-oscilloscope-canvas');
   if (window.civicAudio && typeof window.civicAudio.updateSoundButtonUI === 'function') {
     window.civicAudio.updateSoundButtonUI();
   }
@@ -758,8 +761,15 @@ function switchTab(tabId) {
   if (tabId === 'field-tasks-view') loadFieldTasks();
   if (tabId === 'triage-view') loadTriageQueue();
   if (tabId === 'dispatch-view') loadDispatchData();
-  if (tabId === 'transparency-view') loadTransparencyData();
-  if (tabId === 'citizen-portal') checkForNearbyDeflection();
+  if (tabId === 'transparency-view') {
+    loadTransparencyData();
+    if (typeof loadRupeeLedger === 'function') loadRupeeLedger();
+  }
+  if (tabId === 'citizen-portal') {
+    checkForNearbyDeflection();
+    if (typeof initVisionCanvas === 'function') initVisionCanvas();
+    if (typeof initOscilloscope === 'function') initOscilloscope('voice-oscilloscope-canvas');
+  }
 
   // Sync browser URL Hash without reload
   const hashMap = {
@@ -1703,6 +1713,10 @@ function goToWizardStep(step) {
     checkForNearbyDeflection();
   } else if (step === 3) {
     updateConfidenceChip();
+    if (typeof initVisionCanvas === 'function') initVisionCanvas();
+    if (typeof runVisionScan === 'function') runVisionScan();
+  } else if (step === 1) {
+    if (typeof initOscilloscope === 'function') initOscilloscope('voice-oscilloscope-canvas');
   }
 }
 
@@ -2537,7 +2551,20 @@ function fillSampleGrievance(lang) {
   const txt = samples[lang] || samples.en;
   document.getElementById('complaint-text').value = txt;
   const statusLabel = document.getElementById('voice-status-label');
-  if (statusLabel) statusLabel.innerText = `Loaded sample: "${txt}"`;
+  if (statusLabel) statusLabel.innerText = `Transcribed voice note: "${txt}"`;
+
+  // Start oscilloscope for 1.4s to visually represent audio waveform
+  if (typeof startOscilloscope === 'function') {
+    startOscilloscope('voice-oscilloscope-canvas');
+    setTimeout(() => {
+      if (typeof stopOscilloscope === 'function') stopOscilloscope('voice-oscilloscope-canvas');
+    }, 1400);
+  }
+
+  // Play auditory tone
+  if (window.civicAudio && typeof window.civicAudio.playRisingTone === 'function') {
+    window.civicAudio.playRisingTone();
+  }
 }
 
 function setLocationCoords(lat, lon) {

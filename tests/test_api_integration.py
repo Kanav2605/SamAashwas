@@ -162,5 +162,68 @@ def test_signature_interactive_features_present_in_index():
     assert "shortcuts-modal" in html
     # Certificate button
     assert "openCertificateModal" in html
+    # Flagship Feature Scripts
+    assert "js/oscilloscope.js" in html
+    assert "js/vision_canvas.js" in html
+    assert "js/fleet_simulation.js" in html
+    assert "js/rupee_ledger.js" in html
+    # Canvases & Interactive Panels
+    assert "vision-diagnostic-canvas" in html
+    assert "voice-oscilloscope-canvas" in html
+    assert "fleet-telemetry-panel" in html
+    assert "btn-toggle-simulation" in html
+    assert "rupee-transparency-ledger" in html
+    assert "tax-calculator-input" in html
+
+def test_vision_diagnostics_endpoint():
+    # Test authentic pothole detection
+    res = client.post("/api/v1/complaints/vision-diagnostics", json={
+        "image_identifier": "sample_pothole",
+        "department": "Roads & Traffic Infrastructure",
+        "lat": 12.9716,
+        "lon": 77.5946
+    })
+    assert res.status_code == 200
+    data = res.json()
+    assert data["detected_class"] == "pothole"
+    assert data["is_authentic"] is True
+    assert data["status_label"] == "Auto-Verified"
+    assert len(data["objects"]) > 0
+    assert "box" in data["objects"][0]
+    assert data["spam_shield"]["is_spam"] is False
+
+    # Test spam/meme shield trigger
+    res_spam = client.post("/api/v1/complaints/vision-diagnostics", json={
+        "image_identifier": "sample_meme_selfie.png",
+        "department": "Roads & Traffic Infrastructure"
+    })
+    assert res_spam.status_code == 200
+    data_spam = res_spam.json()
+    assert data_spam["detected_class"] == "unrelated_or_spam"
+    assert data_spam["is_authentic"] is False
+    assert data_spam["spam_shield"]["is_spam"] is True
+    assert data_spam["spam_shield"]["verdict"] == "FLAGGED_SPAM_SHIELD_ACTIVE"
+
+def test_fleet_telemetry_endpoint():
+    res = client.get("/api/v1/dispatch/fleet-telemetry?city=bengaluru")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["active_squads_count"] >= 3
+    assert len(data["squads"]) >= 3
+    squad_alpha = data["squads"][0]
+    assert "Squad Alpha-1" in squad_alpha["name"]
+    assert "lat" in squad_alpha and "lon" in squad_alpha
+    assert "equipment" in squad_alpha
+    assert len(data["radio_chatter"]) > 0
+
+def test_rupee_transparency_ledger_endpoint():
+    res = client.get("/api/v1/analytics/rupee-ledger?city=bengaluru")
+    assert res.status_code == 200
+    data = res.json()
+    assert data["total_annual_budget_crores"] > 0
+    assert data["taxpayer_savings_inr"] > 0
+    assert "₹" in data["taxpayer_savings_formatted"]
+    assert len(data["schedule_of_rates"]) >= 5
+    assert len(data["property_tax_distribution"]) >= 5
 
 

@@ -1,10 +1,31 @@
 from fastapi import APIRouter, HTTPException, Query, Header
 from typing import List, Optional, Dict, Any
+from pydantic import BaseModel, Field
 from ..models.schemas import ComplaintCreateRequest, ComplaintResponse, VoiceNoteComplaintRequest, ChannelEnum
 from ..db.database import db
+from ..core.vision_engine import vision_engine
 from .auth import get_current_user_from_token, is_privileged_user, mask_phone, mask_name
 
+class VisionDiagnosticRequest(BaseModel):
+    image_identifier: str = Field("sample_pothole", description="Image URL, base64 data, or sample tag")
+    department: Optional[str] = Field("Roads & Traffic Infrastructure", description="Target municipal department")
+    lat: Optional[float] = Field(None, description="Optional GPS latitude")
+    lon: Optional[float] = Field(None, description="Optional GPS longitude")
+
 router = APIRouter(prefix="/complaints", tags=["Citizen Complaints"])
+
+@router.post("/vision-diagnostics", summary="Deep vision diagnostics with bounding boxes, EXIF & spam shield")
+async def analyze_vision_diagnostics(payload: VisionDiagnosticRequest):
+    """
+    Executes in-depth multimodal vision verification returning spatial bounding boxes,
+    pavement severity grade, repair area estimates, EXIF tamper checks, and spam shield verdict.
+    """
+    return vision_engine.analyze_diagnostics(
+        image_identifier=payload.image_identifier,
+        department=payload.department,
+        lat=payload.lat,
+        lon=payload.lon
+    )
 
 @router.post("/submit", response_model=ComplaintResponse, summary="Submit a new citizen complaint")
 async def submit_complaint(payload: ComplaintCreateRequest, authorization: Optional[str] = Header(None)):
