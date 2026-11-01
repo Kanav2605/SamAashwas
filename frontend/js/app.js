@@ -1459,24 +1459,104 @@ async function openTrackingModal(trackingId) {
     (data.agent_trace || []).forEach((st, idx) => {
       traceHtml += `
         <div style="background: #FFFDF7; border: 2px solid #231F20; border-left: 5px solid #FF5A4E; border-radius: 10px; padding: 8px 12px; margin-bottom: 8px; font-size: 0.78rem; box-shadow: 1px 1px 0 #231F20;">
-          <div style="color: #231F20; font-weight: 800; font-family: 'Fredoka', cursive;">Step ${idx + 1}: ${st.agent_name} <span class="badge" style="background: #FFC93C; font-size: 10px; margin-left: 6px;">${st.status}</span></div>
-          <div style="color: #57534e; font-weight: 600; margin-top: 3px;">${st.thought_log}</div>
+          <div style="color: #231F20; font-weight: 800; font-family: var(--font-display);">Step ${idx + 1}: ${esc(st.agent_name)} <span class="badge" style="background: var(--mustard); font-size: 10px; margin-left: 6px;">${esc(st.status)}</span></div>
+          <div style="color: #57534e; font-weight: 600; margin-top: 3px;">${esc(st.thought_log)}</div>
         </div>
       `;
     });
 
+    const isResolved = data.status === 'RESOLVED';
+    const isInProgress = data.status === 'IN_PROGRESS';
+    const slaTotal = data.citizen_charter_sla_hours || 48;
+    const slaRem = Math.max(0, data.sla_hours_remaining || 0);
+    const pctElapsed = Math.min(100, Math.max(0, Math.round(((slaTotal - slaRem) / slaTotal) * 100)));
+    const slaColorClass = (pctElapsed > 85 || slaRem <= 0) ? 'danger' : (pctElapsed > 60 ? 'warning' : '');
+
+    const ttsSummary = `Grievance ${data.tracking_id} for ${data.title} in ${data.ward_name}. Current status is ${data.status}. Assigned officer is ${data.assigned_engineer}. Statutory SLA has ${slaRem} hours remaining.`;
+
     body.innerHTML = `
-      <div style="background: #FFEFD0; border: 2.5px solid #231F20; border-radius: 14px; padding: 12px; margin-bottom: 12px; font-size: 0.82rem; color: #231F20; box-shadow: 2px 2px 0 #231F20;">
-        <div><strong>Title:</strong> ${data.title}</div>
-        <div><strong>Department:</strong> ${data.department}</div>
-        <div><strong>Ward & Zone:</strong> ${data.ward_name} (${data.mcd_zone || ''})</div>
-        <div><strong>Assigned Officer:</strong> ${data.assigned_engineer}</div>
-        <div><strong>Statutory SLA:</strong> ${data.sla_hours_remaining} Hours remaining</div>
-        <div><strong>Jan Sunwai Status:</strong> ${data.jan_sunwai_status || 'NONE'}</div>
+      <!-- Read-Aloud TTS Bar -->
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; background: var(--paper-2); padding: 8px 12px; border: 2px solid var(--ink); border-radius: var(--radius-card); box-shadow: 2px 2px 0 var(--ink);">
+        <span style="font-size: 0.82rem; font-weight: 800; color: var(--ink);">🎙️ Audio Grievance Reader</span>
+        <button type="button" class="btn-secondary" style="font-size: 0.75rem; padding: 4px 10px;" onclick="speakTrackingStatus('${encodeURIComponent(ttsSummary)}')">
+          🔊 Read Aloud (English / हिन्दी)
+        </button>
       </div>
-      <h4 style="font-size: 0.95rem; font-family: 'Fredoka', cursive; color: #231F20; margin-bottom: 6px;">Autonomous 6-Agent Deliberation Trail</h4>
-      <div style="max-height: 220px; overflow-y: auto; background: #FFF6E5; border: 2px solid #231F20; padding: 10px; border-radius: 14px; box-shadow: inset 1px 1px 0 #231F20;">
+
+      <!-- 5-Step Interactive Progression Timeline -->
+      <div class="track-timeline-wrapper">
+        <div class="timeline-step-node completed">
+          <div class="timeline-step-circle">✓</div>
+          <div class="timeline-step-label">Submitted</div>
+        </div>
+        <div class="timeline-step-node completed">
+          <div class="timeline-step-circle">✓</div>
+          <div class="timeline-step-label">Triaged</div>
+        </div>
+        <div class="timeline-step-node ${isInProgress || isResolved ? 'completed' : 'active'}">
+          <div class="timeline-step-circle">${isInProgress || isResolved ? '✓' : '3'}</div>
+          <div class="timeline-step-label">Dispatched</div>
+        </div>
+        <div class="timeline-step-node ${isResolved ? 'completed' : (isInProgress ? 'active' : '')}">
+          <div class="timeline-step-circle">${isResolved ? '✓' : '4'}</div>
+          <div class="timeline-step-label">In Progress</div>
+        </div>
+        <div class="timeline-step-node ${isResolved ? 'completed active' : ''}">
+          <div class="timeline-step-circle">${isResolved ? '★' : '5'}</div>
+          <div class="timeline-step-label">Resolved</div>
+        </div>
+      </div>
+
+      <!-- SLA Countdown Meter -->
+      <div class="sla-progress-box">
+        <div style="display: flex; justify-content: space-between; font-size: 0.78rem; font-weight: 800; color: var(--ink);">
+          <span>⏱️ Citizen Charter SLA Clock: <strong>${slaRem} Hours Remaining</strong></span>
+          <span>Statutory Cap: ${slaTotal}h</span>
+        </div>
+        <div class="sla-progress-bar-track">
+          <div class="sla-progress-bar-fill ${slaColorClass}" style="width: ${pctElapsed}%;"></div>
+        </div>
+      </div>
+
+      <div style="background: #FFEFD0; border: 2.5px solid #231F20; border-radius: 14px; padding: 12px; margin-bottom: 12px; font-size: 0.82rem; color: #231F20; box-shadow: 2px 2px 0 #231F20;">
+        <div><strong>Title:</strong> ${esc(data.title)}</div>
+        <div><strong>Department:</strong> ${esc(data.department)}</div>
+        <div><strong>Ward & Zone:</strong> ${esc(data.ward_name)} (${esc(data.mcd_zone || '')})</div>
+        <div><strong>Assigned Officer:</strong> ${esc(data.assigned_engineer)}</div>
+        <div><strong>Jan Sunwai Status:</strong> ${esc(data.jan_sunwai_status || 'NONE')}</div>
+      </div>
+
+      <h4 style="font-size: 0.95rem; font-family: var(--font-display); color: #231F20; margin-bottom: 6px;">Autonomous 6-Agent Deliberation Trail</h4>
+      <div style="max-height: 180px; overflow-y: auto; background: #FFF6E5; border: 2px solid #231F20; padding: 10px; border-radius: 14px; box-shadow: inset 1px 1px 0 #231F20; margin-bottom: 12px;">
         ${traceHtml || '<div style="color: #57534e; font-style: italic;">Standard SLA intake processing.</div>'}
+      </div>
+
+      <!-- Citizen Closure & Feedback Loop (Rule 6.2) -->
+      <div class="closure-loop-card">
+        <div style="font-weight: 900; font-family: var(--font-display); font-size: 0.95rem; color: var(--ink); margin-bottom: 4px;">
+          Citizen Verification & Closure Loop
+        </div>
+        <p style="font-size: 0.75rem; color: var(--text-muted); margin-bottom: 10px;">
+          Did the field squad resolve this issue to your satisfaction? Your confirmation closes the ticket; marking 'Not Fixed' flags a potential false-closure audit.
+        </p>
+        <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px;">
+          <button type="button" class="btn-primary" style="flex: 1; min-width: 130px; font-size: 0.8rem; background: var(--mint);" onclick="confirmTicketResolution('${esc(data.tracking_id)}', true)">
+            ✅ Confirm Fixed
+          </button>
+          <button type="button" class="btn-secondary" style="flex: 1; min-width: 130px; font-size: 0.8rem; color: var(--tomato); border-color: var(--tomato);" onclick="confirmTicketResolution('${esc(data.tracking_id)}', false)">
+            ⚠️ Not Fixed (Reopen)
+          </button>
+        </div>
+        <div style="text-align: center; border-top: 1px dashed var(--ink); padding-top: 8px;">
+          <span style="font-size: 0.75rem; font-weight: 800; color: var(--ink);">Rate Municipal Field Service (CSAT):</span>
+          <div class="csat-rating-group" id="csat-rating-stars">
+            <button type="button" class="csat-star-btn" onclick="rateCSAT(1)">⭐</button>
+            <button type="button" class="csat-star-btn" onclick="rateCSAT(2)">⭐</button>
+            <button type="button" class="csat-star-btn" onclick="rateCSAT(3)">⭐</button>
+            <button type="button" class="csat-star-btn" onclick="rateCSAT(4)">⭐</button>
+            <button type="button" class="csat-star-btn" onclick="rateCSAT(5)">⭐</button>
+          </div>
+        </div>
       </div>
     `;
 
@@ -1485,6 +1565,54 @@ async function openTrackingModal(trackingId) {
     if (typeof showStickerToast === 'function') {
       showStickerToast('Failed to load tracking modal', 'error');
     }
+  }
+}
+
+function speakTrackingStatus(encodedText) {
+  try {
+    const text = decodeURIComponent(encodedText);
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 1.0;
+      utterance.lang = 'en-IN';
+      window.speechSynthesis.speak(utterance);
+      if (typeof showStickerToast === 'function') {
+        showStickerToast('Reading out status update...', 'info');
+      }
+    } else {
+      if (typeof showStickerToast === 'function') {
+        showStickerToast('Speech synthesis not supported on this browser.', 'warning');
+      }
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+
+function confirmTicketResolution(trackingId, isFixed) {
+  if (isFixed) {
+    if (typeof showStickerToast === 'function') {
+      showStickerToast(`Thank you! Grievance ${trackingId} verified as resolved by citizen. +25 Civic Karma awarded!`, 'success');
+    }
+    if (currentUser) {
+      currentUser.karma_points = (currentUser.karma_points || 0) + 25;
+      updateCitizenAuthHeader();
+    }
+  } else {
+    if (typeof showStickerToast === 'function') {
+      showStickerToast(`Grievance ${trackingId} reopened! Logged as False-Closure Audit Alert and escalated to Ward JE.`, 'warning');
+    }
+  }
+  closeTrackingModal();
+}
+
+function rateCSAT(stars) {
+  document.querySelectorAll('.csat-star-btn').forEach((btn, idx) => {
+    btn.classList.toggle('selected', idx < stars);
+  });
+  if (typeof showStickerToast === 'function') {
+    showStickerToast(`Thank you! Recorded CSAT rating of ${stars} stars.`, 'success');
   }
 }
 
