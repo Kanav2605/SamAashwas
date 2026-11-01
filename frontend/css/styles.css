@@ -1,8 +1,8 @@
 /* ==========================================================================
-   CampusHop / SamAashwas - Sticker Book Bus Stop Theme
-   Vibe: Goofy, light, hand-made sticker book. Cream paper, thick ink outlines,
+   SamAashwas v2 - Sticker Book Civic Theme
+   Vibe: Goofy, light, hand-made civic sticker book. Cream paper, thick ink outlines,
          chunky flat colors, cards that look like stickers slapped on a page,
-         and silly objects floating lazily in the background.
+         and silly civic objects floating lazily in the background.
    HARD BANS:
    - NO gradients of any kind (CSS, SVG, or chart fills)
    - NO neon
@@ -216,29 +216,37 @@ a {
 }
 
 /* --------------------------------------------------------------------------
-   TOP UTILITY STRIP & GOVERNMENT BAR
+   ACADEMIC PROTOTYPE BANNER & UTILITY TOPBAR (Rule 4 Compliance)
    -------------------------------------------------------------------------- */
-.tricolor-strip {
-  height: 6px;
-  width: 100%;
-  display: flex;
+.prototype-banner {
+  background: #FFF3DA;
   border-bottom: 2px solid var(--ink);
+  padding: 5px 1.5rem;
+  font-size: 0.76rem;
+  font-weight: 800;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+  z-index: 25;
 }
 
-.tricolor-strip::before {
-  content: "";
-  flex: 1;
-  background-color: #FF7722;
+.prototype-banner-text {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
-.tricolor-strip::after {
-  content: "";
-  flex: 2;
-  background-color: #FFFFFF;
-  box-shadow: inset -50vw 0 0 0 #008844;
+.prototype-banner-text span {
+  font-weight: 600;
+  color: var(--text-muted);
 }
 
-.govt-topbar {
+.utility-topbar {
   background: var(--paper-2);
   border-bottom: var(--border-ink);
   padding: 6px 1.5rem;
@@ -2506,8 +2514,8 @@ tr:nth-child(odd) td {
 .login-tricolor-accent {
   height: 5px;
   width: 100%;
-  background: linear-gradient(90deg, #FF9933 33.3%, #FFFFFF 33.3%, #FFFFFF 66.6%, #138808 66.6%);
-  border-bottom: 1.5px solid var(--ink);
+  background: var(--tomato);
+  border-bottom: 2px solid var(--ink);
 }
 
 .login-presets-grid {
@@ -2819,5 +2827,331 @@ tr:nth-child(odd) td {
   background: var(--cream-white);
   color: var(--ink);
 }
+
+/* --------------------------------------------------------------------------
+   4-STEP CITIZEN REPORT WIZARD
+   -------------------------------------------------------------------------- */
+.wizard-container {
+  max-width: 720px;
+  margin: 0 auto;
+  width: 100%;
+  background: var(--cream-white);
+  border: var(--border-ink-thick);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem;
+  box-shadow: var(--shadow-hard);
+  position: relative;
+}
+
+.wizard-steps-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  margin-bottom: 2rem;
+  padding: 0 10px;
+}
+
+.wizard-steps-header::before {
+  content: "";
+  position: absolute;
+  top: 18px;
+  left: 30px;
+  right: 30px;
+  height: 3px;
+  background: var(--ink);
+  z-index: 1;
+}
+
+.wizard-step-node {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+
+.wizard-step-badge {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--paper-2);
+  border: 2.5px solid var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 0.95rem;
+  color: var(--ink);
+  box-shadow: 2px 2px 0 var(--ink);
+  transition: all 0.2s ease;
+}
+
+.wizard-step-node.active .wizard-step-badge {
+  background: var(--tomato);
+  color: var(--cream-white);
+  transform: scale(1.15);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.wizard-step-node.done .wizard-step-badge {
+  background: var(--mint);
+  color: var(--ink);
+}
+
+.wizard-step-label {
+  font-size: 0.72rem;
+  font-weight: 800;
+  font-family: var(--font-display);
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.wizard-step-node.active .wizard-step-label {
+  color: var(--ink);
+  font-weight: 900;
+}
+
+.wizard-pane {
+  display: none;
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.wizard-pane.active {
+  display: block;
+}
+
+/* Category Selection Grid */
+.category-select-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 10px;
+  margin: 1rem 0;
+}
+
+.category-card {
+  background: var(--paper-2);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-sm);
+  padding: 12px 8px;
+  text-align: center;
+  cursor: pointer;
+  box-shadow: 2px 2px 0 var(--ink);
+  transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.category-card:hover {
+  background: var(--mustard);
+  transform: translateY(-2px);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.category-card.selected {
+  background: var(--tomato);
+  color: var(--cream-white);
+  border-color: var(--ink);
+  transform: translateY(-2px);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.category-card-icon {
+  font-size: 1.8rem;
+  line-height: 1;
+}
+
+.category-card-title {
+  font-size: 0.78rem;
+  font-weight: 800;
+  font-family: var(--font-display);
+}
+
+/* "Is it one of these?" Duplicate Deflection Card */
+.deflection-section {
+  background: #FFF9E6;
+  border: 2px dashed var(--ink);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin: 1.25rem 0;
+}
+
+.deflection-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.deflection-title {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 0.88rem;
+  color: var(--tomato);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.deflection-item {
+  background: var(--cream-white);
+  border: 1.5px solid var(--ink);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.deflection-item-text {
+  font-size: 0.8rem;
+  line-height: 1.35;
+  color: var(--ink);
+}
+
+.btn-me-too {
+  background: var(--mint);
+  color: var(--ink);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-pill);
+  padding: 6px 12px;
+  font-size: 0.76rem;
+  font-weight: 800;
+  font-family: var(--font-display);
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 2px 2px 0 var(--ink);
+  transition: all 0.12s ease;
+}
+
+.btn-me-too:hover {
+  background: var(--mustard);
+  transform: translate(-1px, -1px);
+}
+
+/* Confidence Chip */
+.confidence-chip-card {
+  background: #E8F9F2;
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  margin-bottom: 1rem;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.confidence-chip-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 6px;
+}
+
+.confidence-chip-title {
+  font-weight: 900;
+  font-family: var(--font-display);
+  font-size: 0.86rem;
+  color: #065f46;
+}
+
+/* Wizard Navigation Bar */
+.wizard-nav-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1.5px dashed var(--ink);
+}
+
+/* --------------------------------------------------------------------------
+   FIELD CREW PWA STYLES
+   -------------------------------------------------------------------------- */
+.field-task-card {
+  background: var(--cream-white);
+  border: var(--border-ink-thick);
+  border-radius: var(--radius-md);
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow-hard);
+  position: relative;
+}
+
+.field-order-badge {
+  position: absolute;
+  top: -12px;
+  left: 16px;
+  background: var(--mustard);
+  border: 2px solid var(--ink);
+  border-radius: var(--radius-pill);
+  padding: 2px 12px;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: 0.78rem;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.field-big-btn {
+  min-height: 48px;
+  font-size: 0.95rem;
+  padding: 12px 20px;
+  font-weight: 900;
+  font-family: var(--font-display);
+}
+
+/* --------------------------------------------------------------------------
+   OFFICER TRIAGE QUEUE STYLES
+   -------------------------------------------------------------------------- */
+.triage-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  background: var(--cream-white);
+  border: var(--border-ink);
+  box-shadow: var(--shadow-hard);
+}
+
+.triage-table th {
+  background: var(--paper-2);
+  border-bottom: 2px solid var(--ink);
+  padding: 10px 12px;
+  font-family: var(--font-display);
+  font-weight: 900;
+  text-align: left;
+}
+
+.triage-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--ink);
+  vertical-align: top;
+}
+
+.triage-table tr:hover {
+  background: #FFFDF0;
+}
+
+.triage-table tr.selected {
+  background: #FFF2D1;
+  outline: 2px solid var(--tomato);
+}
+
+.triage-key-badge {
+  display: inline-block;
+  background: var(--paper-2);
+  border: 1.5px solid var(--ink);
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-family: var(--font-mono, monospace);
+  font-weight: 900;
+  font-size: 0.72rem;
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
 
 

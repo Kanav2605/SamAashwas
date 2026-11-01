@@ -46,3 +46,26 @@ async def escalate_ticket_jan_sunwai(ticket_id: str):
         "jan_sunwai_status": ticket.jan_sunwai_status,
         "message": f"Ticket {ticket_id} has been docketed for the upcoming Jan Sunwai / Public Grievance Day hearing before the Municipal Commissioner."
     }
+
+@router.post("/{ticket_id}/endorse", summary="Citizen endorsement (+1 Me too) for duplicate deflection")
+async def endorse_master_ticket(
+    ticket_id: str,
+    payload: Optional[Dict[str, Any]] = None
+):
+    """
+    Register an active citizen endorsement (+1 Me too) on an existing master incident.
+    Deflects redundant ticket creation while boosting incident priority and citizen karma.
+    """
+    citizen_name = (payload or {}).get("citizen_name", "Citizen")
+    citizen_phone = (payload or {}).get("citizen_phone", "9876543210")
+    ticket = db.endorse_master_ticket(ticket_id, citizen_name=citizen_name, citizen_phone=citizen_phone)
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Master ticket not found")
+    return {
+        "status": "success",
+        "master_ticket_id": ticket_id,
+        "report_count": ticket.report_count,
+        "message": f"Endorsement recorded! Master Incident {ticket_id} now has {ticket.report_count} citizen endorsements.",
+        "karma_points_awarded": 50
+    }
+

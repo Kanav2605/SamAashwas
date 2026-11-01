@@ -1,4 +1,4 @@
-// Leaflet GIS Map Visualization for CivicSense AI (SamAashwas) - Sticker Book Bus Stop Edition
+// Leaflet GIS Map Visualization for CivicSense AI (SamAashwas) - Sticker Book Civic Edition
 let map;
 let markersLayer = null;
 let radiusLayer = null;

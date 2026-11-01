@@ -93,3 +93,40 @@ def test_pwa_and_frontend_serving():
     res_sw = client.get("/sw.js")
     assert res_sw.status_code == 200
     assert "civicsense" in res_sw.text
+
+def test_endorse_master_ticket():
+    # First get an existing master ticket
+    res = client.get("/api/v1/master-tickets")
+    assert res.status_code == 200
+    tickets = res.json()
+    assert len(tickets) > 0
+    t_id = tickets[0]["master_ticket_id"]
+    initial_reports = tickets[0]["report_count"]
+
+    # Endorse ticket
+    endorse_res = client.post(f"/api/v1/master-tickets/{t_id}/endorse", json={
+        "citizen_name": "Test Endorser",
+        "citizen_phone": "9876543299"
+    })
+    assert endorse_res.status_code == 200
+    data = endorse_res.json()
+    assert data["status"] == "success"
+    assert data["report_count"] == initial_reports + 1
+    assert data["karma_points_awarded"] == 50
+
+def test_academic_prototype_banner_and_new_views_present():
+    res = client.get("/")
+    assert res.status_code == 200
+    html = res.text
+    # Academic Prototype Banner (Rule 4)
+    assert "Academic Capstone Prototype" in html
+    assert "Not an official government service" in html
+    # New Views for Phase 1
+    assert "field-tasks-view" in html
+    assert "triage-view" in html
+    assert "dispatch-view" in html
+    assert "transparency-view" in html
+    # 4-step wizard
+    assert "wizard-node-1" in html
+    assert "dpdp-consent-checkbox" in html
+

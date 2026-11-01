@@ -17,15 +17,19 @@
 </head>
 <body class="skin-tomato-toast" data-motion="normal">
 
-  <!-- Top Tricolor Ribbon (Indian Saffron, White, Green) -->
-  <div class="tricolor-strip"></div>
+  <!-- Persistent Academic Prototype Banner (Rule 4 Compliance) -->
+  <div class="prototype-banner">
+    <div class="prototype-banner-text">
+      🎓 <strong>Academic Capstone Prototype:</strong> SamAashwas is an independent research platform. 
+      <span>Not an official government service. No affiliation with MoHUA, BBMP, MCD, BMC or any ULB.</span>
+    </div>
+  </div>
 
-  <!-- Government of India / National Urban Local Bodies Top Utility Bar -->
-  <div class="govt-topbar">
-    <div style="display: flex; align-items: center; gap: 10px;">
-      <span>🇮🇳 <strong>राष्ट्रीय नगर सेवा एवं पालिका महासंघ</strong> | National Municipal Care & Citizen Redressal Portal</span>
-      <span style="opacity: 0.4;">|</span>
-      <span>सत्यमेव जयते</span>
+  <!-- Utility Bar: Skin, Motion, Font, and Sunlight Mode Controls -->
+  <div class="utility-topbar">
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span class="badge" style="background: var(--mustard); font-size: 0.74rem;">SamAashwas v2</span>
+      <span style="font-size: 0.76rem; font-weight: 700; color: var(--text-muted);">Municipal Grievance Intelligence &amp; Care</span>
     </div>
     <div class="topbar-accessibility">
       <!-- 4 Light Skins (Section 6.2) -->
@@ -158,15 +162,19 @@
 
     <!-- Desktop Navigation Tabs -->
     <nav class="nav-tabs">
-      <button class="tab-btn active" data-tab="home-view" onclick="switchTab('home-view')" data-i18n="tab_home">🏛️ National Urban Gateway</button>
-      <button class="tab-btn" data-tab="gallery-view" onclick="switchTab('gallery-view')" data-i18n="tab_gallery">📸 Before & After Gallery</button>
-      <button class="tab-btn" data-tab="rewards-view" onclick="switchTab('rewards-view')" data-i18n="tab_rewards">🏆 Swachh Nagrik Rewards</button>
-      <button class="tab-btn" data-tab="command-center" onclick="switchTab('command-center')" data-i18n="tab_command_center">🗺️ Live Incident Map & GIS</button>
-      <button class="tab-btn" data-tab="agent-view" onclick="switchTab('agent-view')" data-i18n="tab_agent_view">🤖 Smart AI Assistance</button>
-      <button class="tab-btn" data-tab="predictive-view" onclick="switchTab('predictive-view')" data-i18n="tab_predictive_view">🌧️ Predictive Risk Shield</button>
-      <button class="tab-btn" data-tab="jan-sunwai-view" onclick="switchTab('jan-sunwai-view')" data-i18n="tab_jan_sunwai">⚖️ Jan Sunwai & Ward Sabha</button>
-      <button class="tab-btn" data-tab="citizen-portal" onclick="handleGrievanceTabClick()" data-i18n="tab_citizen_portal">📝 File Grievance</button>
-      <button class="tab-btn" data-tab="whatsapp-simulator" onclick="switchTab('whatsapp-simulator')" data-i18n="tab_whatsapp_bot">💬 WhatsApp Assistant</button>
+      <button class="tab-btn active" data-tab="home-view" onclick="switchTab('home-view')" data-i18n="tab_home">🏛️ National Gateway</button>
+      <button class="tab-btn" data-tab="citizen-portal" onclick="handleGrievanceTabClick()" data-i18n="tab_citizen_portal">📝 4-Step Report Wizard</button>
+      <button class="tab-btn" data-tab="field-tasks-view" onclick="switchTab('field-tasks-view')">👷 Field Crew PWA</button>
+      <button class="tab-btn" data-tab="triage-view" onclick="switchTab('triage-view')">📥 Officer Triage</button>
+      <button class="tab-btn" data-tab="dispatch-view" onclick="switchTab('dispatch-view')">🚚 Dispatch Optimizer</button>
+      <button class="tab-btn" data-tab="transparency-view" onclick="switchTab('transparency-view')">📊 Ward Scorecards</button>
+      <button class="tab-btn" data-tab="command-center" onclick="switchTab('command-center')" data-i18n="tab_command_center">🗺️ Incident Map</button>
+      <button class="tab-btn" data-tab="gallery-view" onclick="switchTab('gallery-view')" data-i18n="tab_gallery">📸 Transformations</button>
+      <button class="tab-btn" data-tab="rewards-view" onclick="switchTab('rewards-view')" data-i18n="tab_rewards">🏆 Nagrik Rewards</button>
+      <button class="tab-btn" data-tab="predictive-view" onclick="switchTab('predictive-view')" data-i18n="tab_predictive_view">🌧️ Predictive Shield</button>
+      <button class="tab-btn" data-tab="jan-sunwai-view" onclick="switchTab('jan-sunwai-view')" data-i18n="tab_jan_sunwai">⚖️ Jan Sunwai</button>
+      <button class="tab-btn" data-tab="agent-view" onclick="switchTab('agent-view')" data-i18n="tab_agent_view">🤖 AI Deliberation</button>
+      <button class="tab-btn" data-tab="whatsapp-simulator" onclick="switchTab('whatsapp-simulator')" data-i18n="tab_whatsapp_bot">💬 WhatsApp</button>
     </nav>
   </header>
 
@@ -257,17 +265,17 @@
         </div>
       </div>
 
-      <!-- Live CampusHop / SamAashwas Squish Meter (Section 6.10) -->
+      <!-- Live SamAashwas Civic Workload & Capacity Meter -->
       <div class="squish-meter-card">
         <div class="squish-meter-header">
           <div class="squish-title-group">
-            <span style="font-size: 1.6rem;">🚌</span>
+            <span style="font-size: 1.6rem;">🏛️</span>
             <div>
               <div style="font-weight: 900; font-family: var(--font-display); font-size: 1.05rem;">
-                CampusHop Civic Transit & Grievance Squish Meter
+                Municipal Field Squad Capacity & Grievance Load Meter
               </div>
               <div style="font-size: 0.72rem; color: var(--text-muted); font-weight: 700;">
-                Live load: &lt;40% Roomy (Mint) &bull; 40-70% Cozy (Mustard) &bull; 70-90% Snug (Peach) &bull; &gt;90% Sardine Mode (Tomato)
+                Live load: &lt;40% Roomy (Mint) &bull; 40-70% Cozy (Mustard) &bull; 70-90% Snug (Peach) &bull; &gt;90% High Surge (Tomato)
               </div>
             </div>
           </div>
@@ -953,117 +961,309 @@
     <div class="sticker-divider-wavy"></div>
 
     <!-- ========================================== -->
-    <!-- TAB 8: CITIZEN GRIEVANCE SUBMISSION        -->
+    <!-- TAB 8: 4-STEP CITIZEN REPORT WIZARD       -->
     <!-- ========================================== -->
     <div id="citizen-portal" class="view-container">
-      <div style="max-width: 680px; margin: 0 auto; width: 100%; background: var(--cream-white); border: var(--border-ink-thick); border-radius: var(--radius-lg); padding: 1.75rem; box-shadow: var(--shadow-hard);">
-        <h2 style="margin-bottom: 0.5rem; font-size: 1.35rem; color: var(--ink); font-family: var(--font-display); font-weight: 900;" data-i18n="portal_title">Citizen Grievance Submission</h2>
-        <p style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600; margin-bottom: 1.25rem;" data-i18n="portal_sub">
-          Report municipal issues in Hindi, Hinglish, Kannada, Tamil, or English. Our AI automatically extracts department, verifies photos, and merges neighborhood complaints.
-        </p>
+      <div style="max-width: 720px; margin: 0 auto; width: 100%; background: var(--cream-white); border: var(--border-ink-thick); border-radius: var(--radius-lg); padding: 1.75rem; box-shadow: var(--shadow-hard);">
+        
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 8px;">
+          <div>
+            <h2 style="margin: 0; font-size: 1.4rem; color: var(--ink); font-family: var(--font-display); font-weight: 900;" data-i18n="portal_title">
+              📝 4-Step Citizen Grievance Wizard
+            </h2>
+            <p style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600; margin-top: 4px;" data-i18n="portal_sub">
+              Smart municipal intake with automatic spatial deflection, multimodal verification, and DPDP 2023 compliance.
+            </p>
+          </div>
+          <span class="badge badge-mission" id="wizard-step-tag">Step 1 of 4: What</span>
+        </div>
+
+        <!-- 4-Step Visual Progress Indicator -->
+        <div class="wizard-steps-indicator" style="display: flex; justify-content: space-between; margin-bottom: 1.5rem; position: relative;">
+          <div class="wizard-step-node active" id="wizard-node-1" onclick="goToWizardStep(1)">
+            <div class="wizard-step-badge">1</div>
+            <div class="wizard-step-label">1. What</div>
+          </div>
+          <div class="wizard-step-node" id="wizard-node-2" onclick="goToWizardStep(2)">
+            <div class="wizard-step-badge">2</div>
+            <div class="wizard-step-label">2. Where</div>
+          </div>
+          <div class="wizard-step-node" id="wizard-node-3" onclick="goToWizardStep(3)">
+            <div class="wizard-step-badge">3</div>
+            <div class="wizard-step-label">3. Check</div>
+          </div>
+          <div class="wizard-step-node" id="wizard-node-4" onclick="goToWizardStep(4)">
+            <div class="wizard-step-badge">4</div>
+            <div class="wizard-step-label">4. Consent</div>
+          </div>
+        </div>
 
         <!-- Citizen Authentication Status Banner -->
         <div id="grievance-auth-banner" class="grievance-auth-banner"></div>
 
-        <!-- Vernacular Speech / Voice Note Recorder Widget -->
-        <div class="voice-recorder-card">
-          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
-            <div style="font-size: 0.88rem; font-weight: 800; color: var(--ink); font-family: var(--font-display); display: flex; align-items: center; gap: 6px;">
-              🎙️ <span data-i18n="voice_record_btn">Bolkar Batayein / Record Voice Grievance</span>
-            </div>
-            <select id="voice-lang-select" class="form-control" style="padding: 4px 8px; font-size: 0.75rem; width: auto;">
-              <option value="hi-IN">हिन्दी (Hindi)</option>
-              <option value="kn-IN">ಕನ್ನಡ (Kannada)</option>
-              <option value="ta-IN">தமிழ் (Tamil)</option>
-              <option value="hinglish" selected>Hinglish</option>
-              <option value="en-IN">English (India)</option>
-            </select>
-          </div>
-
-          <div style="display: flex; align-items: center; gap: 12px; margin-top: 10px;">
-            <button type="button" id="voice-record-btn" class="btn-primary" onclick="toggleVoiceRecording()">
-              🎙️ <span id="voice-btn-label">Start Speaking</span>
-            </button>
-            <span id="voice-status-label" style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700;">Click mic or select quick vernacular sample below</span>
-          </div>
-
-          <!-- Quick Vernacular Sample Buttons -->
-          <div style="margin-top: 8px;">
-            <div style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px;" data-i18n="voice_quick_samples">Quick Vernacular Sample Voice Inputs:</div>
-            <div class="sample-chips">
-              <span class="sample-chip" onclick="fillSampleGrievance('hi')">🇮🇳 Hindi: सड़क पर बड़ा गड्ढा है</span>
-              <span class="sample-chip" onclick="fillSampleGrievance('kn')">🟡 Kannada: ರಸ್ತೆಯಲ್ಲಿ ದೊಡ್ಡ ಗುಂಡಿ ಬಿದ್ದಿದೆ</span>
-              <span class="sample-chip" onclick="fillSampleGrievance('ta')">🔴 Tamil: தெரு விளக்கு எரியவில்லை</span>
-              <span class="sample-chip" onclick="fillSampleGrievance('hg')">⚡ Hinglish: Street light 4 din se band hai</span>
-              <span class="sample-chip" onclick="fillSampleGrievance('en')">🌐 English: Sewer water overflowing near gate</span>
-            </div>
-          </div>
-        </div>
-
         <form id="citizen-form" onsubmit="handleCitizenSubmit(event)">
-          <div class="form-group">
-            <label data-i18n="label_describe">Describe the Grievance (Text or Vernacular Audio)</label>
-            <textarea id="complaint-text" class="form-control" rows="3" placeholder="e.g. Bhaiya road par street light 4 din se band hai, near Sharma General Store, Ward 7" data-i18n="placeholder_describe" required></textarea>
-          </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div class="form-group">
-              <label data-i18n="label_lat">Latitude</label>
-              <input type="number" step="0.000001" id="form-lat" class="form-control" value="12.9716" required>
+          <!-- ============================================== -->
+          <!-- STEP 1: WHAT (Category, Text, Voice, QR)       -->
+          <!-- ============================================== -->
+          <div class="wizard-pane active" id="wizard-pane-1">
+            <label style="font-size: 0.88rem; font-weight: 900; color: var(--ink); font-family: var(--font-display); display: block; margin-bottom: 6px;">
+              Select Issue Category (Click to Pre-Filter):
+            </label>
+            <div class="category-select-grid" id="category-selector-grid">
+              <div class="category-card selected" data-cat="Roads & Footpaths" onclick="selectWizardCategory('Roads & Footpaths', this)">
+                <div class="category-card-icon">🚧</div>
+                <div class="category-card-title">Roads &amp; Potholes</div>
+              </div>
+              <div class="category-card" data-cat="Electrical & Streetlights" onclick="selectWizardCategory('Electrical & Streetlights', this)">
+                <div class="category-card-icon">💡</div>
+                <div class="category-card-title">Streetlights &amp; Power</div>
+              </div>
+              <div class="category-card" data-cat="Sanitation & Waste Management" onclick="selectWizardCategory('Sanitation & Waste Management', this)">
+                <div class="category-card-icon">🧹</div>
+                <div class="category-card-title">Sanitation &amp; Garbage</div>
+              </div>
+              <div class="category-card" data-cat="Water Supply & Sewage" onclick="selectWizardCategory('Water Supply & Sewage', this)">
+                <div class="category-card-icon">💧</div>
+                <div class="category-card-title">Water &amp; Sewer Drainage</div>
+              </div>
+              <div class="category-card" data-cat="Horticulture & Parks" onclick="selectWizardCategory('Horticulture & Parks', this)">
+                <div class="category-card-icon">🌳</div>
+                <div class="category-card-title">Trees &amp; Public Parks</div>
+              </div>
+              <div class="category-card" data-cat="Encroachment & Town Planning" onclick="selectWizardCategory('Encroachment & Town Planning', this)">
+                <div class="category-card-icon">🏗️</div>
+                <div class="category-card-title">Encroachment &amp; Footpath</div>
+              </div>
             </div>
+
+            <!-- Vernacular Speech / Voice Note Recorder Widget -->
+            <div class="voice-recorder-card">
+              <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px;">
+                <div style="font-size: 0.88rem; font-weight: 800; color: var(--ink); font-family: var(--font-display); display: flex; align-items: center; gap: 6px;">
+                  🎙️ <span data-i18n="voice_record_btn">Bolkar Batayein / Record Voice Grievance</span>
+                </div>
+                <select id="voice-lang-select" class="form-control" style="padding: 4px 8px; font-size: 0.75rem; width: auto;">
+                  <option value="hi-IN">हिन्दी (Hindi)</option>
+                  <option value="kn-IN">ಕನ್ನಡ (Kannada)</option>
+                  <option value="ta-IN">தமிழ் (Tamil)</option>
+                  <option value="hinglish" selected>Hinglish</option>
+                  <option value="en-IN">English (India)</option>
+                </select>
+              </div>
+
+              <div style="display: flex; align-items: center; gap: 12px; margin-top: 10px;">
+                <button type="button" id="voice-record-btn" class="btn-primary" onclick="toggleVoiceRecording()">
+                  🎙️ <span id="voice-btn-label">Start Speaking</span>
+                </button>
+                <span id="voice-status-label" style="font-size: 0.78rem; color: var(--text-muted); font-weight: 700;">Click mic or select quick vernacular sample below</span>
+              </div>
+
+              <div style="margin-top: 8px;">
+                <div style="font-size: 0.72rem; color: var(--text-muted); margin-bottom: 4px;" data-i18n="voice_quick_samples">Quick Vernacular Sample Voice Inputs:</div>
+                <div class="sample-chips">
+                  <span class="sample-chip" onclick="fillSampleGrievance('hi')">🇮🇳 Hindi: सड़क पर बड़ा गड्ढा है</span>
+                  <span class="sample-chip" onclick="fillSampleGrievance('kn')">🟡 Kannada: ರಸ್ತೆಯಲ್ಲಿ ದೊಡ್ಡ ಗುಂಡಿ ಬಿದ್ದಿದೆ</span>
+                  <span class="sample-chip" onclick="fillSampleGrievance('ta')">🔴 Tamil: தெரு விளக்கு எரியவில்லை</span>
+                  <span class="sample-chip" onclick="fillSampleGrievance('hg')">⚡ Hinglish: Street light 4 din se band hai</span>
+                  <span class="sample-chip" onclick="fillSampleGrievance('en')">🌐 English: Sewer water overflowing near gate</span>
+                </div>
+              </div>
+            </div>
+
             <div class="form-group">
-              <label data-i18n="label_lon">Longitude</label>
-              <input type="number" step="0.000001" id="form-lon" class="form-control" value="77.6412" required>
+              <label data-i18n="label_describe" style="font-weight: 800;">Describe the Grievance (Text or Vernacular Audio)</label>
+              <textarea id="complaint-text" class="form-control" rows="3" placeholder="e.g. Bhaiya road par street light 4 din se band hai, near Sharma General Store, Ward 7" data-i18n="placeholder_describe" required oninput="onGrievanceTextInput()"></textarea>
+            </div>
+
+            <div class="form-group">
+              <label style="font-size: 0.8rem; font-weight: 800; color: var(--ink);">Asset QR Code / Pole ID / Valve ID (Optional)</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="text" id="form-asset-qr" class="form-control" placeholder="e.g. BLR-POLE-4091 or MCD-SUMP-12" style="flex: 1;">
+                <button type="button" class="btn-secondary" style="font-size: 0.78rem; white-space: nowrap;" onclick="simulateQRScan()">📷 Scan QR</button>
+              </div>
+            </div>
+
+            <div class="wizard-nav-bar">
+              <div></div>
+              <button type="button" class="btn-primary" onclick="goToWizardStep(2)">
+                Next: Choose Location &amp; Deflection &rarr;
+              </button>
             </div>
           </div>
 
-          <!-- Dynamic City Pin Presets -->
-          <div style="margin-bottom: 1rem; display: flex; gap: 8px; flex-wrap: wrap;" id="form-quick-pins">
-            <button type="button" class="btn-primary" style="background: var(--paper-2); color: var(--ink); border: var(--border-ink); font-size: 0.8rem;" onclick="detectLocation()" data-i18n="btn_gps">
-              📍 Auto-Detect GPS Location
-            </button>
-            <button type="button" class="btn-secondary" style="font-size: 0.8rem;" onclick="setLocationCoords(12.9716, 77.6412)">
-              📍 Bengaluru (Indiranagar)
-            </button>
-            <button type="button" class="btn-secondary" style="font-size: 0.8rem;" onclick="setLocationCoords(28.6514, 77.1907)">
-              📍 Delhi (Karol Bagh)
-            </button>
-            <button type="button" class="btn-secondary" style="font-size: 0.8rem;" onclick="setLocationCoords(19.0596, 72.8295)">
-              📍 Mumbai (Bandra)
-            </button>
-          </div>
+          <!-- ============================================== -->
+          <!-- STEP 2: WHERE (Location, Deflection +1)         -->
+          <!-- ============================================== -->
+          <div class="wizard-pane" id="wizard-pane-2">
+            <h3 style="font-size: 1.05rem; font-family: var(--font-display); font-weight: 900; margin-bottom: 0.5rem; color: var(--ink);">
+              📍 Step 2: Location &amp; Neighborhood Duplicate Deflection
+            </h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; margin-bottom: 1rem;">
+              Set the exact geographic coordinates. If an active neighborhood report already exists within 300m, you can simply endorse (+1) it to boost urgency without duplicate backlog!
+            </p>
 
-          <div class="form-group">
-            <label data-i18n="label_photo">Upload Photo (Simulated Vision Check)</label>
-            <select id="form-image-hint" class="form-control">
-              <option value="" data-i18n="photo_none">No Image</option>
-              <option value="pothole" data-i18n="photo_pothole">Photo: Pothole / Broken Road</option>
-              <option value="sewage_overflow" data-i18n="photo_sewage">Photo: Sewer Overflow / Drain Block</option>
-              <option value="garbage_dump" data-i18n="photo_garbage">Photo: Garbage Dump / Trash Pile</option>
-              <option value="broken_streetlight" data-i18n="photo_streetlight">Photo: Broken Streetlight</option>
-              <option value="unrelated_or_spam" data-i18n="photo_spam">Photo: Random Selfie / Meme (Spam Test)</option>
-            </select>
-          </div>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
-            <div class="form-group">
-              <label data-i18n="label_name">Your Name</label>
-              <input type="text" id="citizen-name" class="form-control" value="Aarav Sharma" required>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label data-i18n="label_lat">Latitude</label>
+                <input type="number" step="0.000001" id="form-lat" class="form-control" value="12.9716" required onchange="checkForNearbyDeflection()">
+              </div>
+              <div class="form-group">
+                <label data-i18n="label_lon">Longitude</label>
+                <input type="number" step="0.000001" id="form-lon" class="form-control" value="77.6412" required onchange="checkForNearbyDeflection()">
+              </div>
             </div>
-            <div class="form-group">
-              <label data-i18n="label_phone">Phone Number</label>
-              <input type="text" id="citizen-phone" class="form-control" value="9811099888" required>
+
+            <!-- Dynamic City Pin Presets -->
+            <div style="margin-bottom: 1rem; display: flex; gap: 8px; flex-wrap: wrap;" id="form-quick-pins">
+              <button type="button" class="btn-primary" style="background: var(--paper-2); color: var(--ink); border: var(--border-ink); font-size: 0.8rem;" onclick="detectLocation()" data-i18n="btn_gps">
+                📍 Auto-Detect GPS Location
+              </button>
+              <button type="button" class="btn-secondary" style="font-size: 0.8rem;" onclick="setLocationCoords(12.9716, 77.6412)">
+                📍 Bengaluru (Indiranagar)
+              </button>
+              <button type="button" class="btn-secondary" style="font-size: 0.8rem;" onclick="setLocationCoords(28.6514, 77.1907)">
+                📍 Delhi (Karol Bagh)
+              </button>
+              <button type="button" class="btn-secondary" style="font-size: 0.8rem;" onclick="setLocationCoords(19.0596, 72.8295)">
+                📍 Mumbai (Bandra)
+              </button>
+            </div>
+
+            <!-- "Is it one of these?" Duplicate Deflection Section -->
+            <div class="deflection-section" id="deflection-section">
+              <div class="deflection-header">
+                <div class="deflection-title">
+                  <span>🔍 Is it one of these already reported nearby?</span>
+                </div>
+                <span style="font-size: 0.72rem; color: var(--text-muted); font-weight: 800;">300m Spatial Gate</span>
+              </div>
+              <div id="deflection-items-container">
+                <div style="font-size: 0.78rem; color: var(--text-muted); font-style: italic;">
+                  Checking active master incidents within 300m radius...
+                </div>
+              </div>
+            </div>
+
+            <div class="wizard-nav-bar">
+              <button type="button" class="btn-secondary" onclick="goToWizardStep(1)">
+                &larr; Back: Issue Details
+              </button>
+              <button type="button" class="btn-primary" onclick="goToWizardStep(3)">
+                Next: AI Slot &amp; Confidence Check &rarr;
+              </button>
             </div>
           </div>
 
-          <button type="submit" class="btn-primary" style="width: 100%; margin-top: 0.5rem; padding: 12px; font-size: 0.95rem;" data-i18n="btn_submit_portal" id="btn-submit-grievance">
-            Submit Grievance to Municipal ULB
-          </button>
+          <!-- ============================================== -->
+          <!-- STEP 3: CHECK (Confidence Chip & Photo)         -->
+          <!-- ============================================== -->
+          <div class="wizard-pane" id="wizard-pane-3">
+            <h3 style="font-size: 1.05rem; font-family: var(--font-display); font-weight: 900; margin-bottom: 0.5rem; color: var(--ink);">
+              🤖 Step 3: AI Confidence Chip &amp; Visual Evidence
+            </h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; margin-bottom: 1rem;">
+              Our Indic-NLP engine has parsed your complaint. Verify the extracted department, urgency rating, and photo evidence.
+            </p>
+
+            <!-- Dynamic Confidence Chip Card -->
+            <div class="confidence-chip-card" id="wizard-confidence-chip">
+              <div class="confidence-chip-header">
+                <span class="confidence-chip-title" id="confidence-chip-title">✨ AI Intake Classification: High Confidence</span>
+                <span class="badge badge-low" id="confidence-chip-pct">94% Confidence</span>
+              </div>
+              <div style="font-size: 0.82rem; color: var(--ink); line-height: 1.45;" id="confidence-chip-desc">
+                Looks like <strong>Roads &amp; Footpaths</strong> (Pothole / Broken Surface).
+                <br>
+                <span style="font-size: 0.76rem; color: var(--text-muted);">Wrong category? Tap below to adjust manually.</span>
+              </div>
+              <div style="margin-top: 8px; display: flex; gap: 8px; align-items: center;">
+                <label style="font-size: 0.76rem; font-weight: 800; color: var(--ink);">Override Category:</label>
+                <select id="wizard-category-override" class="form-control" style="padding: 4px 8px; font-size: 0.76rem; width: auto;" onchange="onCategoryOverrideChange(this.value)">
+                  <option value="Roads & Footpaths">Roads &amp; Footpaths</option>
+                  <option value="Electrical & Streetlights">Electrical &amp; Streetlights</option>
+                  <option value="Sanitation & Waste Management">Sanitation &amp; Waste Management</option>
+                  <option value="Water Supply & Sewage">Water Supply &amp; Sewage</option>
+                  <option value="Horticulture & Parks">Horticulture &amp; Parks</option>
+                  <option value="Encroachment & Town Planning">Encroachment &amp; Town Planning</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label data-i18n="label_photo">Upload Photographic Proof (Simulated Vision Verifier)</label>
+              <select id="form-image-hint" class="form-control">
+                <option value="" data-i18n="photo_none">No Image Attached</option>
+                <option value="pothole" data-i18n="photo_pothole" selected>Photo: Pothole / Broken Road (Verified Proof)</option>
+                <option value="sewage_overflow" data-i18n="photo_sewage">Photo: Sewer Overflow / Drain Block</option>
+                <option value="garbage_dump" data-i18n="photo_garbage">Photo: Garbage Dump / Trash Pile</option>
+                <option value="broken_streetlight" data-i18n="photo_streetlight">Photo: Broken Streetlight</option>
+                <option value="unrelated_or_spam" data-i18n="photo_spam">Photo: Random Selfie / Meme (Fraud Spam Test)</option>
+              </select>
+            </div>
+
+            <div class="wizard-nav-bar">
+              <button type="button" class="btn-secondary" onclick="goToWizardStep(2)">
+                &larr; Back: Location
+              </button>
+              <button type="button" class="btn-primary" onclick="goToWizardStep(4)">
+                Next: Consent &amp; Submission &rarr;
+              </button>
+            </div>
+          </div>
+
+          <!-- ============================================== -->
+          <!-- STEP 4: CONSENT & SUBMIT (DPDP 2023 & Receipt) -->
+          <!-- ============================================== -->
+          <div class="wizard-pane" id="wizard-pane-4">
+            <h3 style="font-size: 1.05rem; font-family: var(--font-display); font-weight: 900; margin-bottom: 0.5rem; color: var(--ink);">
+              🔒 Step 4: Citizen Consent &amp; Official Submission
+            </h3>
+            <p style="font-size: 0.8rem; color: var(--text-muted); font-weight: 600; margin-bottom: 1rem;">
+              Review your details. Under DPDP 2023, your personal data is protected and masked from public display.
+            </p>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+              <div class="form-group">
+                <label data-i18n="label_name">Your Name</label>
+                <input type="text" id="citizen-name" class="form-control" value="Aarav Sharma" required>
+              </div>
+              <div class="form-group">
+                <label data-i18n="label_phone">Phone Number (Protected under DPDP Act)</label>
+                <input type="text" id="citizen-phone" class="form-control" value="9811099888" required>
+              </div>
+            </div>
+
+            <!-- DPDP Act 2023 Explicit Purpose-Specific Consent -->
+            <div style="background: var(--paper-2); border: var(--border-ink); border-radius: var(--radius-sm); padding: 12px; margin-bottom: 1.25rem;">
+              <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer; font-size: 0.8rem; font-weight: 700; color: var(--ink); line-height: 1.4;">
+                <input type="checkbox" id="dpdp-consent-checkbox" required checked style="margin-top: 2px; transform: scale(1.2);">
+                <span>
+                  🛡️ <strong>DPDP Act 2023 Purpose-Specific Consent:</strong>
+                  I explicitly consent to the collection, verification, and processing of my contact and location information solely for municipal grievance redressal, spatial deduplication, and statutory Citizen Charter SLA audit tracking.
+                </span>
+              </label>
+            </div>
+
+            <button type="submit" class="btn-primary" style="width: 100%; padding: 14px; font-size: 1rem;" data-i18n="btn_submit_portal" id="btn-submit-grievance">
+              🚀 Submit Grievance to Municipal Corporation
+            </button>
+
+            <div class="wizard-nav-bar">
+              <button type="button" class="btn-secondary" onclick="goToWizardStep(3)">
+                &larr; Back: Review AI Check
+              </button>
+              <div></div>
+            </div>
+          </div>
+
         </form>
 
+        <!-- Official Receipt Card (Rendered Dynamically After Submission) -->
         <div id="submission-result" style="display: none; margin-top: 1.5rem; background: var(--paper-2); border: var(--border-ink-thick); border-radius: var(--radius-md); padding: 1.25rem; font-size: 0.85rem; box-shadow: var(--shadow-hard);">
           <!-- Result rendered dynamically -->
         </div>
+
       </div>
     </div>
 
@@ -1111,6 +1311,224 @@
         </div>
       </div>
     </div>
+
+    <!-- ========================================== -->
+    <!-- TAB: FIELD CREW PWA & DISPATCH TASKS       -->
+    <!-- ========================================== -->
+    <div id="field-tasks-view" class="view-container">
+      <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 1.25rem;">
+        <div>
+          <h2 style="font-size: 1.35rem; color: var(--ink); font-family: var(--font-display); font-weight: 900;">
+            👷 Municipal Field Squad PWA (Glove-Friendly Task Execution)
+          </h2>
+          <p style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">
+            Assigned rapid response work orders for Ward Squads. Enforces GPS geofence verification (&le; 50m) and post-repair photographic proof before resolution.
+          </p>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <span class="badge badge-low" id="field-squad-status-badge">🟢 On Active Patrol &bull; Ward 12 Squad A</span>
+          <button class="btn-primary" onclick="refreshFieldTasks()" style="font-size: 0.8rem; padding: 6px 12px;">🔄 Refresh Queue</button>
+        </div>
+      </div>
+
+      <!-- Field Squad Stats Summary -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+        <div style="background: var(--paper-2); border: var(--border-ink); border-radius: var(--radius-sm); padding: 12px; box-shadow: var(--shadow-hard-sm);">
+          <div style="font-size: 0.74rem; font-weight: 800; color: var(--text-muted);">ASSIGNED SQUAD</div>
+          <div style="font-size: 1.1rem; font-weight: 900; font-family: var(--font-display); color: var(--ink);">Squad A-4 (Ward 12)</div>
+          <div style="font-size: 0.72rem; color: var(--tomato); font-weight: 800;">Van KA-01-EQ-9812</div>
+        </div>
+        <div style="background: var(--paper-2); border: var(--border-ink); border-radius: var(--radius-sm); padding: 12px; box-shadow: var(--shadow-hard-sm);">
+          <div style="font-size: 0.74rem; font-weight: 800; color: var(--text-muted);">ACTIVE WORK ORDERS</div>
+          <div style="font-size: 1.1rem; font-weight: 900; font-family: var(--font-display); color: var(--ink);" id="field-active-tasks-count">3 Pending Tasks</div>
+          <div style="font-size: 0.72rem; color: #065f46; font-weight: 800;">2 Critical / 1 High</div>
+        </div>
+        <div style="background: var(--paper-2); border: var(--border-ink); border-radius: var(--radius-sm); padding: 12px; box-shadow: var(--shadow-hard-sm);">
+          <div style="font-size: 0.74rem; font-weight: 800; color: var(--text-muted);">GPS GEOFENCE BOUNDARY</div>
+          <div style="font-size: 1.1rem; font-weight: 900; font-family: var(--font-display); color: var(--ink);">Strict &le; 50 Meters</div>
+          <div style="font-size: 0.72rem; color: var(--ink); font-weight: 700;">Anti-Ghost Closure Enforcement</div>
+        </div>
+      </div>
+
+      <!-- Field Tasks List Container -->
+      <div id="field-tasks-list">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB: OFFICER TRIAGE QUEUE (KEYBOARD-FIRST)-->
+    <!-- ========================================== -->
+    <div id="triage-view" class="view-container">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; margin-bottom: 1rem;">
+        <div>
+          <h2 style="font-size: 1.35rem; color: var(--ink); font-family: var(--font-display); font-weight: 900;">
+            📥 Municipal Control Room Triage Queue (Keyboard-First)
+          </h2>
+          <p style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">
+            High-velocity keyboard inbox for ULB Triage Engineers. Rapidly confirm AI department assignment, merge duplicates, or refer to Friday Jan Sunwai.
+          </p>
+        </div>
+        <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+          <button class="btn-secondary" onclick="cycleTriageSelection(-1)" title="Previous Ticket (J)">⬆️ Prev (J)</button>
+          <button class="btn-secondary" onclick="cycleTriageSelection(1)" title="Next Ticket (K)">⬇️ Next (K)</button>
+          <button class="btn-primary" onclick="loadTriageQueue()">🔄 Refresh Inbox</button>
+        </div>
+      </div>
+
+      <!-- Keyboard shortcuts legend bar -->
+      <div style="background: var(--paper-2); border: var(--border-ink); border-radius: var(--radius-sm); padding: 8px 12px; margin-bottom: 1rem; display: flex; gap: 12px; flex-wrap: wrap; font-size: 0.76rem; font-weight: 800;">
+        <span>⌨️ <strong>Hotkeys:</strong></span>
+        <span><span class="triage-key-badge">J</span> / <span class="triage-key-badge">K</span> Navigate</span>
+        <span><span class="triage-key-badge">1</span> Roads</span>
+        <span><span class="triage-key-badge">2</span> Electrical</span>
+        <span><span class="triage-key-badge">3</span> Sanitation</span>
+        <span><span class="triage-key-badge">4</span> Water/Sewage</span>
+        <span><span class="triage-key-badge">5</span> Parks</span>
+        <span><span class="triage-key-badge">6</span> Encroachment</span>
+        <span><span class="triage-key-badge">M</span> Merge Selected</span>
+        <span><span class="triage-key-badge">S</span> Split Incident</span>
+        <span><span class="triage-key-badge">R</span> Refer Jan Sunwai</span>
+      </div>
+
+      <!-- Triage Queue Table -->
+      <div style="overflow-x: auto; background: var(--cream-white); border: var(--border-ink-thick); border-radius: var(--radius-md); box-shadow: var(--shadow-hard);">
+        <table class="triage-table">
+          <thead>
+            <tr>
+              <th style="width: 40px;">#</th>
+              <th>Incident &amp; Location</th>
+              <th>AI Extracted Department</th>
+              <th>Confidence</th>
+              <th>Urgency</th>
+              <th>SLA Clock</th>
+              <th>Action Hotkeys</th>
+            </tr>
+          </thead>
+          <tbody id="triage-table-body">
+            <!-- Rendered dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB: DISPATCH OPTIMIZER (VS FIFO BASELINE) -->
+    <!-- ========================================== -->
+    <div id="dispatch-view" class="view-container">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; margin-bottom: 1.25rem;">
+        <div>
+          <h2 style="font-size: 1.35rem; color: var(--ink); font-family: var(--font-display); font-weight: 900;">
+            🚚 Intelligent Field Crew Dispatch Optimizer
+          </h2>
+          <p style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">
+            Dynamic route optimization with SLA urgency constraints vs traditional First-In-First-Out (FIFO) routing baseline.
+          </p>
+        </div>
+        <button class="btn-primary" onclick="recalculateDispatchOptimization()">⚡ Re-Optimize Dispatch Routes</button>
+      </div>
+
+      <!-- Benchmark Comparison Card -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+        <div style="background: #E8F9F2; border: var(--border-ink-thick); border-radius: var(--radius-md); padding: 1.25rem; box-shadow: var(--shadow-hard-sm);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-size: 0.82rem; font-weight: 900; color: #065f46; text-transform: uppercase;">✨ AI Optimized Routing</span>
+            <span class="badge badge-low">39.8% Efficiency Gain</span>
+          </div>
+          <div style="font-size: 2rem; font-family: var(--font-display); font-weight: 900; color: var(--ink);">14.2 km <span style="font-size: 1rem; color: var(--text-muted); font-weight: 700;">(2.4 hrs travel)</span></div>
+          <div style="font-size: 0.78rem; color: var(--ink); font-weight: 700; margin-top: 6px;">
+            ✅ Zero SLA breaches predicted &bull; 42% fuel carbon footprint reduction
+          </div>
+        </div>
+
+        <div style="background: var(--paper-2); border: var(--border-ink-thick); border-radius: var(--radius-md); padding: 1.25rem; box-shadow: var(--shadow-hard-sm);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+            <span style="font-size: 0.82rem; font-weight: 900; color: var(--text-muted); text-transform: uppercase;">⏳ Traditional FIFO Baseline</span>
+            <span class="badge badge-critical">Unoptimized</span>
+          </div>
+          <div style="font-size: 2rem; font-family: var(--font-display); font-weight: 900; color: var(--ink);">23.6 km <span style="font-size: 1rem; color: var(--text-muted); font-weight: 700;">(4.8 hrs travel)</span></div>
+          <div style="font-size: 0.78rem; color: var(--tomato); font-weight: 700; margin-top: 6px;">
+            ⚠️ 2 SLA breaches risk due to criss-cross ward travel
+          </div>
+        </div>
+      </div>
+
+      <!-- Active Squads Dispatch Map & Waypoint Sequence -->
+      <div style="background: var(--cream-white); border: var(--border-ink-thick); border-radius: var(--radius-md); padding: 1.25rem; box-shadow: var(--shadow-hard);">
+        <h3 style="font-size: 1.1rem; font-family: var(--font-display); font-weight: 900; color: var(--ink); margin-bottom: 0.75rem;">
+          🗺️ Active Squad Waypoint Sequence &amp; Fuel Optimization Plan
+        </h3>
+        <div id="dispatch-squad-routes">
+          <!-- Filled dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- TAB: WARD GOVERNANCE & TRANSPARENCY       -->
+    <!-- ========================================== -->
+    <div id="transparency-view" class="view-container">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 8px; margin-bottom: 1.25rem;">
+        <div>
+          <h2 style="font-size: 1.35rem; color: var(--ink); font-family: var(--font-display); font-weight: 900;">
+            📊 Municipal Ward Governance &amp; Transparency Scorecards
+          </h2>
+          <p style="font-size: 0.82rem; color: var(--text-muted); font-weight: 600;">
+            Public grievance resolution compliance, SLA performance, citizen satisfaction ratings, and false-closure audit integrity.
+          </p>
+        </div>
+        <button class="btn-primary" onclick="downloadSanitizedCSV()" style="font-size: 0.82rem;">
+          📥 Download Sanitized Public Records (CSV)
+        </button>
+      </div>
+
+      <!-- Transparency Integrity Cards -->
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+        <div style="background: var(--paper-2); border: var(--border-ink); border-radius: var(--radius-sm); padding: 12px; box-shadow: var(--shadow-hard-sm);">
+          <div style="font-size: 0.74rem; font-weight: 800; color: var(--text-muted);">OVERALL SLA RESOLUTION</div>
+          <div style="font-size: 1.5rem; font-weight: 900; font-family: var(--font-display); color: var(--ink);">94.8%</div>
+          <div style="font-size: 0.72rem; color: #065f46; font-weight: 800;">Within Statutory Citizen Charter</div>
+        </div>
+        <div style="background: var(--paper-2); border: var(--border-ink); border-radius: var(--radius-sm); padding: 12px; box-shadow: var(--shadow-hard-sm);">
+          <div style="font-size: 0.74rem; font-weight: 800; color: var(--text-muted);">FALSE-CLOSURE AUDIT RATE</div>
+          <div style="font-size: 1.5rem; font-weight: 900; font-family: var(--font-display); color: var(--tomato);">1.9%</div>
+          <div style="font-size: 0.72rem; color: var(--ink); font-weight: 700;">Re-opened by Citizens &bull; Audited</div>
+        </div>
+        <div style="background: var(--paper-2); border: var(--border-ink); border-radius: var(--radius-sm); padding: 12px; box-shadow: var(--shadow-hard-sm);">
+          <div style="font-size: 0.74rem; font-weight: 800; color: var(--text-muted);">CITIZEN TRUST INDEX</div>
+          <div style="font-size: 1.5rem; font-weight: 900; font-family: var(--font-display); color: var(--ink);">4.7 / 5.0</div>
+          <div style="font-size: 0.72rem; color: #065f46; font-weight: 800;">Based on 14,800+ Post-Repair Reviews</div>
+        </div>
+        <div style="background: var(--paper-2); border: var(--border-ink); border-radius: var(--radius-sm); padding: 12px; box-shadow: var(--shadow-hard-sm);">
+          <div style="font-size: 0.74rem; font-weight: 800; color: var(--text-muted);">SPATIAL DEDUPLICATION SAVINGS</div>
+          <div style="font-size: 1.5rem; font-weight: 900; font-family: var(--font-display); color: var(--ink);">34.2%</div>
+          <div style="font-size: 0.72rem; color: var(--ink); font-weight: 700;">Redundant Tickets Eliminated</div>
+        </div>
+      </div>
+
+      <!-- Ward Performance Scorecard Table -->
+      <div style="overflow-x: auto; background: var(--cream-white); border: var(--border-ink-thick); border-radius: var(--radius-md); box-shadow: var(--shadow-hard); padding: 1.25rem;">
+        <h3 style="font-size: 1.1rem; font-family: var(--font-display); font-weight: 900; color: var(--ink); margin-bottom: 0.75rem;">
+          🏛️ Ward Performance League Table
+        </h3>
+        <table class="triage-table">
+          <thead>
+            <tr>
+              <th>Ward ID &amp; Name</th>
+              <th>Corporation</th>
+              <th>Total Grievances</th>
+              <th>Avg Resolution Time</th>
+              <th>SLA Compliance</th>
+              <th>False-Closure %</th>
+              <th>Trust Grade</th>
+            </tr>
+          </thead>
+          <tbody id="transparency-table-body">
+            <!-- Rendered dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </div>
   </main>
 
   <!-- Mobile Bottom Navigation Bar -->
@@ -1119,25 +1537,25 @@
       <span>🏛️</span>
       <span>Home</span>
     </button>
-    <button class="mobile-nav-item" data-tab="gallery-view" onclick="switchTab('gallery-view')">
-      <span>📸</span>
-      <span>Gallery</span>
-    </button>
-    <button class="mobile-nav-item" data-tab="rewards-view" onclick="switchTab('rewards-view')">
-      <span>🏆</span>
-      <span>Rewards</span>
-    </button>
-    <button class="mobile-nav-item" data-tab="command-center" onclick="switchTab('command-center')">
-      <span>📊</span>
-      <span>Map</span>
-    </button>
     <button class="mobile-nav-item" data-tab="citizen-portal" onclick="handleGrievanceTabClick()">
       <span>📝</span>
-      <span>Grievance</span>
+      <span>Report</span>
     </button>
-    <button class="mobile-nav-item" data-tab="whatsapp-simulator" onclick="switchTab('whatsapp-simulator')">
-      <span>💬</span>
-      <span>WhatsApp</span>
+    <button class="mobile-nav-item" data-tab="field-tasks-view" onclick="switchTab('field-tasks-view')">
+      <span>👷</span>
+      <span>Field</span>
+    </button>
+    <button class="mobile-nav-item" data-tab="triage-view" onclick="switchTab('triage-view')">
+      <span>📥</span>
+      <span>Triage</span>
+    </button>
+    <button class="mobile-nav-item" data-tab="command-center" onclick="switchTab('command-center')">
+      <span>🗺️</span>
+      <span>Map</span>
+    </button>
+    <button class="mobile-nav-item" data-tab="transparency-view" onclick="switchTab('transparency-view')">
+      <span>📊</span>
+      <span>Score</span>
     </button>
   </div>
 

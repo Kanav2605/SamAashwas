@@ -306,6 +306,33 @@ class MunicipalDatabase:
             ticket.jan_sunwai_status = update.jan_sunwai_status
         return ticket
 
+    def endorse_master_ticket(self, ticket_id: str, citizen_name: str = "Citizen", citizen_phone: str = "9876543210") -> Optional[MasterTicketRecord]:
+        ticket = self.master_tickets.get(ticket_id)
+        if not ticket:
+            return None
+        complaint = ComplaintRecord(
+            raw_text=f"Citizen endorsement (+1 Me too) for {ticket.title}",
+            department=ticket.department,
+            issue_type=ticket.issue_type,
+            urgency=ticket.urgency,
+            location_landmark=f"Near {ticket.ward_name}",
+            ward_extracted=ticket.ward_name,
+            language_detected="English",
+            lat=ticket.lat,
+            lon=ticket.lon,
+            channel="web_deflection_endorsement",
+            citizen_name=citizen_name,
+            citizen_phone=citizen_phone,
+            is_duplicate=True,
+            master_ticket_id=ticket.master_ticket_id,
+            city=getattr(ticket, "city", "Pan-India"),
+            corporation=getattr(ticket, "corporation", "ULB"),
+            zone=getattr(ticket, "zone", "Central")
+        )
+        self.complaints[complaint.complaint_id] = complaint
+        ticket.add_report(complaint)
+        return ticket
+
     def get_analytics_stats(self, city: Optional[str] = None) -> AnalyticsStatsResponse:
         complaints = list(self.complaints.values())
         masters = list(self.master_tickets.values())
