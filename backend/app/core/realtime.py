@@ -83,9 +83,9 @@ class RealtimeHub:
         self.event_history.append(event_packet)
         message_json = json.dumps(event_packet)
 
-        # Broadcast to WebSockets
+        # Broadcast to WebSockets (iterate over a copy to avoid Set changed size during iteration)
         dead_ws = []
-        for ws in self.active_websockets:
+        for ws in list(self.active_websockets):
             try:
                 await ws.send_text(message_json)
             except Exception:
@@ -93,9 +93,9 @@ class RealtimeHub:
         for ws in dead_ws:
             self.unregister_websocket(ws)
 
-        # Broadcast to SSE Queues
+        # Broadcast to SSE Queues (iterate over a copy)
         dead_sse = []
-        for q in self.sse_queues:
+        for q in list(self.sse_queues):
             try:
                 q.put_nowait(event_packet)
             except asyncio.QueueFull:
