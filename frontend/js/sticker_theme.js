@@ -291,7 +291,7 @@ const DENSITY_MAP = {
 
 // State
 let currentSkin = localStorage.getItem('sticker_skin') || 'tomato-toast';
-let currentMotion = localStorage.getItem('sticker_motion') || 'normal';
+let currentMotion = localStorage.getItem('sticker_motion') || 'off';
 let currentMascotMood = 'happy';
 
 // Initialize Theme Systems

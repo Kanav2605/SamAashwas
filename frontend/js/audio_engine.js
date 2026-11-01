@@ -42,8 +42,11 @@ class CivicAudioEngine {
   updateSoundButtonUI() {
     const btn = document.getElementById('btn-sound-toggle');
     if (btn) {
-      btn.innerHTML = this.enabled ? '🔊 Sound: ON' : '🔇 Sound: OFF';
+      btn.innerHTML = this.enabled
+        ? '🔊 Audio <span class="eq-bars sound-active"><span class="eq-bar"></span><span class="eq-bar"></span><span class="eq-bar"></span></span>'
+        : '🔇 Audio: Muted';
       btn.classList.toggle('active', this.enabled);
+      btn.classList.toggle('sound-active', this.enabled);
     }
   }
 

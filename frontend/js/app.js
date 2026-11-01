@@ -3827,10 +3827,17 @@ function applyGrievancePreset(presetKey) {
 function toggleCivicAudio() {
   if (window.civicAudio) {
     const isNowOn = window.civicAudio.toggleSound();
-    const btn = document.getElementById('btn-sound-toggle');
-    if (btn) {
-      btn.innerText = isNowOn ? '🔊 Sound: ON' : '🔇 Sound: OFF';
-      btn.classList.toggle('active', isNowOn);
+    if (typeof window.civicAudio.updateSoundButtonUI === 'function') {
+      window.civicAudio.updateSoundButtonUI();
+    } else {
+      const btn = document.getElementById('btn-sound-toggle');
+      if (btn) {
+        btn.innerHTML = isNowOn 
+          ? '🔊 Audio <span class="eq-bars sound-active"><span class="eq-bar"></span><span class="eq-bar"></span><span class="eq-bar"></span></span>' 
+          : '🔇 Audio: Muted';
+        btn.classList.toggle('active', isNowOn);
+        btn.classList.toggle('sound-active', isNowOn);
+      }
     }
   }
 }
