@@ -14,6 +14,7 @@
   <!-- Leaflet GIS CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/curtain_copilot.css">
 </head>
 <body class="skin-tomato-toast" data-motion="normal">
 
@@ -2644,6 +2645,78 @@
   <script src="js/rupee_ledger.js"></script>
   <script src="js/h3_hex_grid.js"></script>
   <script src="js/homography_inspector.js"></script>
+  <!-- Global Vernacular Voice AI Copilot Floating Launcher -->
+  <button id="btn-copilot-trigger" class="btn-copilot-floating" onclick="toggleCivicCopilot()" title="Open Nagrik AI Sahayak (Voice & Chat Copilot)">
+    <span class="copilot-beacon"></span>
+    <span class="copilot-icon">🎙️</span>
+    <span class="copilot-label">Nagrik AI Sahayak</span>
+    <span class="copilot-badge">AI Live</span>
+  </button>
+
+  <!-- Vernacular Voice AI Copilot Sliding Drawer -->
+  <div id="civic-copilot-drawer" class="civic-copilot-drawer" style="display: none;">
+    <!-- Copilot Header -->
+    <div class="copilot-header">
+      <div class="copilot-title-group">
+        <div class="copilot-avatar">🤖</div>
+        <div>
+          <div class="copilot-title">Nagrik AI Sahayak <span class="copilot-version-pill">v2.0 Indic</span></div>
+          <div class="copilot-subtitle">Autonomous Vernacular Municipal Copilot</div>
+        </div>
+      </div>
+      <div class="copilot-header-actions">
+        <!-- Vernacular Language Select -->
+        <select id="copilot-lang-select" class="copilot-lang-select" onchange="onCopilotLangChange(this.value)">
+          <option value="en-IN">🇮🇳 English (Indian)</option>
+          <option value="hi-IN" selected>🇮🇳 हिन्दी (Hindi)</option>
+          <option value="kn-IN">🇮🇳 ಕನ್ನಡ (Kannada)</option>
+          <option value="ta-IN">🇮🇳 தமிழ் (Tamil)</option>
+          <option value="hi-Latn">🇮🇳 Hinglish</option>
+        </select>
+        <!-- Spoken TTS Readout Toggle -->
+        <button id="copilot-tts-toggle" class="copilot-tts-btn active" onclick="toggleCopilotTTS()" title="Toggle Spoken Vernacular Readout">
+          🔊 Spoken Audio
+        </button>
+        <!-- Close Drawer -->
+        <button class="copilot-close-btn" onclick="toggleCivicCopilot()" title="Close Copilot">✕</button>
+      </div>
+    </div>
+
+    <!-- Quick Chips Carousel -->
+    <div class="copilot-chips-bar" id="copilot-quick-chips">
+      <button class="copilot-chip" onclick="sendCopilotQuickMessage('Status of CMP-2026-0891')">🔍 Track CMP-2026-0891</button>
+      <button class="copilot-chip" onclick="sendCopilotQuickMessage('सड़क पर बड़ा गड्ढा है')">🕳️ गड्ढा रिपोर्ट करें</button>
+      <button class="copilot-chip" onclick="sendCopilotQuickMessage('Emergency municipal helplines')">🚨 Helplines (112, 1916)</button>
+      <button class="copilot-chip" onclick="sendCopilotQuickMessage('5% Municipal Property Tax Rebate')">🪙 5% Tax Rebate & Karma</button>
+    </div>
+
+    <!-- Messages Scroll Body -->
+    <div class="copilot-body" id="copilot-messages-container">
+      <!-- Dynamically rendered speech messages -->
+    </div>
+
+    <!-- Live Voice Wave Equalizer Bar (Active while recording) -->
+    <div id="copilot-voice-wave" class="copilot-voice-wave" style="display: none;">
+      <div class="wave-bar"></div>
+      <div class="wave-bar"></div>
+      <div class="wave-bar"></div>
+      <div class="wave-bar"></div>
+      <div class="wave-bar"></div>
+      <span id="copilot-listening-status" class="listening-text">Listening... बोलिए (Recording in Hindi)</span>
+    </div>
+
+    <!-- Input Bar -->
+    <div class="copilot-footer">
+      <button id="copilot-mic-btn" class="copilot-mic-btn" onclick="toggleCopilotVoiceRecording()" title="Click to speak your grievance in vernacular">
+        <span id="copilot-mic-icon">🎙️</span>
+      </button>
+      <input type="text" id="copilot-text-input" class="copilot-text-input" placeholder="Type or click 🎙️ to speak (उदा. शिकायत का स्टेटस, गड्ढा रिपोर्ट)..." onkeydown="if(event.key==='Enter') sendCopilotText()">
+      <button id="copilot-send-btn" class="copilot-send-btn" onclick="sendCopilotText()" title="Send Message">
+        ➤
+      </button>
+    </div>
+  </div>
+
   <!-- Real-Time Activity Wire Sliding Drawer -->
   <div id="realtime-wire-drawer" class="realtime-wire-drawer">
     <div class="realtime-wire-header">

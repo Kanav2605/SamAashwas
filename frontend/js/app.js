@@ -1444,7 +1444,11 @@ async function loadTransformations(categoryFilter = null) {
 
     items.forEach(t => {
       const card = document.createElement('div');
-      card.className = 'transformation-card';
+      card.className = 'ba-curtain-card';
+      const beforeImg = t.before_image || 'https://images.unsplash.com/photo-1515162816999-a0c47dc192f7?auto=format&fit=crop&w=700&q=80';
+      const afterImg = t.after_image || 'https://images.unsplash.com/photo-1545459720-aac8509eb02c?auto=format&fit=crop&w=700&q=80';
+      const sliderId = `curtain-range-${t.id}`;
+
       card.innerHTML = `
         <div class="transformation-header">
           <div>
@@ -1454,34 +1458,80 @@ async function loadTransformations(categoryFilter = null) {
           <span class="transformation-tag">${t.badge}</span>
         </div>
 
-        <div class="before-after-container">
-          <div class="ba-box before">
-            <div class="ba-label">⚠️ Before Report</div>
-            <div class="ba-icon">${t.before_icon}</div>
-            <div class="ba-desc">${t.before_desc}</div>
+        <!-- 50/50 Split Curtain Comparison Container -->
+        <div class="ba-curtain-container" id="curtain-box-${t.id}">
+          <!-- Layer 1: AFTER Redressal (Full base) -->
+          <div class="ba-curtain-after" style="background-image: url('${afterImg}');">
+            <div class="ba-curtain-overlay-after"></div>
+            <span class="ba-badge-curtain after">✅ ${t.after_icon} After Redressal</span>
+            <div class="ba-curtain-caption">
+              <div class="caption-title">${t.after_icon} Resolved & Inspected</div>
+              <div class="caption-desc">${t.after_desc}</div>
+            </div>
           </div>
-          <div class="ba-box after">
-            <div class="ba-label">✅ After Redressal</div>
-            <div class="ba-icon">${t.after_icon}</div>
-            <div class="ba-desc">${t.after_desc}</div>
+
+          <!-- Layer 2: BEFORE Report (Clipped left side) -->
+          <div class="ba-curtain-before" id="curtain-before-${t.id}" style="width: 50%;">
+            <div class="ba-curtain-before-inner" id="curtain-inner-${t.id}" style="background-image: url('${beforeImg}');">
+              <div class="ba-curtain-overlay-before"></div>
+              <span class="ba-badge-curtain before">⚠️ ${t.before_icon} Before Report</span>
+              <div class="ba-curtain-caption">
+                <div class="caption-title">${t.before_icon} Hazardous Condition</div>
+                <div class="caption-desc">${t.before_desc}</div>
+              </div>
+            </div>
           </div>
+
+          <!-- Central Draggable Divider Line & Handle -->
+          <div class="ba-curtain-divider" id="curtain-divider-${t.id}" style="left: 50%;">
+            <div class="ba-curtain-handle" title="Slide horizontally to compare Before vs After">◀ 🔀 ▶</div>
+          </div>
+
+          <!-- Invisible Precision Scrubbing Range Input -->
+          <input type="range" min="0" max="100" value="50" class="ba-curtain-range" id="${sliderId}"
+                 aria-label="Before-After Comparison Slider for ${t.title}"
+                 oninput="onCurtainSliderChange('${t.id}', this.value)"
+                 title="Drag slider or click left/right to reveal before vs after">
         </div>
 
         <div class="transformation-footer">
           <div>
-            <span>Turnaround: </span>
-            <span class="turnaround-pill">⏱️ ${t.sla_turnaround_hours} Hours</span>
+            <span style="color: var(--text-muted); font-size: 0.72rem; font-weight: 700;">Charter SLA Turnaround: </span>
+            <span class="turnaround-pill">⏱️ ${t.sla_turnaround_hours}h</span>
           </div>
-          <button class="endorse-btn" onclick="endorseTransformation('${t.id}', this)">
-            👍 Verified (${t.endorsements})
+          <button class="endorse-btn" id="btn-endorse-${t.id}" onclick="endorseTransformation('${t.id}', this, event)">
+            👍 Verify & Audit (+50 Karma) &bull; <span id="endorse-count-${t.id}">${t.endorsements}</span>
           </button>
         </div>
       `;
       container.appendChild(card);
+      setTimeout(() => fixCurtainInnerWidth(t.id), 50);
     });
   } catch (e) {
     console.warn('Failed to load transformations:', e);
   }
+}
+
+function fixCurtainInnerWidth(id) {
+  const box = document.getElementById(`curtain-box-${id}`);
+  const inner = document.getElementById(`curtain-inner-${id}`);
+  if (box && inner) {
+    inner.style.width = `${box.offsetWidth}px`;
+  }
+}
+
+window.addEventListener('resize', () => {
+  document.querySelectorAll('.ba-curtain-container').forEach(box => {
+    const id = box.id.replace('curtain-box-', '');
+    fixCurtainInnerWidth(id);
+  });
+});
+
+function onCurtainSliderChange(id, value) {
+  const beforeLayer = document.getElementById(`curtain-before-${id}`);
+  const divider = document.getElementById(`curtain-divider-${id}`);
+  if (beforeLayer) beforeLayer.style.width = `${value}%`;
+  if (divider) divider.style.left = `${value}%`;
 }
 
 function filterGallery(category) {
@@ -1492,14 +1542,61 @@ function filterGallery(category) {
   loadTransformations(category);
 }
 
-function endorseTransformation(id, btnEl) {
-  btnEl.style.background = 'var(--mint)';
-  btnEl.style.borderColor = 'var(--ink)';
-  btnEl.style.color = 'var(--ink)';
-  btnEl.innerText = '✅ Endorsed by You';
+async function endorseTransformation(id, btnEl, event) {
+  if (btnEl.disabled) return;
   btnEl.disabled = true;
+
+  // Sound fanfare celebration
+  if (window.civicAudio && typeof window.civicAudio.playSuccessFanfare === 'function') {
+    window.civicAudio.playSuccessFanfare();
+  }
+
+  // Pure-Canvas Confetti burst at mouse position or center
+  const clickX = event && event.clientX ? event.clientX : window.innerWidth * 0.5;
+  const clickY = event && event.clientY ? event.clientY : window.innerHeight * 0.5;
+  if (typeof window.fireCivicCelebration === 'function') {
+    window.fireCivicCelebration(clickX, clickY);
+  }
+
+  // Floating +50 Karma burst pill animation
+  const pill = document.createElement('div');
+  pill.className = 'karma-burst-pill';
+  pill.innerText = '🌟 +50 Citizen Karma!';
+  if (btnEl.parentElement) {
+    btnEl.parentElement.style.position = 'relative';
+    btnEl.parentElement.appendChild(pill);
+    setTimeout(() => pill.remove(), 1500);
+  }
+
+  // Award Karma in local session
+  let karma = parseInt(localStorage.getItem('civicsense_karma') || '850', 10);
+  karma += 50;
+  localStorage.setItem('civicsense_karma', karma.toString());
+  const karmaCounter = document.getElementById('citizen-karma-count');
+  if (karmaCounter) karmaCounter.innerText = karma.toLocaleString('en-IN');
+  const karmaScoreEl = document.getElementById('rewards-karma-score');
+  if (karmaScoreEl) karmaScoreEl.innerText = karma.toLocaleString('en-IN');
+
+  // Call Backend Endorsement Endpoint
+  try {
+    const res = await fetch(`/api/v1/transformations/${encodeURIComponent(id)}/endorse`, {
+      method: 'POST'
+    });
+    if (res.ok) {
+      const data = await res.json();
+      const countEl = document.getElementById(`endorse-count-${id}`);
+      if (countEl) countEl.innerText = data.endorsements;
+    }
+  } catch (err) {
+    console.warn('Backend endorsement call error:', err);
+  }
+
+  btnEl.innerHTML = '✅ Verified by You (+50 Karma)';
+  btnEl.style.background = '#059669';
+  btnEl.style.borderColor = '#10B981';
+
   if (typeof showStickerToast === 'function') {
-    showStickerToast('Thank you for verifying civic transformation!', 'success');
+    showStickerToast('🎉 Citizen Audit Verified! +50 Swachh Karma added to your record.', 'success');
   }
 }
 
@@ -3663,6 +3760,309 @@ window.escalateModalToJanSunwai = escalateModalToJanSunwai;
 window.selectCity = selectCity;
 window.switchTab = switchTab;
 window.loadMasterTickets = loadMasterTickets;
+
+// ==========================================================================
+// NAGRIK AI SAHAYAK - GLOBAL VERNACULAR VOICE & CHAT COPILOT
+// ==========================================================================
+let copilotSpeechRecognizer = null;
+let isCopilotListening = false;
+let copilotTTSActive = true;
+let copilotLanguage = 'hi-IN';
+
+function toggleCivicCopilot() {
+  const drawer = document.getElementById('civic-copilot-drawer');
+  if (!drawer) return;
+
+  const isHidden = drawer.style.display === 'none' || !drawer.style.display;
+  drawer.style.display = isHidden ? 'flex' : 'none';
+
+  if (isHidden) {
+    if (window.civicAudio && typeof window.civicAudio.playDrawerSlide === 'function') {
+      window.civicAudio.playDrawerSlide();
+    }
+    const msgContainer = document.getElementById('copilot-messages-container');
+    if (msgContainer && msgContainer.children.length === 0) {
+      sendCopilotInitialGreeting();
+    }
+    const input = document.getElementById('copilot-text-input');
+    if (input) input.focus();
+  }
+}
+
+function onCopilotLangChange(lang) {
+  copilotLanguage = lang;
+  if (isCopilotListening && copilotSpeechRecognizer) {
+    copilotSpeechRecognizer.stop();
+    isCopilotListening = false;
+  }
+  const statusEl = document.getElementById('copilot-listening-status');
+  if (statusEl) {
+    const langNames = {
+      'hi-IN': 'हिन्दी (Hindi)',
+      'en-IN': 'English (Indian)',
+      'kn-IN': 'ಕನ್ನಡ (Kannada)',
+      'ta-IN': 'தமிழ் (Tamil)',
+      'hi-Latn': 'Hinglish'
+    };
+    statusEl.innerText = `Listening... बोलिए (${langNames[lang] || lang})`;
+  }
+}
+
+function toggleCopilotTTS() {
+  copilotTTSActive = !copilotTTSActive;
+  const btn = document.getElementById('copilot-tts-toggle');
+  if (btn) {
+    btn.classList.toggle('active', copilotTTSActive);
+    btn.innerHTML = copilotTTSActive ? '🔊 Spoken Audio' : '🔇 Audio Muted';
+  }
+}
+
+function sendCopilotInitialGreeting() {
+  const greetings = {
+    'hi-IN': {
+      text: 'नमस्ते! मैं आपका **नागरिक AI सहायक** हूँ।\n\nआप बोलकर या लिखकर अपनी शिकायत का स्टेटस (जैसे `CMP-2026-0891`), नई समस्या (सड़क, कचरा, स्ट्रीटलाइट), या आपातकालीन हेल्पलाइन (112, 1916) के बारे में पूछ सकते हैं।',
+      spoken: 'नमस्ते! मैं आपका नागरिक AI सहायक हूँ। आप बोलकर या लिखकर शिकायत की स्थिति या आपातकालीन हेल्पलाइन पूछ सकते हैं।'
+    },
+    'kn-IN': {
+      text: 'ನಮಸ್ಕಾರ! ನಾನು ನಿಮ್ಮ **ಸಮಆಶ್ವಾಸ ನಾಗರಿಕ AI ಸಹಾಯಕ**.\n\nನಿಮ್ಮ ದೂರಿನ ಸ್ಥಿತಿ (`CMP-2026-0891`), ರಸ್ತೆ ಗುಂಡಿ, ಕಸ, ಬೀದಿದೀಪ ದೂರು ಅಥವಾ ತುರ್ತು ಸಹಾಯವಾಣಿಗಳ ಬಗ್ಗೆ ಮಾತನಾಡಿ ಅಥವಾ ಬರೆಯಿರಿ.',
+      spoken: 'ನಮಸ್ಕಾರ! ನಾನು ನಿಮ್ಮ ನಾಗರಿಕ AI ಸಹಾಯಕ.'
+    },
+    'ta-IN': {
+      text: 'வணக்கம்! நான் உங்கள் **குடிமக்கள் AI உதவியாளர்**.\n\nஉங்கள் புகார் நிலை (`CMP-2026-0891`), சாலை, குப்பை, தெருவிளக்கு அல்லது அவசர உதவி எண்களைப் பற்றி கேளுங்கள்.',
+      spoken: 'வணக்கம்! நான் உங்கள் குடிமக்கள் AI உதவியாளர்.'
+    },
+    'en-IN': {
+      text: 'Hello! I am your **SamAashwas Civic AI Copilot**.\n\nSpeak or type to check complaint status (e.g. `CMP-2026-0891`), report potholes/dark spots, look up municipal helplines (112, 1916), or claim your 5% Property Tax rebate.',
+      spoken: 'Hello! I am your SamAashwas Civic AI Copilot. Speak or type to track complaints or report civic hazards.'
+    }
+  };
+
+  const g = greetings[copilotLanguage] || greetings['hi-IN'];
+  renderCopilotMessage('bot', g.text);
+  if (copilotTTSActive) {
+    speakCopilotText(g.spoken, copilotLanguage);
+  }
+}
+
+function toggleCopilotVoiceRecording() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const micBtn = document.getElementById('copilot-mic-btn');
+  const waveEl = document.getElementById('copilot-voice-wave');
+
+  if (!SpeechRecognition) {
+    if (typeof showStickerToast === 'function') {
+      showStickerToast('Speech Recognition not supported in this browser. Please use text input or Chrome/Edge.', 'info');
+    }
+    return;
+  }
+
+  if (isCopilotListening) {
+    if (copilotSpeechRecognizer) copilotSpeechRecognizer.stop();
+    isCopilotListening = false;
+    if (micBtn) micBtn.classList.remove('recording');
+    if (waveEl) waveEl.style.display = 'none';
+    return;
+  }
+
+  try {
+    copilotSpeechRecognizer = new SpeechRecognition();
+    copilotSpeechRecognizer.lang = (copilotLanguage === 'hi-Latn') ? 'hi-IN' : copilotLanguage;
+    copilotSpeechRecognizer.continuous = false;
+    copilotSpeechRecognizer.interimResults = false;
+
+    copilotSpeechRecognizer.onstart = () => {
+      isCopilotListening = true;
+      if (micBtn) micBtn.classList.add('recording');
+      if (waveEl) waveEl.style.display = 'flex';
+      if (window.civicAudio && typeof window.civicAudio.playClick === 'function') {
+        window.civicAudio.playClick();
+      }
+    };
+
+    copilotSpeechRecognizer.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      if (transcript && transcript.trim()) {
+        executeCopilotQuery(transcript.trim());
+      }
+    };
+
+    copilotSpeechRecognizer.onerror = (event) => {
+      console.warn('Copilot Speech Recognition error:', event.error);
+      isCopilotListening = false;
+      if (micBtn) micBtn.classList.remove('recording');
+      if (waveEl) waveEl.style.display = 'none';
+    };
+
+    copilotSpeechRecognizer.onend = () => {
+      isCopilotListening = false;
+      if (micBtn) micBtn.classList.remove('recording');
+      if (waveEl) waveEl.style.display = 'none';
+    };
+
+    copilotSpeechRecognizer.start();
+  } catch (err) {
+    console.error('Failed to start speech recognizer:', err);
+    isCopilotListening = false;
+    if (micBtn) micBtn.classList.remove('recording');
+    if (waveEl) waveEl.style.display = 'none';
+  }
+}
+
+function sendCopilotText() {
+  const input = document.getElementById('copilot-text-input');
+  if (!input) return;
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  executeCopilotQuery(text);
+}
+
+function sendCopilotQuickMessage(msg) {
+  executeCopilotQuery(msg);
+}
+
+async function executeCopilotQuery(queryText) {
+  renderCopilotMessage('user', queryText);
+
+  const msgContainer = document.getElementById('copilot-messages-container');
+  const thinkingBubble = document.createElement('div');
+  thinkingBubble.className = 'copilot-msg-bubble bot';
+  thinkingBubble.id = 'copilot-thinking-indicator';
+  thinkingBubble.innerHTML = '<span style="opacity: 0.7;">⚡ Nagrik AI is analyzing your municipal query...</span>';
+  if (msgContainer) {
+    msgContainer.appendChild(thinkingBubble);
+    msgContainer.scrollTop = msgContainer.scrollHeight;
+  }
+
+  try {
+    const payload = {
+      query: queryText,
+      language: copilotLanguage,
+      user_name: (currentUser && currentUser.user && currentUser.user.name) ? currentUser.user.name : 'Citizen',
+      city: currentSelectedCity || 'bengaluru'
+    };
+
+    const res = await fetch('/api/v1/copilot/query', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (thinkingBubble) thinkingBubble.remove();
+
+    if (res.ok) {
+      const data = await res.json();
+      renderCopilotMessage('bot', data.reply_text, data.suggested_action, data.quick_replies);
+      if (copilotTTSActive && data.audio_speakable_text) {
+        speakCopilotText(data.audio_speakable_text, data.language || copilotLanguage);
+      }
+      if (window.civicAudio && typeof window.civicAudio.playAlertBell === 'function') {
+        window.civicAudio.playAlertBell();
+      }
+    } else {
+      renderCopilotMessage('bot', '⚠️ Could not reach municipal AI server. Please try again.');
+    }
+  } catch (e) {
+    if (thinkingBubble) thinkingBubble.remove();
+    console.error('Copilot Query Exception:', e);
+    renderCopilotMessage('bot', '⚠️ Connection error. Please verify network connectivity.');
+  }
+}
+
+function renderCopilotMessage(sender, text, action = null, quickReplies = null) {
+  const msgContainer = document.getElementById('copilot-messages-container');
+  if (!msgContainer) return;
+
+  const bubble = document.createElement('div');
+  bubble.className = `copilot-msg-bubble ${sender}`;
+
+  let formatted = text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/`(.*?)`/g, '<code style="background: rgba(0,0,0,0.06); padding: 2px 5px; border-radius: 4px; font-weight: 800;">$1</code>')
+    .replace(/\n\n/g, '<br><br>')
+    .replace(/\n•/g, '<br>&bull;')
+    .replace(/\n/g, '<br>');
+
+  bubble.innerHTML = formatted;
+
+  if (action && action.action_type) {
+    const actBtn = document.createElement('button');
+    actBtn.className = 'copilot-msg-action-btn';
+    actBtn.innerHTML = `⚡ ${action.label || 'Take Action'}`;
+    actBtn.onclick = () => executeCopilotAction(action);
+    bubble.appendChild(document.createElement('br'));
+    bubble.appendChild(actBtn);
+  }
+
+  msgContainer.appendChild(bubble);
+  msgContainer.scrollTop = msgContainer.scrollHeight;
+}
+
+function executeCopilotAction(action) {
+  if (!action) return;
+  const { action_type, target, params } = action;
+
+  if (action_type === 'track_id') {
+    switchTab('tracking-view');
+    const input = document.getElementById('tracking-search-input');
+    if (input) {
+      input.value = target;
+      if (typeof searchTracking === 'function') searchTracking();
+    }
+    toggleCivicCopilot();
+  } else if (action_type === 'prefill_complaint') {
+    switchTab('citizen-portal');
+    const descEl = document.getElementById('grievance-desc');
+    if (descEl && params && params.description) descEl.value = params.description;
+    if (params && params.category) {
+      const catSelect = document.getElementById('category-override-select');
+      if (catSelect) catSelect.value = params.category;
+    }
+    toggleCivicCopilot();
+  } else if (action_type === 'navigate') {
+    const tabMap = {
+      'section-report': 'citizen-portal',
+      'section-track': 'tracking-view',
+      'section-rewards': 'rewards-view',
+      'section-dashboard': 'home-view'
+    };
+    const targetTab = tabMap[target] || target;
+    if (typeof switchTab === 'function') switchTab(targetTab);
+    toggleCivicCopilot();
+  } else if (action_type === 'call') {
+    window.location.href = target;
+  }
+}
+
+function speakCopilotText(text, lang = 'hi-IN') {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+
+  const cleanText = text.replace(/[*#`_]/g, '');
+  const utterance = new SpeechSynthesisUtterance(cleanText);
+  utterance.lang = (lang === 'hi-Latn') ? 'hi-IN' : lang;
+  utterance.rate = 1.0;
+  utterance.pitch = 1.0;
+
+  const voices = window.speechSynthesis.getVoices();
+  const targetPrefix = lang.split('-')[0].toLowerCase();
+  const matchedVoice = voices.find(v => v.lang.toLowerCase().startsWith(targetPrefix));
+  if (matchedVoice) {
+    utterance.voice = matchedVoice;
+  }
+
+  window.speechSynthesis.speak(utterance);
+}
+
+
+window.onCurtainSliderChange = onCurtainSliderChange;
+window.toggleCivicCopilot = toggleCivicCopilot;
+window.onCopilotLangChange = onCopilotLangChange;
+window.toggleCopilotTTS = toggleCopilotTTS;
+window.toggleCopilotVoiceRecording = toggleCopilotVoiceRecording;
+window.sendCopilotText = sendCopilotText;
+window.sendCopilotQuickMessage = sendCopilotQuickMessage;
+
 window.loadTransformations = loadTransformations;
 window.endorseTransformation = endorseTransformation;
 window.claimPerk = claimPerk;
