@@ -32,7 +32,11 @@ class ComplaintRecord:
         city: Optional[str] = None,
         corporation: Optional[str] = None,
         zone: Optional[str] = None,
-        agent_trace: Optional[List[Dict[str, Any]]] = None
+        agent_trace: Optional[List[Dict[str, Any]]] = None,
+        is_abstained: bool = False,
+        is_wrong_door: bool = False,
+        jurisdiction: Optional[str] = None,
+        wrong_door_advice: Optional[str] = None
     ):
         self.complaint_id = complaint_id or f"CMP-{uuid.uuid4().hex[:8].upper()}"
         self.raw_text = raw_text
@@ -62,6 +66,10 @@ class ComplaintRecord:
         self.corporation = corporation or "Municipal Corporation"
         self.zone = zone or self.mcd_zone
         self.agent_trace = agent_trace or []
+        self.is_abstained = is_abstained
+        self.is_wrong_door = is_wrong_door
+        self.jurisdiction = jurisdiction
+        self.wrong_door_advice = wrong_door_advice
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -92,7 +100,11 @@ class ComplaintRecord:
             "city": self.city,
             "corporation": self.corporation,
             "zone": self.zone,
-            "agent_trace": self.agent_trace
+            "agent_trace": self.agent_trace,
+            "is_abstained": self.is_abstained,
+            "is_wrong_door": self.is_wrong_door,
+            "jurisdiction": self.jurisdiction,
+            "wrong_door_advice": self.wrong_door_advice
         }
 
 

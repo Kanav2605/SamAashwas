@@ -63,6 +63,19 @@ DEMO_PRESETS: Dict[str, Dict[str, Any]] = {
         "badge": "Community Pillar",
         "avatar": "👩🏽‍💼",
         "aadhaar_verified": True
+    },
+    "vikas_officer": {
+        "id": "USR-OFF-01",
+        "name": "Vikas Rao",
+        "phone": "9811012000",
+        "role": "Ward Officer",
+        "role_title": "Ward Junior Engineer / SDO",
+        "city": "Bengaluru",
+        "ward": "Indiranagar (Ward 1)",
+        "karma_points": 2100,
+        "badge": "Ward Field Officer",
+        "avatar": "👷🏽",
+        "aadhaar_verified": True
     }
 }
 
@@ -137,6 +150,61 @@ def get_current_user_from_token(token: Optional[str]) -> Optional[Dict[str, Any]
     if token.startswith("Bearer "):
         token = token[7:].strip()
     return ACTIVE_SESSIONS.get(token)
+
+
+PRIVILEGED_ROLES = {"ward officer", "officer", "ward volunteer", "rwa lead", "admin", "engineer", "corporator", "commissioner"}
+
+def is_privileged_user(user: Optional[Dict[str, Any]]) -> bool:
+    if not user:
+        return False
+    role = (user.get("role") or "").strip().lower()
+    return role in PRIVILEGED_ROLES
+
+
+def require_authenticated_user(authorization: Optional[str] = Header(None)) -> Dict[str, Any]:
+    user = get_current_user_from_token(authorization)
+    if not user:
+        raise HTTPException(
+            status_code=401,
+            detail="Authentication required. Please provide a valid citizen or officer session token."
+        )
+    return user
+
+
+def require_privileged_role(authorization: Optional[str] = Header(None)) -> Dict[str, Any]:
+    user = require_authenticated_user(authorization)
+    if not is_privileged_user(user):
+        raise HTTPException(
+            status_code=403,
+            detail=f"Forbidden: Action requires officer or volunteer privilege. Current role: {user.get('role')}"
+        )
+    return user
+
+
+def mask_phone(phone: Optional[str]) -> str:
+    """Mask citizen phone number for public display (S2 compliance)."""
+    if not phone:
+        return "XXXXX XXXXX"
+    digits = "".join(c for c in str(phone) if c.isdigit())
+    if len(digits) >= 10:
+        return f"+91 {digits[:2]}*** **{digits[-3:]}"
+    elif len(digits) >= 4:
+        return f"***{digits[-4:]}"
+    return "**********"
+
+
+def mask_name(name: Optional[str]) -> str:
+    """Mask citizen name for public display to protect privacy (S2 compliance)."""
+    if not name or name.strip().lower() in ["citizen", "voice citizen"]:
+        return "Verified Citizen"
+    parts = name.strip().split()
+    masked_parts = []
+    for p in parts:
+        if len(p) <= 2:
+            masked_parts.append(p[0] + "*")
+        else:
+            masked_parts.append(p[0] + "*" * (len(p) - 2) + p[-1])
+    return " ".join(masked_parts)
 
 
 @router.get("/presets", summary="Get available demo citizen profiles for instant testing")

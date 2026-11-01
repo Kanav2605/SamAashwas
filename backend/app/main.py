@@ -6,7 +6,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 
 from .config import settings
-from .api import complaints, master_tickets, predictive, whatsapp, analytics, agents, cities, auth
+from .api import complaints, master_tickets, predictive, whatsapp, analytics, agents, cities, auth, dispatch
 from .db.seed_data import seed_database_and_export
 from .db.database import db
 from fastapi import HTTPException
@@ -32,14 +32,24 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Enable CORS for cross-origin frontend communication
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# Enable CORS with strict origin validation (S4 compliance)
+cors_origins_list = [o.strip() for o in settings.CORS_ORIGINS.split(",") if o.strip()]
+if "*" in cors_origins_list:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=False,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+else:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=cors_origins_list,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 # Register API Routers under /api/v1
 api_prefix = "/api/v1"
@@ -51,6 +61,7 @@ app.include_router(predictive.router, prefix=api_prefix)
 app.include_router(whatsapp.router, prefix=api_prefix)
 app.include_router(analytics.router, prefix=api_prefix)
 app.include_router(agents.router, prefix=api_prefix)
+app.include_router(dispatch.router, prefix=api_prefix)
 
 @app.get(f"{api_prefix}/tracking/{{tracking_id}}", tags=["Tracking"])
 async def track_application(tracking_id: str):

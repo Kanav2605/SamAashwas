@@ -1,4 +1,5 @@
 import logging
+from datetime import datetime
 from typing import Dict, Any, List
 from ..models.schemas import WardRiskResponse, PredictiveAssetResponse
 
@@ -92,7 +93,8 @@ class PredictiveMaintenanceEngine:
         """
         health_score = float(asset.get("structural_health_score", 60))
         installed_year = asset.get("installed_year", 2015)
-        age_years = max(1, 2026 - installed_year)
+        current_year = datetime.now().year
+        age_years = max(1, current_year - installed_year)
 
         # Base failure rate increases with age and low health
         base_failure = (100.0 - health_score) * 0.6 + (age_years * 2.0)

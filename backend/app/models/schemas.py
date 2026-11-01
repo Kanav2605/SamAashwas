@@ -31,25 +31,25 @@ class VisionVerificationResult(BaseModel):
     explanation: str
 
 class ComplaintCreateRequest(BaseModel):
-    raw_text: str = Field(..., description="Complaint description in Hinglish, Hindi, Kannada, Tamil, or English")
-    lat: float = Field(..., description="Latitude coordinate of grievance")
-    lon: float = Field(..., description="Longitude coordinate of grievance")
+    raw_text: str = Field(..., min_length=3, max_length=2000, description="Complaint description in Hinglish, Hindi, Kannada, Tamil, or English")
+    lat: float = Field(..., ge=6.0, le=38.0, description="Latitude coordinate of grievance within India [6.0, 38.0]")
+    lon: float = Field(..., ge=68.0, le=98.0, description="Longitude coordinate of grievance within India [68.0, 98.0]")
     ward_hint: Optional[str] = Field(None, description="Optional user-provided ward name/id")
-    citizen_name: Optional[str] = Field("Citizen", description="Citizen name")
-    citizen_phone: Optional[str] = Field("9876543210", description="Citizen phone or WhatsApp number")
+    citizen_name: Optional[str] = Field("Citizen", max_length=100, description="Citizen name")
+    citizen_phone: Optional[str] = Field("9876543210", max_length=20, description="Citizen phone or WhatsApp number")
     channel: ChannelEnum = Field(ChannelEnum.WEB_PORTAL, description="Reporting channel")
     image_url: Optional[str] = Field(None, description="Image URL or base64 data")
     image_category_hint: Optional[str] = Field(None, description="Vision verification hint")
-    audio_transcript: Optional[str] = Field(None, description="Voice note speech-to-text transcript")
+    audio_transcript: Optional[str] = Field(None, max_length=2000, description="Voice note speech-to-text transcript")
     mcd_zone: Optional[str] = Field(None, description="MCD Administrative Zone")
 
 class VoiceNoteComplaintRequest(BaseModel):
     spoken_language: str = Field("hi-IN", description="Language code: hi-IN, kn-IN, ta-IN, en-IN, or hinglish")
-    audio_transcript: str = Field(..., description="Transcribed vernacular voice grievance text")
-    lat: float = Field(..., description="Latitude coordinate")
-    lon: float = Field(..., description="Longitude coordinate")
-    citizen_name: Optional[str] = Field("Citizen", description="Citizen name")
-    citizen_phone: Optional[str] = Field("9876543210", description="Citizen phone")
+    audio_transcript: str = Field(..., min_length=3, max_length=2000, description="Transcribed vernacular voice grievance text")
+    lat: float = Field(..., ge=6.0, le=38.0, description="Latitude coordinate within India [6.0, 38.0]")
+    lon: float = Field(..., ge=68.0, le=98.0, description="Longitude coordinate within India [68.0, 98.0]")
+    citizen_name: Optional[str] = Field("Citizen", max_length=100, description="Citizen name")
+    citizen_phone: Optional[str] = Field("9876543210", max_length=20, description="Citizen phone")
     mcd_zone: Optional[str] = Field(None, description="MCD Zone")
 
 class ExtractedNLPData(BaseModel):
@@ -62,6 +62,10 @@ class ExtractedNLPData(BaseModel):
     confidence: float
     national_mission: Optional[str] = None
     citizen_charter_sla_hours: Optional[int] = None
+    is_abstained: Optional[bool] = False
+    is_wrong_door: Optional[bool] = False
+    jurisdiction: Optional[str] = None
+    wrong_door_advice: Optional[str] = None
 
 class ComplaintResponse(BaseModel):
     complaint_id: str
@@ -89,6 +93,10 @@ class ComplaintResponse(BaseModel):
     audio_transcript: Optional[str] = None
     mcd_zone: Optional[str] = None
     agent_trace: Optional[List[Dict[str, Any]]] = None
+    is_abstained: Optional[bool] = False
+    is_wrong_door: Optional[bool] = False
+    jurisdiction: Optional[str] = None
+    wrong_door_advice: Optional[str] = None
 
 class MasterTicketResponse(BaseModel):
     master_ticket_id: str

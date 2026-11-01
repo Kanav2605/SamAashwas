@@ -2,7 +2,7 @@ from fastapi import APIRouter, HTTPException, Query, Header
 from typing import List, Optional, Dict, Any
 from ..models.schemas import ComplaintCreateRequest, ComplaintResponse, VoiceNoteComplaintRequest, ChannelEnum
 from ..db.database import db
-from .auth import get_current_user_from_token
+from .auth import get_current_user_from_token, is_privileged_user, mask_phone, mask_name
 
 router = APIRouter(prefix="/complaints", tags=["Citizen Complaints"])
 
@@ -55,15 +55,31 @@ async def submit_voice_grievance(payload: VoiceNoteComplaintRequest, authorizati
         raise HTTPException(status_code=500, detail=f"Failed to process voice grievance: {str(e)}")
 
 @router.get("", response_model=List[Dict[str, Any]], summary="List recent citizen complaints")
-async def list_complaints(limit: int = Query(50, ge=1, le=200)):
+async def list_complaints(limit: int = Query(50, ge=1, le=200), authorization: Optional[str] = Header(None)):
     """
     Retrieve recent citizen complaints including duplicate and non-duplicate submissions.
+    Masks citizen PII unless caller is an authenticated municipal officer or volunteer (S2 compliance).
     """
-    return db.get_all_complaints(limit=limit)
+    items = db.get_all_complaints(limit=limit)
+    user = get_current_user_from_token(authorization)
+    if not is_privileged_user(user):
+        sanitized = []
+        for it in items:
+            c = dict(it)
+            c["citizen_phone"] = mask_phone(c.get("citizen_phone"))
+            c["citizen_name"] = mask_name(c.get("citizen_name"))
+            sanitized.append(c)
+        return sanitized
+    return items
 
 @router.get("/{complaint_id}", summary="Get complaint by ID")
-async def get_complaint(complaint_id: str):
+async def get_complaint(complaint_id: str, authorization: Optional[str] = Header(None)):
     complaint = db.complaints.get(complaint_id)
     if not complaint:
         raise HTTPException(status_code=404, detail="Complaint not found")
-    return complaint.to_dict()
+    res = complaint.to_dict()
+    user = get_current_user_from_token(authorization)
+    if not is_privileged_user(user):
+        res["citizen_phone"] = mask_phone(res.get("citizen_phone"))
+        res["citizen_name"] = mask_name(res.get("citizen_name"))
+    return res

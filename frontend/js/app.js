@@ -1,5 +1,15 @@
 // SamAashwas (समाश्वास) - National Municipal Grievance Intelligence & Urban Care Platform
 // Main Application Controller powered by CivicSense AI
+// Safe HTML escaping helper to prevent Stored XSS (S3 compliance)
+function esc(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
 
 let currentTickets = [];
 let selectedTicketId = null;
@@ -978,10 +988,10 @@ function openTicketModal(ticketId) {
 
     reportItem.innerHTML = `
       <div style="display: flex; justify-content: space-between; color: #57534e; font-weight: 800; margin-bottom: 4px;">
-        <strong>#${idx + 1} ${r.citizen_name} (${r.citizen_phone})</strong>
-        <span>Channel: <strong style="color: #231F20;">${r.channel}</strong></span>
+        <strong>#${idx + 1} ${esc(r.citizen_name)} (${esc(r.citizen_phone)})</strong>
+        <span>Channel: <strong style="color: #231F20;">${esc(r.channel)}</strong></span>
       </div>
-      <div style="color: #231F20; font-style: italic; font-weight: 600;">"${r.raw_text}"</div>
+      <div style="color: #231F20; font-style: italic; font-weight: 600;">"${esc(r.raw_text)}"</div>
     `;
     reportsList.appendChild(reportItem);
   });
@@ -996,12 +1006,25 @@ function closeModal(event) {
 
 async function updateTicketStatus(newStatus) {
   if (!selectedTicketId) return;
+  const headers = { 'Content-Type': 'application/json' };
+  if (currentUser?.token) {
+    headers['Authorization'] = `Bearer ${currentUser.token}`;
+  }
   try {
     const res = await fetch(`/api/v1/master-tickets/${selectedTicketId}`, {
       method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
+      headers,
       body: JSON.stringify({ status: newStatus })
     });
+    if (res.status === 401 || res.status === 403) {
+      if (typeof openCitizenLoginModal === 'function') {
+        openCitizenLoginModal();
+      }
+      if (typeof showStickerToast === 'function') {
+        showStickerToast('Privileged Officer or Volunteer login required to update ticket status.', 'error');
+      }
+      return;
+    }
     if (res.ok) {
       if (typeof showStickerToast === 'function') {
         showStickerToast(`Ticket status updated to ${newStatus}!`, 'success');
@@ -1018,11 +1041,24 @@ async function updateTicketStatus(newStatus) {
   }
 }
 
-async function escalateModalToJanSunwai() {
-  if (!selectedTicketId) return;
+async function escalateModalToJanSunwai(targetTicketId = null) {
+  const ticketId = targetTicketId || selectedTicketId;
+  if (!ticketId) return;
+  if (!currentUser?.token) {
+    if (typeof openCitizenLoginModal === 'function') {
+      openCitizenLoginModal();
+    }
+    if (typeof showStickerToast === 'function') {
+      showStickerToast('Please login to docket this grievance for Jan Sunwai.', 'info');
+    }
+    return;
+  }
   try {
-    const res = await fetch(`/api/v1/master-tickets/${selectedTicketId}/escalate-jan-sunwai`, {
-      method: 'POST'
+    const res = await fetch(`/api/v1/master-tickets/${ticketId}/escalate-jan-sunwai`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${currentUser.token}`
+      }
     });
     if (res.ok) {
       if (typeof showStickerToast === 'function') {

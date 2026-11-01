@@ -104,8 +104,13 @@ def test_jan_sunwai_escalation_endpoint_and_filter():
     js_tickets = js_res.json()
     assert any(t["master_ticket_id"] == master_id for t in js_tickets)
 
-    # Test explicit manual escalate endpoint
-    esc_res = client.post(f"/api/v1/master-tickets/{master_id}/escalate-jan-sunwai")
+    # Test explicit manual escalate endpoint with authenticated citizen session (S1 compliance)
+    login_resp = client.post("/api/v1/auth/login", json={"preset_id": "rajesh_kumar"})
+    token = login_resp.json()["access_token"]
+    esc_res = client.post(
+        f"/api/v1/master-tickets/{master_id}/escalate-jan-sunwai",
+        headers={"Authorization": f"Bearer {token}"}
+    )
     assert esc_res.status_code == 200
     assert esc_res.json()["jan_sunwai_status"] == "ESCALATED"
 
