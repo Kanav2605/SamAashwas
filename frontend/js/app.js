@@ -551,17 +551,13 @@ function requireLogin(callback) {
 }
 
 function handleReportIssueClick() {
-  requireLogin(() => {
-    switchTab('citizen-portal');
-    const txtArea = document.getElementById('complaint-text');
-    if (txtArea) txtArea.focus();
-  });
+  switchTab('citizen-portal');
+  const txtArea = document.getElementById('complaint-text');
+  if (txtArea) txtArea.focus();
 }
 
 function handleGrievanceTabClick() {
-  requireLogin(() => {
-    switchTab('citizen-portal');
-  });
+  switchTab('citizen-portal');
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -766,7 +762,10 @@ function switchTab(tabId) {
   document.querySelectorAll('.view-container').forEach(view => view.classList.remove('active'));
 
   const targetView = document.getElementById(tabId);
-  if (targetView) targetView.classList.add('active');
+  if (targetView) {
+    targetView.classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
 
   const desktopBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
   if (desktopBtn) desktopBtn.classList.add('active');
@@ -856,6 +855,7 @@ function handleHashRouting() {
 }
 
 window.addEventListener('hashchange', handleHashRouting);
+window.addEventListener('popstate', handleHashRouting);
 
 
 // Fetch Real-time KPI Stats

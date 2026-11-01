@@ -552,35 +552,38 @@ header {
 .tab-btn {
   background: var(--cream-white);
   border: var(--border-ink);
-  border-bottom: var(--border-ink);
-  border-radius: 14px 14px 0 0;
-  padding: 8px 14px;
-  font-size: 0.82rem;
-  font-weight: 800;
+  border-bottom: 2px solid transparent;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  padding: 9px 16px;
+  font-size: 0.83rem;
+  font-weight: 700;
   font-family: var(--font-display);
   color: var(--ink);
   cursor: pointer;
   white-space: nowrap;
-  box-shadow: 3px 3px 0 var(--ink);
-  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.05);
+  transition: all 0.15s ease;
 }
 
 .tab-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 4px 4px 0 var(--ink);
-  background: var(--paper-2);
+  background: #F1F5F9;
+  border-color: #94A3B8;
+  color: var(--theme-accent);
 }
 
 .tab-btn:active {
-  transform: translateY(1px) scale(0.98);
-  box-shadow: 1px 1px 0 var(--ink);
+  transform: translateY(0);
 }
 
 .tab-btn.active {
   background: var(--theme-accent);
+  border-color: var(--theme-accent);
   border-bottom: 3px solid var(--theme-accent);
-  box-shadow: 4px 4px 0 var(--ink);
-  transform: translateY(-3px);
+  color: #FFFFFF !important;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.28);
+  font-weight: 800;
+  transform: translateY(-2px);
   z-index: 2;
 }
 
